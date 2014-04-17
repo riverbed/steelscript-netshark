@@ -16,11 +16,11 @@ display filters.
 
 from __future__ import absolute_import
 
-from rvbd.common import timeutils
-from rvbd.shark._api4 import API4_0
-from rvbd.shark._api5 import API5_0
-from rvbd.shark import _filters4
-from rvbd.shark.shark import FILTERS_MAP
+from steelscript.common import timeutils
+from steelscript.shark._api4 import API4_0
+from steelscript.shark._api5 import API5_0
+from steelscript.shark import _filters4
+from steelscript.shark.shark import FILTERS_MAP
 
 FILTERS_MAP.update({
         API4_0: _filters4,

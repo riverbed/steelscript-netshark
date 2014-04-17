@@ -5,8 +5,8 @@
 #   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
 # This software is distributed "AS IS" as set forth in the License.
 
-from rvbd.common.exceptions import *
-from rvbd.shark import _source4 as s4
+from steelscript.common.exceptions import *
+from steelscript.shark import _source4 as s4
 
 class Job5(s4.Job4):
     @property

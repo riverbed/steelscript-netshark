@@ -16,9 +16,9 @@ The functionality in the module includes:
 from __future__ import absolute_import
 
 
-from rvbd.shark.shark import *
-from rvbd.common.exceptions import *
-from rvbd.common.service import *
-from rvbd.shark._exceptions import *
-from rvbd.shark.filters import *
-from rvbd.shark.types import *
+from steelscript.shark.shark import *
+from steelscript.common.exceptions import *
+from steelscript.common.service import *
+from steelscript.shark._exceptions import *
+from steelscript.shark.filters import *
+from steelscript.shark.types import *

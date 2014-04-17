@@ -7,7 +7,7 @@
 
 
 
-from rvbd.common.utils import DictObject
+from steelscript.common.utils import DictObject
 
 class ExtractorField(DictObject):
     @classmethod

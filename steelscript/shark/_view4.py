@@ -10,11 +10,11 @@ import time
 import json
 import logging
 
-from rvbd.common import timeutils
-from rvbd.common.utils import DictObject
-from rvbd.shark import _interfaces
-from rvbd.shark._class_mapping import path_to_class
-from rvbd.shark._api_helpers import APITimestampFormat
+from steelscript.common import timeutils
+from steelscript.common.utils import DictObject
+from steelscript.shark import _interfaces
+from steelscript.shark._class_mapping import path_to_class
+from steelscript.shark._api_helpers import APITimestampFormat
 
 logger = logging.getLogger(__name__)
 

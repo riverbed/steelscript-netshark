@@ -11,12 +11,12 @@ from __future__ import absolute_import
 
 import datetime
 try:
-    from rvbd.common.datetime import datetimeng
+    from steelscript.common.datetime import datetimeng
     datetimeng_available = True
 except:
     datetimeng_available = False
     
-from rvbd.common import timeutils
+from steelscript.common import timeutils
 
 
 class TimeFilter(object):

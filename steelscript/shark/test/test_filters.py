@@ -7,7 +7,7 @@
 
 
 import unittest
-import rvbd.shark.filters as filters
+import steelscript.shark.filters as filters
 
 
 class FilterTests(unittest.TestCase):

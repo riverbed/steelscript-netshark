@@ -9,18 +9,18 @@
 
 from __future__ import absolute_import
 
-from rvbd.shark import _interfaces
-from rvbd.shark._interfaces import loaded
-from rvbd.shark._exceptions import SharkException
-from rvbd.common import utils, timeutils
+from steelscript.shark import _interfaces
+from steelscript.shark._interfaces import loaded
+from steelscript.shark._exceptions import SharkException
+from steelscript.common import utils, timeutils
 
 
 class Interface4(_interfaces._InputSource):
     """A physical interface packet source, that can be used for live packet
     capture. Interface objects are normally not instantianted directly, but
     are instead obtained by calling
-    :py:func:`rvbd.shark.shark.Shark.get_interfaces` or
-    :py:func:`rvbd.shark.shark.Shark.get_interface_by_name`."""
+    :py:func:`steelscript.shark.shark.Shark.get_interfaces` or
+    :py:func:`steelscript.shark.shark.Shark.get_interface_by_name`."""
     def __init__(self, shark, data):
         super(Interface4, self).__init__(shark, data, shark.api.interfaces)
         self.id = self.data['id']
@@ -119,7 +119,7 @@ class Clip4(_interfaces.Clip):
     def get_all(cls, shark):
         """Get the complete list of trace files on given a Shark.
 
-        ``shark`` is an ``rvbd.shark.shark.Shark`` object
+        ``shark`` is an ``steelscript.shark.shark.Shark`` object
 
         Returns a list of ``TraceFile`` objects
         """
@@ -263,7 +263,7 @@ class Job4(_interfaces.Job):
     def get_all(cls, shark):
         """Get the complete list of capture jobs on given a Shark.
 
-        ``shark`` is an :py:class:`rvbd.shark.shark.Shark` object
+        ``shark`` is an :py:class:`steelscript.shark.shark.Shark` object
 
         Returns a list of ``CaptureJob`` objects
 

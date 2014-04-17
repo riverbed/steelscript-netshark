@@ -14,11 +14,11 @@ import logging
 import datetime
 
 import testscenarios
-from rvbd.common.exceptions import RvbdHTTPException
-from rvbd.common import timeutils
+from steelscript.common.exceptions import RvbdHTTPException
+from steelscript.common import timeutils
 
-from rvbd.shark.filters import SharkFilter, TimeFilter
-from rvbd.shark.test.common import (SetUpTearDownMixin, setup_defaults,
+from steelscript.shark.filters import SharkFilter, TimeFilter
+from steelscript.shark.test.common import (SetUpTearDownMixin, setup_defaults,
                                     setup_capture_job, create_trace_clip, create_tracefile)
 from testconfig import config
 

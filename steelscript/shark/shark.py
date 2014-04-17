@@ -16,15 +16,15 @@ like creating clips or starting/stopping capture jobs.
 from __future__ import absolute_import
 import traceback
 
-from rvbd.common.api_helpers import APIVersion
-from rvbd.common.service import Service
-from rvbd.common.exceptions import RvbdException, RvbdHTTPException
-from rvbd.shark._exceptions import SharkException
-from rvbd.shark._api_helpers import SharkAPIVersions
-from rvbd.shark._api4 import API4_0
-from rvbd.shark._api5 import API5_0
-from rvbd.common.utils import ColumnProxy
-from rvbd.shark._class_mapping import Classesv4, Classes, Classesv5
+from steelscript.common.api_helpers import APIVersion
+from steelscript.common.service import Service
+from steelscript.common.exceptions import RvbdException, RvbdHTTPException
+from steelscript.shark._exceptions import SharkException
+from steelscript.shark._api_helpers import SharkAPIVersions
+from steelscript.shark._api4 import API4_0
+from steelscript.shark._api5 import API5_0
+from steelscript.common.utils import ColumnProxy
+from steelscript.shark._class_mapping import Classesv4, Classes, Classesv5
 
 
 FILTERS_MAP = {}
@@ -40,7 +40,7 @@ CLASS_TABLE = {
 }
 
 
-from rvbd.shark.filters import TimeFilter
+from steelscript.shark.filters import TimeFilter
 
 __all__ = ['Shark']
 
@@ -62,7 +62,7 @@ class Shark(Service):
 
         `auth` defines the authentication method and credentials to use
                  to access the Shark.  It should be an instance of
-                 rvbd.common.UserAuth or rvbd.common.OAuth.
+                 steelscript.common.UserAuth or steelscript.common.OAuth.
 
         `force_version` is the API version to use when communicating.
                  if unspecified, this will use the latest version supported

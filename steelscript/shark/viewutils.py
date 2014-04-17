@@ -18,8 +18,8 @@ import logging
 from datetime import datetime, timedelta
 from collections import namedtuple
 
-from rvbd.common.utils import DictObject
-from rvbd.common.timeutils import tzutc, max_width
+from steelscript.common.utils import DictObject
+from steelscript.common.timeutils import tzutc, max_width
 
 
 class OutputMixer(object):

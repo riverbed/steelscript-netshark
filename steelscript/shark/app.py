@@ -5,8 +5,8 @@
 #   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
 # This software is distributed "AS IS" as set forth in the License.
 
-from rvbd.common.app import Application
-import rvbd.shark
+from steelscript.common.app import Application
+import steelscript.shark
 
 
 class SharkApp(Application):
@@ -19,7 +19,7 @@ class SharkApp(Application):
     def parse_args(self):
         super(SharkApp, self).parse_args()
 
-        self.shark = rvbd.shark.Shark(self.args[0], port=self.options.port,
+        self.shark = steelscript.shark.Shark(self.args[0], port=self.options.port,
                                       auth=self.auth,
                                       force_version=self.options.api_version)
 

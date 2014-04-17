@@ -7,7 +7,7 @@
 
 import common
 import testscenarios
-from rvbd.common.exceptions import RvbdHTTPException
+from steelscript.common.exceptions import RvbdHTTPException
 
 
 class EqualityTest(object):

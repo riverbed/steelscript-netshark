@@ -14,8 +14,8 @@ from __future__ import absolute_import
 
 import os
 
-from rvbd.shark._exceptions import SharkException
-from rvbd.shark._interfaces import loaded, _InputSource
+from steelscript.shark._exceptions import SharkException
+from steelscript.shark._interfaces import loaded, _InputSource
 import datetime
 
 class _FSResource(object):

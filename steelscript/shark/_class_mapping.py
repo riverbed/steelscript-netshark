@@ -26,8 +26,8 @@ class Classesv4(Classes):
         #of classes working. If we import at module level
         #we will have multiple registration of classes between
         #different versions
-        import rvbd.shark._source4 as v4
-        from rvbd.shark import _view4, _fs, _settings4, _fields4
+        import steelscript.shark._source4 as v4
+        from steelscript.shark import _view4, _fs, _settings4, _fields4
 
         self.Interface = v4.Interface4
         self.Job = v4.Job4
@@ -47,8 +47,8 @@ class Classesv4(Classes):
 class Classesv5(Classesv4):
     def __init__(self):
         super(Classesv5, self).__init__()
-        import rvbd.shark._source5 as v5
-        from rvbd.shark import _settings5
+        import steelscript.shark._source5 as v5
+        from steelscript.shark import _settings5
         self.Job = v5.Job5
         self.Interface = v5.Interface5
         self.Settings = _settings5.Settings5

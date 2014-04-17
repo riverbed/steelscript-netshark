@@ -6,8 +6,8 @@
 # This software is distributed "AS IS" as set forth in the License.
 
 
-from rvbd.shark import *
-from rvbd.shark.app import SharkApp
+from steelscript.shark import *
+from steelscript.shark.app import SharkApp
 import time
 import logging
 

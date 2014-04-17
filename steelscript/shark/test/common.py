@@ -5,11 +5,11 @@
 #   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
 # This software is distributed "AS IS" as set forth in the License.
 
-import rvbd.shark
-from rvbd.shark import Shark
-from rvbd.shark.types import Operation, Value, Key
-from rvbd.shark.filters import SharkFilter, TimeFilter
-from rvbd.common.service import UserAuth
+import steelscript.shark
+from steelscript.shark import Shark
+from steelscript.shark.types import Operation, Value, Key
+from steelscript.shark.filters import SharkFilter, TimeFilter
+from steelscript.common.service import UserAuth
 
 from testconfig import config
 
@@ -35,14 +35,14 @@ loglevel = config.get('loglevel')
 logging.basicConfig(format="%(asctime)s [%(levelname)-5.5s] %(msg)s",
                     level=loglevel or logging.DEBUG)
     
-import rvbd.common.connection
+import steelscript.common.connection
 try:
-    rvbd.common.connection.Connection.HTTPLIB_DEBUGLEVEL = config['http_loglevel']
+    steelscript.common.connection.Connection.HTTPLIB_DEBUGLEVEL = config['http_loglevel']
 except KeyError:
     pass
 
 try:
-    rvbd.common.connection.Connection.DEBUG_MSG_BODY = config['debug_http_body']
+    steelscript.common.connection.Connection.DEBUG_MSG_BODY = config['debug_http_body']
 except KeyError:
     pass
     
@@ -118,7 +118,7 @@ def create_trace_clip(shark, job):
 def create_tracefile(shark):
     try:
         tracefile = shark.get_file('/admin/test.pcap')
-    except rvbd.shark.RvbdHTTPException as e:
+    except steelscript.shark.RvbdHTTPException as e:
         if e.error_text.find('does not exist') == -1:
             raise
 

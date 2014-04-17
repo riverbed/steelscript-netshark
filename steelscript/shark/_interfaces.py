@@ -9,7 +9,7 @@
 
 import functools
 
-from rvbd.common.utils import DictObject
+from steelscript.common.utils import DictObject
 
 def loaded(f):
     @functools.wraps(f)
@@ -170,7 +170,7 @@ class File(_InputSource):
        also be uploaded into the appliance using the shark.upload() method.
        TraceClip objects are normally not instantianted directly, but are
        instead obtained by calling
-       :py:func:`rvbd.shark.shark.Shark.get_files` or
+       :py:func:`steelscript.shark.shark.Shark.get_files` or
        :py:func:`CaptureJob.get_file`."""
 
     def is_live(self):

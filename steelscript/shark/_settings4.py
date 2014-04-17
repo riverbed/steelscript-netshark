@@ -8,7 +8,7 @@
 import functools
 import warnings
 
-from rvbd.common.jsondict import JsonDict
+from steelscript.common.jsondict import JsonDict
 import json
 import copy
 import time
