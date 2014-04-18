@@ -56,6 +56,12 @@ http://pythonhosted.org/steelscript/install.html
     'install_requires': (
         'steelscript.common>=0.6',
     ),
+
+    'entry_points': {
+        'portal.plugins': [
+            'shark = steelscript.shark.appfw.plugin:SharkPlugin'
+        ],
+    },
 }
 
 if packagedata:
