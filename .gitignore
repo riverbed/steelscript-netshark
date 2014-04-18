@@ -4,11 +4,8 @@
 
 build
 dist
-flyscript.egg-info
+steelscript.netshark.egg-info
 RELEASE-VERSION
-
-docs/flyscript/tmp
-docs/html
 
 *.swp
 .DS_Store

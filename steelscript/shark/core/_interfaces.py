@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -15,7 +15,7 @@ def loaded(f):
     @functools.wraps(f)
     def wrapper(self, *args, **kwds):
         self._ensure_loaded()
-        return f(self, *args, **kwds) 
+        return f(self, *args, **kwds)
     return wrapper
 
 
@@ -103,7 +103,7 @@ class View(object):
     def get_data(self, *args, **kwargs):
         """ Returns the data from the output in this view.
         Shorthand for `all_outputs()[0].get_data()`.
-        
+
         Raises a LookupError if the view has more than one output.
 
         For a full description of the function arguments, refer to the
@@ -113,20 +113,20 @@ class View(object):
         if len(outputs) != 1:
             raise LookupError('This view has more than one output. You have to call get_data'
                               'on an Output object directly')
-        
+
         return outputs[0].get_data(*args, **kwargs)
 
     def get_legend(self):
         """ Returns the legend from the output in this view.
         Shorthand for `all_outputs()[0].get_legend()`.
-        
+
         Raises a LookupError if the view has more than one output.
         """
         outputs = self.all_outputs()
         if len(outputs) != 1:
             raise LookupError('This view has more than one output. You have to call get_legend'
                               'on an Output object directly')
-        
+
         return outputs[0].get_legend()
 
     def all_outputs(self):
@@ -170,7 +170,7 @@ class File(_InputSource):
        also be uploaded into the appliance using the shark.upload() method.
        TraceClip objects are normally not instantianted directly, but are
        instead obtained by calling
-       :py:func:`steelscript.shark.shark.Shark.get_files` or
+       :py:func:`steelscript.shark.core.shark.Shark.get_files` or
        :py:func:`CaptureJob.get_file`."""
 
     def is_live(self):

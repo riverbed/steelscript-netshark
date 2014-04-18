@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -14,8 +14,8 @@ from __future__ import absolute_import
 
 import os
 
-from steelscript.shark._exceptions import SharkException
-from steelscript.shark._interfaces import loaded, _InputSource
+from steelscript.shark.core._exceptions import SharkException
+from steelscript.shark.core._interfaces import loaded, _InputSource
 import datetime
 
 class _FSResource(object):
@@ -150,7 +150,7 @@ class _FSResource(object):
         # from the server: created
         if "created" not in self.data:
             self._load()
-    
+
     def _load(self):
         self.data = self.shark.api.fs.get_details(self.data["id"], details=True)
 
@@ -261,7 +261,7 @@ class Directory4(_FSResource):
         sub-directories and an array with the files
         """
         assert self.shark is not None
-        
+
         #the get_details call has different result on / than on any
         #other directory, so we should take care of it
         res = self.shark.api.fs.get_details(
@@ -274,7 +274,7 @@ class Directory4(_FSResource):
             #we are in the root case, res is thus a list of directories
             for directory in res:
                 dir_list.append(Directory4(self.shark, directory))
-            #no need to check for files, they are not in the root 
+            #no need to check for files, they are not in the root
             #directory by design
         else:
             dir_list, file_list = self._process_json_directories(res)
@@ -289,7 +289,7 @@ class Directory4(_FSResource):
 
         complete_remote_path = self.data["id"] + self.shark._file_separator + remote_file_name
         return TraceFile4.upload(self.shark, complete_remote_path, local_path)
-    
+
 
     def _walk(self, data, dirs):
         """Helper for walk in order to use recursive function without
@@ -312,25 +312,25 @@ class Directory4(_FSResource):
                 for dir in data['dirs']:
                     if dir['id'] == id:
                         return dir
-            
+
 
         for dir in dirs:
             sub_data = data_lookup(data, dir.data['id'])
             sub_dirs, sub_files = self._process_json_directories(sub_data)
-        
+
             yield dir.data['id'], sub_dirs, sub_files
-        
+
             for x in self._walk(sub_data, sub_dirs):
                 yield x
 
     def walk(self):
-        """Generate the file names in a directory tree by walking the tree in a top-down way. 
+        """Generate the file names in a directory tree by walking the tree in a top-down way.
         For each directory in the tree rooted at directory top (including top itself),
         it yields a 3-tuple (dirpath, dirnames, filenames).
-        """    
+        """
         res = self.shark.api.fs.get_details(
             self.data['id'], details=True, recursive=True)
-        
+
         dirs = list()
         files = list()
 
@@ -339,13 +339,13 @@ class Directory4(_FSResource):
                 dirs.append(Directory4(self.shark, dir))
         else:
             dirs, files = self._process_json_directories(res)
-        
+
         yield self.data['id'], dirs, files
-        
+
         for x in self._walk(res, dirs):
             yield x
 
-        
+
 class File4(_FSResource, _InputSource):
 
     #this dictionary stores the string_type:class
@@ -370,23 +370,23 @@ class File4(_FSResource, _InputSource):
     @classmethod
     def get_all(cls, shark):
         res = list()
-        
+
         for directory in shark.api.fs.get_all(recursive=True):
             cls._get_all(shark, directory, res)
-            
+
         return res
-        
+
     @classmethod
-    def _get_all(cls, shark, dirs, lst):        
+    def _get_all(cls, shark, dirs, lst):
         for dir in dirs['dirs']:
             cls._get_all(shark, dir, lst)
-            
+
         for file in dirs['files']:
             clss = cls._get_child_class(file)
             lst.append(clss(shark, file))
 
         return lst
-        
+
     @classmethod
     def _get_child_class(cls, fi):
         """Given a json representation of a file returns
@@ -677,7 +677,7 @@ class MultisegmentFile4(_AggregatedFile):
                 ": the 'packets' parameter is not an integer value")
 
         self.shark.api.fs.update_timeskew(self.data["id"], packets)
-    
+
     def delete_timeskew(self):
         """Delete the timeskew computation on the trace file.
         """
@@ -687,7 +687,7 @@ class MultisegmentFile4(_AggregatedFile):
         assert self.data is not None
 
         self.shark.api.fs.delete_timeskew(self.data["id"])
-    
+
     def timeskew(self):
         """Return timeskew computation details.
         """

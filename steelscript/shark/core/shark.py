@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -19,12 +19,12 @@ import traceback
 from steelscript.common.api_helpers import APIVersion
 from steelscript.common.service import Service
 from steelscript.common.exceptions import RvbdException, RvbdHTTPException
-from steelscript.shark._exceptions import SharkException
-from steelscript.shark._api_helpers import SharkAPIVersions
-from steelscript.shark._api4 import API4_0
-from steelscript.shark._api5 import API5_0
+from steelscript.shark.core._exceptions import SharkException
+from steelscript.shark.core._api_helpers import SharkAPIVersions
+from steelscript.shark.core._api4 import API4_0
+from steelscript.shark.core._api5 import API5_0
 from steelscript.common.utils import ColumnProxy
-from steelscript.shark._class_mapping import Classesv4, Classes, Classesv5
+from steelscript.shark.core._class_mapping import Classesv4, Classes, Classesv5
 
 
 FILTERS_MAP = {}
@@ -40,7 +40,7 @@ CLASS_TABLE = {
 }
 
 
-from steelscript.shark.filters import TimeFilter
+from steelscript.shark.core.filters import TimeFilter
 
 __all__ = ['Shark']
 
@@ -104,7 +104,7 @@ class Shark(Service):
         def _set_fields(f):
             self.columns = f
         self.columns = ColumnProxy(_get_fields, _set_fields)
-        
+
         self._capture_jobs_cache = None
         self._traceclips_cache = None
         self._tracefiles_cache = None
@@ -134,7 +134,7 @@ class Shark(Service):
             # any other non-ok status probably means we are
             # not talking to a shark
             return None
-        
+
         from xml.etree import ElementTree
         tree = ElementTree.fromstring(res.read())
         if tree.tag != 'ProtocolInfo':
@@ -250,7 +250,7 @@ class Shark(Service):
         by this view.
 
         """
-       
+
         if start_time is not None or end_time is not None:
             if start_time is None or end_time is None:
                 raise ValueError('must specify both start and end times')
@@ -449,7 +449,7 @@ class Shark(Service):
 
         clips = [ c for c in clips
                   if c.description == description ]
-            
+
         if len(clips) == 0:
             raise SharkException('cannot find clip %s' % description)
 
@@ -474,7 +474,7 @@ class Shark(Service):
     def _fetch_extractor_fields(self, force=False):
         if not force and len(self.xtfields) > 0:
             return
-        
+
         for f in self.classes.ExtractorField.get_all(self):
             self.xtfields[f.id] = f
 
@@ -591,24 +591,24 @@ class Shark(Service):
         Return Value: a reference to the new file
         """
         return self.classes.MergedFile.create_merged_file(self, path, files)
-    
+
     def download_log(self, path=None, log_type='COMPLETE', case_id=None):
         """Download log archive to local machine into path
         If path is None a temporary file is created
-        
+
         `log_type` can be:
             -'CURRENT'
             -'PROBE'
             -'PACKETRECORDER'
             -'COMPLETE' (default)
-        
+
         `case_id` is an integer that represent the case id
         """
         config = {'dump_type': log_type}
         if case_id:
             config['case_id'] = int(case_id)
         return self.api.system.get_sysdump(path, config)
-    
+
     @property
     def version(self):
         """Returns the Shark software version
@@ -620,7 +620,7 @@ class Shark(Service):
         """Returns the Shark software model
         """
         return self.api.common.info().get('model')
-    
+
     @property
     def _file_separator(self):
         # Get the file separator based on the server OS

@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -37,7 +37,7 @@ class OutputMixer(object):
     """
 
     sourceobj = namedtuple('sourceobj', ['output', 'prefix', 'offset'])
-    
+
     def __init__(self):
         """
         """
@@ -58,14 +58,14 @@ class OutputMixer(object):
         for field in src.get_legend():
             if field.dimension:
                 raise NotImplementedError()
-            
+
             # create a new record overriding some fields
             entry = DictObject(field)
             entry.id = 'x%d' % len(self._legend)
             entry.name = prefix + entry.name
 
             self._legend.append(entry)
-        
+
     def get_legend(self):
         """ Return the legend for each of the source objects
         """
@@ -107,7 +107,7 @@ class OutputMixer(object):
                                                        vals=[vals],
                                                        processed_pkts=None,
                                                        unprocessed_pkts=None))
-                
+
                 sample_time = ms.t
                 vals = list(template)
 
@@ -117,7 +117,7 @@ class OutputMixer(object):
             off = self._sources[i].offset
             for j in range(len(V)):
                 vals[off + j] = V[j]
-                
+
             ms = min_sample()
 
         yield DictObject.create_from_dict(dict(t=sample_time,
@@ -131,7 +131,7 @@ def print_data(legend, stream, timeformat='%Y/%m/%d %H:%M:%S.%f',
                widths=None, limit=None, line_prefix=''):
     """
     Print the data of a given view output to stdout.
-    
+
     `widths` is an optional list of integers, specifying how
     many characters wide each column should be.  If it is not
     specified, reasonable defaults are chosen.
@@ -193,7 +193,7 @@ def print_data(legend, stream, timeformat='%Y/%m/%d %H:%M:%S.%f',
         total += 1
         if total == limit:
             return
-    
+
 
 def write_csv(filename, legend, stream, include_column_names=True, include_sample_times=True):
     """
@@ -214,7 +214,7 @@ def write_csv(filename, legend, stream, include_column_names=True, include_sampl
 
     ofile = open(filename, "wb")
     writer = csv.writer(ofile)
-        
+
     if include_column_names:
         labels = []
         if include_sample_times:
@@ -228,9 +228,9 @@ def write_csv(filename, legend, stream, include_column_names=True, include_sampl
             sample = []
             if include_sample_times:
                 sample.append(s["t"])
-            
+
             sample += [str(f) for f in v]
-                    
+
             writer.writerow(sample)
 
     ofile.close()
@@ -249,11 +249,11 @@ class Cursor(object):
         view = self.output.view
 
         ti = view.get_timeinfo()
-        
+
         start = self._last_end
-    
+
         data = self.output.get_data(start=start, end=ti.end)
-        
+
         self._last_end = ti.end
-        
+
         return data

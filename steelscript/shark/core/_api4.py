@@ -1,12 +1,12 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
-from steelscript.shark._api_helpers import APIGroup, APITimestampFormat
+from steelscript.shark.core._api_helpers import APIGroup, APITimestampFormat
 import urllib
 
 
@@ -73,7 +73,7 @@ class Common(API4Group):
 
     def ping(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         return self._xjtrans("/ping", "GET", None, as_json, timestamp_format)
-    
+
     def info(self):
         return self._xjtrans("/info", "GET", None, True, APITimestampFormat.NANOSECOND)
 
@@ -81,11 +81,11 @@ class Settings(API4Group):
     def get_basic(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves the basic configuration settings """
         return self._xjtrans("/settings/basic", "GET", None, as_json, timestamp_format)
-    
+
     def update_basic(self, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Updates the basic configuration settings """
         return self._xjtrans("/settings/basic", "PUT", config, as_json, timestamp_format)
-    
+
     def get_auth(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves the authentication settings """
         return self._xjtrans("/settings/auth", "GET", None, as_json, timestamp_format)
@@ -109,11 +109,11 @@ class Settings(API4Group):
     def update_cors_domains(self, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Updates the cors_domains settings """
         return self._xjtrans("/settings/cors_domains", "PUT", config, as_json, timestamp_format)
-    
+
     def update_firewall_config(self, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Updates the firewall settings """
         return self._xjtrans("/settings/firewall", "POST", config, as_json, timestamp_format)
-    
+
     def get_firewall_config(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Returns the firewall settings """
         return self._xjtrans("/settings/firewall", "GET", None, as_json, timestamp_format)
@@ -153,7 +153,7 @@ class Settings(API4Group):
         resp = self.shark.conn.request(self.uri_prefix + "/settings/protocol_names", "PUT",
                                        body=settings, extra_headers={'Content-Type' : 'text/plain'})
         resp.read()
-        
+
     def get_notification(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Returns notification and SMTP settings from management daemon"""
         return self._xjtrans("/settings/notification", "GET", None, as_json, timestamp_format)
@@ -216,7 +216,7 @@ class Interfaces(API4Group):
     def get_packets_from_export(self, handle, export_id, path=None):
         """ Fetch packets from export ID """
         return self.shark.conn.download(self.uri_prefix + "/interfaces/%s/exports/%s/packets" % (handle, export_id), path)
-    
+
     def get_packets(self, handle, path=None, params=None):
         """ Directly fetch packets for this interface, with optional parameters """
         return self.shark.conn.download(self.uri_prefix + "/interfaces/%s/packets" % handle, path, params=params)
@@ -230,7 +230,7 @@ class Jobs(API4Group):
     def get_all(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Lists the capture jobs on the system """
         return self._xjtrans("/jobs" , "GET", None, as_json, timestamp_format)
-    
+
     def add(self, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Add a new capture job to the system """
         return self._xjtrans("/jobs", "POST", config, as_json, timestamp_format)
@@ -274,15 +274,15 @@ class Jobs(API4Group):
     def state_update(self, handle, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Updates the capture jobs status """
         return self._xjtrans("/jobs/%s/status" % handle, "PUT", config, as_json, timestamp_format)
-  
+
     def get_config(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves configuration information about a capture job """
         return self._xjtrans("/jobs/%s/config" % handle, "GET", None, as_json, timestamp_format)
-        
+
     def get_status(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves status information about a capture job """
         return self._xjtrans("/jobs/%s/status" % handle, "GET", None, as_json, timestamp_format)
-        
+
     def get_index(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves index information about a capture job """
         return self._xjtrans("/jobs/%s/index" % handle, "GET", None, as_json, timestamp_format)
@@ -290,24 +290,24 @@ class Jobs(API4Group):
     def get_stats(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves statistics about a capture job """
         return self._xjtrans("/jobs/%s/stats" % handle, "GET", None, as_json, timestamp_format)
-        
+
 class Clips(API4Group):
     def get_all(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Lists the trace clips on the system """
         return self._xjtrans("/clips" , "GET", None, as_json, timestamp_format)
-    
+
     def add(self, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Add a new trace clip to the system """
         return self._xjtrans("/clips", "POST", config, as_json, timestamp_format)
-    
+
     def get_details(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves information about a trace clip """
         return self._xjtrans("/clips/%s" % handle, "GET", None, as_json, timestamp_format)
-    
+
     def update(self, handle, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Updates the trace clip configuration """
         return self._xjtrans("/clips/%s" % handle, "PUT", config, as_json, timestamp_format)
-    
+
     def delete(self, handle):
         """Delete a trace clip."""
         return self._xjtrans('/clips/%s' % handle, "DELETE", None, True, APITimestampFormat.NANOSECOND)
@@ -315,15 +315,15 @@ class Clips(API4Group):
     def set_locked(self, handle, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Locks/unlocks the trace clip """
         return self._xjtrans("/clips/%s/status" % handle, "PUT", config, as_json, timestamp_format)
-    
+
     def create_export(self, handle, config=None, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Create an export and return url """
         return self._xjtrans("/clips/%s/exports" % handle, "POST", config, as_json, timestamp_format)
-    
+
     def get_all_exports(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ List all exports for this job """
         return self._xjtrans("/clips/%s/exports" % handle, "GET", None, as_json, timestamp_format)
-    
+
     def get_export_details(self, handle, export_id, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Return details for a specific export """
         return self._xjtrans("/clips/%s/exports/%s" % (handle, export_id), "GET", None, as_json, timestamp_format)
@@ -339,15 +339,15 @@ class Clips(API4Group):
     def get_packets(self, handle, path=None, params=None):
         """ Directly fetch packets from this clip, with optional parameters """
         return self.shark.conn.download(self.uri_prefix + "/clips/%s/packets" % handle, path, params=params)
-        
+
     def get_config(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves configuration information about a trace clip """
         return self._xjtrans("/clips/%s/config" % handle, "GET", None, as_json, timestamp_format)
-        
+
     def get_status(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves status information about a trace clip """
         return self._xjtrans("/clips/%s/status" % handle, "GET", None, as_json, timestamp_format)
-        
+
     def get_index(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Retrieves index information about a trace clip """
         return self._xjtrans("/clips/%s/index" % handle, "GET", None, as_json, timestamp_format)
@@ -374,14 +374,14 @@ class Files(API4Group):
         if path[0] == '/':
             path = path[1:]
         return self.shark.conn.upload(self.uri_prefix + "/fs/%s" % path, data, extra_headers=headers)
-                        
+
     def upload_xjobject(self, path, data, headers, as_json=True, timestamp_format = APITimestampFormat.NANOSECOND):
         """Upload an XML or JSON-encoded file object."""
         if path[0] == '/':
             path = path[1:]
 
         return self._xjtrans("/fs/%s" % path, "POST", data, as_json, timestamp_format, custom_headers = headers)
-    
+
     def get_details(self, path, params=None, as_json=True, details = False, recursive = False,
                     timestamp_format=APITimestampFormat.NANOSECOND):
         """Retrieves information about a disk file """
@@ -393,7 +393,7 @@ class Files(API4Group):
 
         if params is None:
             params = {}
-            
+
         if details == True:
             params['details'] = True
 
@@ -409,13 +409,13 @@ class Files(API4Group):
         if path[0] == '/':
             path = path[1:]
         return self.shark.conn.upload(self.uri_prefix + "/fs/%s" % path, local_file_ref, extra_headers=headers)
-    
+
     def download(self, path, local_path=None):
         """Convenience function to download a file."""
         if path[0] == '/':
             path = path[1:]
         return self.shark.conn.download(self.uri_prefix + "/fs/%s/download" % path, path=local_path)
-        
+
     def delete(self, path):
         """Delete a file from the system."""
         if path[0] == '/':
@@ -439,13 +439,13 @@ class Files(API4Group):
         if path[0] == '/':
             path = path[1:]
         return self._xjtrans("/fs/%s/move" % path, "POST", config, as_json, timestamp_format)
-    
+
     def copy(self, path, config, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Moves a disk file """
         if path[0] == '/':
             path = path[1:]
         return self._xjtrans("/fs/%s/copy" % path, "POST", config, as_json, timestamp_format)
-    
+
     def create_index(self, path, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Creates an index for a disk file """
         if path[0] == '/':
@@ -523,7 +523,7 @@ class Files(API4Group):
         if path[0] == '/':
             path = path[1:]
         return self.shark.conn.download(self.uri_prefix + "/fs/%s/packets" % path, local_path, params=params)
-        
+
 class Users(API4Group):
     def get(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Lists the users on the system """
@@ -601,7 +601,7 @@ class Views(API4Group):
     def close(self, handle):
         """Close the running view"""
         return self._xjtrans("/views/%s" % handle, "DELETE", None, True, APITimestampFormat.NANOSECOND)
-        
+
     def get_config(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """Return the configuration of the given view"""
         return self._xjtrans("/views/%s" % handle, "GET", None, as_json, timestamp_format)
@@ -618,7 +618,7 @@ class Views(API4Group):
     def get_legend(self, handle, output, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """Return the legend for the given view output"""
         return self._xjtrans("/views/%s/data/%s/legend" % (handle, output), "GET", None, as_json, timestamp_format)
-        
+
     def get_data(self, handle, output, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND, **params):
         """Return the output for the given view"""
         return self._xjtrans("/views/%s/data/%s" % (handle, output), "GET", None, as_json, timestamp_format, params)
@@ -626,7 +626,7 @@ class Views(API4Group):
     def get_stats(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """Return the statistics for the given view"""
         return self._xjtrans("/views/%s/stats" % handle, "GET", None, as_json, timestamp_format)
-    
+
     def get_processor_stats(self, handle, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """Return the processor statistics for the given view"""
         return self._xjtrans("/debug/handles/%s" % handle, "GET", None, as_json, timestamp_format)
@@ -660,7 +660,7 @@ class Views(API4Group):
         return self._xjtrans("/views/%s/watches/%s/enable" % (handle, watch_id), "POST", None, as_json, timestamp_format)
 
     # XXX/demmer lock/unlock/stop
-    
+
 class System(API4Group):
     def get_info(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """Return the system info"""
@@ -673,49 +673,49 @@ class System(API4Group):
     def get_events(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """Return the events list"""
         return self._xjtrans("/debug/events", "GET", None, as_json, timestamp_format)
-    
+
     def get_sysdump(self, path, config, as_json=True, timestap_format=APITimestampFormat.NANOSECOND):
         """Dump log archive
         """
         return self.shark.conn.download(self.uri_prefix + "/system/sysdump", path, params=config)
 
 class Certificates(API4Group):
-    
+
     def get(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Returns the certificates settings """
         return self._xjtrans("/settings/certificates", "GET", None, as_json, timestamp_format)
-    
-    
-    def update_profiler_export_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND): 
+
+
+    def update_profiler_export_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Set a new Profiler Export certificate"""
         return self._xjtrans("/settings/certificates/profiler_export", "PUT", certificate_data, as_json, timestamp_format)
-    
+
     def generate_profiler_export_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Generate new Trusted Profiler certificate"""
         return self._xjtrans("/settings/certificates/profiler_export/generate", "POST", certificate_data, as_json, timestamp_format)
-    
-    def copy_web_certificate(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND): 
+
+    def copy_web_certificate(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Reuses the web certificate as profiler export certificate"""
         return self._xjtrans("/settings/certificates/profiler_export/copy_web", "POST", None, as_json, timestamp_format)
-    
-    
-    def update_web_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND): 
+
+
+    def update_web_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Set a new Web certificate"""
         return self._xjtrans("/settings/certificates/web", "PUT", certificate_data, as_json, timestamp_format)
-    
+
     def generate_web_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Generate new web certificate"""
         return self._xjtrans("/settings/certificates/web/generate", "POST", certificate_data, as_json, timestamp_format)
-        
-    def copy_profiler_export_certificate(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND): 
+
+    def copy_profiler_export_certificate(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Reuses the Profiler Export's certificate as web certificate"""
         return self._xjtrans("/settings/certificates/web/copy_profiler_export", "POST", None, as_json, timestamp_format)
-       
-    
-    def add_trusted_profiler_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND): 
+
+
+    def add_trusted_profiler_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Add a new Trusted Profiler certificate"""
         return self._xjtrans("/settings/certificates/trusted_profilers", "POST", certificate_data, as_json, timestamp_format)
-    
+
     def delete_trusted_profiler_certificate(self, id, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Delete a new Trusted Profiler certificate by its id"""
         return self._xjtrans("/settings/certificates/trusted_profilers/"+id, "DELETE", None, as_json, timestamp_format)
@@ -724,11 +724,11 @@ class Stats(API4Group):
     def get_memory(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Returns the memory stats """
         return self._xjtrans("/stats/memory", "GET", None, as_json, timestamp_format)
-        
+
     def get_profiler_export(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Returns the profiler export stats """
         return self._xjtrans("/stats/profiler_export", "GET", None, as_json, timestamp_format)
-        
+
     def get_storage(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """Returns the storage stats
         """
@@ -766,7 +766,7 @@ class Update(API4Group):
         """
         headers = {'Content-Disposition' : 'update.iso',
                    'Content-Type' : 'application/octet-stream'}
-        
+
         return self.shark.conn.upload(self.uri_prefix + "/system/update/iso", data=f, extra_headers=headers)
 
     def delete_iso(self, data):

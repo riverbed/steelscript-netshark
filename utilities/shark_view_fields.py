@@ -2,9 +2,9 @@
 
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -15,7 +15,7 @@ For full field details, use the -v flag.
 
 import optparse
 
-from steelscript.shark.app import SharkApp
+from steelscript.shark.core.app import SharkApp
 from steelscript.common.utils import Formatter
 
 
@@ -36,7 +36,7 @@ class FieldsApp(SharkApp):
         data = [(f.id, f.description, f.type) for f in self.shark.get_extractor_fields()]
         if self.options.sort_id:
             data.sort()
-        Formatter.print_table(data, 
+        Formatter.print_table(data,
                               headers,
                               padding=2,
                               max_width=int(self.options.table_width),

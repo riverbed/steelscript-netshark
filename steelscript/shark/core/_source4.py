@@ -1,17 +1,17 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
 
 from __future__ import absolute_import
 
-from steelscript.shark import _interfaces
-from steelscript.shark._interfaces import loaded
-from steelscript.shark._exceptions import SharkException
+from steelscript.shark.core import _interfaces
+from steelscript.shark.core._interfaces import loaded
+from steelscript.shark.core._exceptions import SharkException
 from steelscript.common import utils, timeutils
 
 
@@ -19,8 +19,8 @@ class Interface4(_interfaces._InputSource):
     """A physical interface packet source, that can be used for live packet
     capture. Interface objects are normally not instantianted directly, but
     are instead obtained by calling
-    :py:func:`steelscript.shark.shark.Shark.get_interfaces` or
-    :py:func:`steelscript.shark.shark.Shark.get_interface_by_name`."""
+    :py:func:`steelscript.shark.core.shark.Shark.get_interfaces` or
+    :py:func:`steelscript.shark.core.shark.Shark.get_interface_by_name`."""
     def __init__(self, shark, data):
         super(Interface4, self).__init__(shark, data, shark.api.interfaces)
         self.id = self.data['id']
@@ -32,12 +32,12 @@ class Interface4(_interfaces._InputSource):
 
     def __str__(self):
         return '{0}'.format(self.data['name'])
-    
+
     @property
     def name(self):
         """The interface device name."""
         return self.data['name']
-    
+
     @property
     def description(self):
         """The interface description."""
@@ -66,7 +66,7 @@ class Interface4(_interfaces._InputSource):
         """
         data = self._api.get_details(self.id)
         super(Interface4, self).update(data)
-    
+
 
 class Clip4(_interfaces.Clip):
     """A trace clip packet source.
@@ -81,7 +81,7 @@ class Clip4(_interfaces.Clip):
     def _ensure_loaded(self):
         if self.data is None or len(self.data) == 1:
             self._load()
-    
+
     def _load(self):
         self.data = self._api.get_details(self.id)
 
@@ -119,7 +119,7 @@ class Clip4(_interfaces.Clip):
     def get_all(cls, shark):
         """Get the complete list of trace files on given a Shark.
 
-        ``shark`` is an ``steelscript.shark.shark.Shark`` object
+        ``shark`` is an ``steelscript.shark.core.shark.Shark`` object
 
         Returns a list of ``TraceFile`` objects
         """
@@ -175,13 +175,13 @@ class Job4(_interfaces.Job):
     def __init__(self, shark, data):
         super(Job4, self).__init__(shark, data, shark.api.jobs)
         self.id = self.data['id']
-        self.index_enabled = True 
+        self.index_enabled = True
         self.data = data
 
     def _ensure_loaded(self):
         if self.data is None or len(self.data) == 1:
             self._load()
-    
+
     def _load(self):
         self.data = self._api.get_details(self.id)
 
@@ -263,7 +263,7 @@ class Job4(_interfaces.Job):
     def get_all(cls, shark):
         """Get the complete list of capture jobs on given a Shark.
 
-        ``shark`` is an :py:class:`steelscript.shark.shark.Shark` object
+        ``shark`` is an :py:class:`steelscript.shark.core.shark.Shark` object
 
         Returns a list of ``CaptureJob`` objects
 
@@ -303,7 +303,7 @@ class Job4(_interfaces.Job):
         stats = shark.get_stats()
         packet_storage_total = stats['storage']['packet_storage']['total']
         index_storage_total = stats['storage']['os_storage']['index_storage']['total']
- 
+
         packet_retention_size_limit = _calc_size(packet_retention_size_limit, packet_storage_total) if packet_retention_size_limit else None
         stop_rule_size_limit = _calc_size(stop_rule_size_limit, packet_storage_total) if stop_rule_size_limit else None
         indexing_size_limit = _calc_size(indexing_size_limit, index_storage_total) if indexing_size_limit else None
@@ -424,11 +424,11 @@ class Job4(_interfaces.Job):
         A file object that contains the packets is returned.
         """
         return open(self._api.get_packets(self.id, path), 'rb')
-        
+
     def get_state(self):
         """Return the state of the job (e.g. RUNNING, STOPPED)"""
         return self.get_status()['state']
-    
+
     def get_status(self):
         """Return status information about the capture job."""
         return self._api.get_status(self.id)

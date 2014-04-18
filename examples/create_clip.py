@@ -2,9 +2,9 @@
 
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -15,8 +15,8 @@ following properties:
  - the clip contains only packets for the IP address 192.168.0.1
 """
 
-from steelscript.shark.app import SharkApp
-from steelscript.shark.filters import TimeFilter, SharkFilter
+from steelscript.shark.core.app import SharkApp
+from steelscript.shark.core.filters import TimeFilter, SharkFilter
 
 
 def main(app):
@@ -26,19 +26,19 @@ def main(app):
         print ("No jobs on the appliance, you can create jobs using the "
                "'create_job.py' and start/stop them using the 'control_job.py' script.")
         return 0
-    
+
     # Pick the first job
     job = jobs[0]
     print 'creating a 30 minutes clip on job {0}'.format(job.name)
 
-    # set the filters 
+    # set the filters
     filters = (
         # Time filter: keep the last 30 minutes
         TimeFilter.parse_range("last 30 m"),
 
-        # IP address filter: keep only 192.168.0.1 
+        # IP address filter: keep only 192.168.0.1
         SharkFilter('ip.src="192.168.0.1"')
-    ) 
+    )
 
     # Create the clip
     clip = job.add_clip(filters, "a_test_clip")

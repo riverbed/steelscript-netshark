@@ -1,13 +1,13 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
-from steelscript.shark import *
-from steelscript.shark.app import SharkApp
+from steelscript.shark.core import *
+from steelscript.shark.core.app import SharkApp
 import time
 import logging
 
@@ -21,6 +21,6 @@ def test(app):
         print "%s Success... (sleeping for %s seconds)" % (time.ctime(time.time()), t)
         time.sleep(t)
         t = t * 2
-    
+
 app = SharkApp(main_fn = test)
 app.run()

@@ -17,8 +17,8 @@ import testscenarios
 from steelscript.common.exceptions import RvbdHTTPException
 from steelscript.common import timeutils
 
-from steelscript.shark.filters import SharkFilter, TimeFilter
-from steelscript.shark.test.common import (SetUpTearDownMixin, setup_defaults,
+from steelscript.shark.core.filters import SharkFilter, TimeFilter
+from steelscript.shark.core.test.common import (SetUpTearDownMixin, setup_defaults,
                                     setup_capture_job, create_trace_clip, create_tracefile)
 from testconfig import config
 

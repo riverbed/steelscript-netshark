@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 import functools
@@ -21,7 +21,7 @@ def getted(f):
         return f(self, *args, **kwds)
     return wrapper
 
- 
+
 class BasicSettingsFunctionality(object):
     """This basic mixin is used as a base for all the settings related classes.
     It ensures that the following interface is implemented for all the settings:
@@ -136,7 +136,7 @@ class Auth(BasicSettingsFunctionality):
     @getted
     def save(self):
         self._save(self._api.update_auth)
-        
+
 
 class Audit(BasicSettingsFunctionality):
     """Wrapper class around audit configuration."""
@@ -150,7 +150,7 @@ class Audit(BasicSettingsFunctionality):
     def save(self):
         self._save(self._api.update_audit)
 
-                    
+
 class Licenses(NoBulk, BasicSettingsFunctionality):
     """Wrapper class around license configuration."""
 
@@ -158,17 +158,17 @@ class Licenses(NoBulk, BasicSettingsFunctionality):
     def save(self):
         NoBulk.save(self)
         warnings.warn('Reboot of shark is needed to apply the new configuration')
-    
+
     @getted
     def add(self, license_keys):
         #the add wants a list of keys while the
         #delete wants a single key
         self._api.add_license([license_keys])
-        
+
     @getted
     def remove(self, key):
         self._api.delete_license(key)
-        
+
     @getted
     def clear(self):
         for lic in self.data:
@@ -180,7 +180,7 @@ class Licenses(NoBulk, BasicSettingsFunctionality):
 
 
 class Firewall(BasicSettingsFunctionality):
-    """Allows to get the current configuration of the firewall and 
+    """Allows to get the current configuration of the firewall and
     set a new one."""
 
     def get(self, force=False):
@@ -215,12 +215,12 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
     def save(self):
         NoBulk.save(self)
         warnings.warn('Reboot of shark is needed to apply the new configuration')
-    
+
     @getted
     def use_profiler_export_certificate_for_web(self):
         """Copies profiler export certificate and use it for webui"""
         self._api.copy_profiler_export_certificate()
-      
+
     @getted
     def set_certificate_for_web(self, cert):
         """Given a certificate in PEM format, uploads to the server and
@@ -275,7 +275,7 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
         """Removes the name of a PEM certificate that is trusted, removes from the list of
         trusted certificates"""
         self._api.delete_trusted_profiler_certificate(name)
-    
+
 
 class ProfilerExport(BasicSettingsFunctionality):
     """Wrapper class around authentication settings. """
@@ -387,7 +387,7 @@ class Update(NoBulk, BasicSettingsFunctionality):
 
     @getted
     def update(self):
-        if self.data['init_id'] is not '': 
+        if self.data['init_id'] is not '':
             res = self._api.update({'init_id': self.data['init_id'],
                                     'state': 'RUNNING'})
         else:
@@ -481,6 +481,6 @@ class Settings4(object):
         self.get_protocol_names = shark.api.settings.get_protocol_names
         self.update_protocol_names = shark.api.settings.update_protocol_names
 
-        #these have been implemented from API >= 5.0 
+        #these have been implemented from API >= 5.0
         self.alerts = NotImplementedSetting()
         self.snmp = NotImplementedSetting()

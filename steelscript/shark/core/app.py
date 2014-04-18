@@ -1,12 +1,12 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 from steelscript.common.app import Application
-import steelscript.shark
+from steelscript.shark.core import Shark
 
 
 class SharkApp(Application):
@@ -16,12 +16,10 @@ class SharkApp(Application):
         self.optparse.set_usage('%prog SHARK_HOSTNAME <options>')
         self.shark = None
 
-    def parse_args(self):
-        super(SharkApp, self).parse_args()
-
-        self.shark = steelscript.shark.Shark(self.args[0], port=self.options.port,
-                                      auth=self.auth,
-                                      force_version=self.options.api_version)
+    def setup(self):
+        self.shark = Shark(self.args[0], port=self.options.port,
+                           auth=self.auth,
+                           force_version=self.options.api_version)
 
     def validate_args(self):
         if len(self.args) < 1:

@@ -1,14 +1,14 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
-import steelscript.shark
-from steelscript.shark import Shark
-from steelscript.shark.types import Operation, Value, Key
-from steelscript.shark.filters import SharkFilter, TimeFilter
+import steelscript.shark.core
+from steelscript.shark.core import Shark
+from steelscript.shark.core.types import Operation, Value, Key
+from steelscript.shark.core.filters import SharkFilter, TimeFilter
 from steelscript.common.service import UserAuth
 
 from testconfig import config
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 loglevel = config.get('loglevel')
 logging.basicConfig(format="%(asctime)s [%(levelname)-5.5s] %(msg)s",
                     level=loglevel or logging.DEBUG)
-    
+
 import steelscript.common.connection
 try:
     steelscript.common.connection.Connection.HTTPLIB_DEBUGLEVEL = config['http_loglevel']
@@ -45,7 +45,7 @@ try:
     steelscript.common.connection.Connection.DEBUG_MSG_BODY = config['debug_http_body']
 except KeyError:
     pass
-    
+
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 trace_files_dir = os.path.join(HERE, "traces")
@@ -70,7 +70,7 @@ def setup_defaults():
                Value('generic.packets'),
                Value('http.duration', Operation.max, description="Max Duration"),
                Value('http.duration', Operation.avg, description="Avg Duration")]
-    # we don't 
+    # we don't
     # have generic.application in 5.0 anymore
     filters = [SharkFilter('(tcp.src_port=80) | (tcp.dst_port=80)'),
                TimeFilter.parse_range('last 2 hours')]
@@ -118,7 +118,7 @@ def create_trace_clip(shark, job):
 def create_tracefile(shark):
     try:
         tracefile = shark.get_file('/admin/test.pcap')
-    except steelscript.shark.RvbdHTTPException as e:
+    except steelscript.shark.core.RvbdHTTPException as e:
         if e.error_text.find('does not exist') == -1:
             raise
 
@@ -157,7 +157,6 @@ class SetUpTearDownMixin(object):
     def setUp(self):
         host = self.host
         self.shark = create_shark(host)
-                
+
     def tearDown(self):
         cleanup_shark(self.shark)
-

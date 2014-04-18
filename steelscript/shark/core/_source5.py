@@ -1,12 +1,12 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 from steelscript.common.exceptions import *
-from steelscript.shark import _source4 as s4
+from steelscript.shark.core import _source4 as s4
 
 class Job5(s4.Job4):
     @property
@@ -29,9 +29,9 @@ class Job5(s4.Job4):
         self._api.update(self.id, data)
         if state != "STOPPED":
             self._api.state_update(self.id, {'state': state})
-        
 
-class Interface5(s4.Interface4):    
+
+class Interface5(s4.Interface4):
 
     def save(self):
         if self.shark.model == "vShark":

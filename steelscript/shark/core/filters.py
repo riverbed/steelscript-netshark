@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -17,10 +17,10 @@ display filters.
 from __future__ import absolute_import
 
 from steelscript.common import timeutils
-from steelscript.shark._api4 import API4_0
-from steelscript.shark._api5 import API5_0
-from steelscript.shark import _filters4
-from steelscript.shark.shark import FILTERS_MAP
+from steelscript.shark.core._api4 import API4_0
+from steelscript.shark.core._api5 import API5_0
+from steelscript.shark.core import _filters4
+from steelscript.shark.core.shark import FILTERS_MAP
 
 FILTERS_MAP.update({
         API4_0: _filters4,

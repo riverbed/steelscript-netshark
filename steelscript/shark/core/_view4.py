@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -12,9 +12,9 @@ import logging
 
 from steelscript.common import timeutils
 from steelscript.common.utils import DictObject
-from steelscript.shark import _interfaces
-from steelscript.shark._class_mapping import path_to_class
-from steelscript.shark._api_helpers import APITimestampFormat
+from steelscript.shark.core import _interfaces
+from steelscript.shark.core._class_mapping import path_to_class
+from steelscript.shark.core._api_helpers import APITimestampFormat
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def _to_native(string, legend_entry):
         denominator = int(den)
     else:
         denominator = 1
-    
+
     if legend_entry['type'].startswith('INT') \
       or legend_entry['type'].startswith('UINT') \
       or legend_entry['type'] in ( 'TCP_PORT', 'UDP_PORT'):
@@ -52,7 +52,7 @@ def _to_native(string, legend_entry):
 
     if legend_entry['type'] == 'ABSOLUTE_TIME':
         return timeutils.nsec_string_to_datetime(string)
-    
+
     if legend_entry['type'] == 'RELATIVE_TIME':
         return float(string) / denominator
 
@@ -63,7 +63,7 @@ def _to_native(string, legend_entry):
 class View4(_interfaces.View):
     def __init__(self, shark, handle, config=None, source=None):
         super(View4, self).__init__()
-        
+
         self.shark = shark
         self.handle = handle
         self.source = source
@@ -84,7 +84,7 @@ class View4(_interfaces.View):
         d['source'] = self.config['input_source']['path']
         if 'info' in self.config and 'title' in self.config['info']:
             d['title'] = self.config['info']['title']
-           
+
         return '<View ' + ' '.join(['%s="%s"' % (k, d[k]) for k in d.keys()]) + '>'
 
     @classmethod
@@ -122,7 +122,7 @@ class View4(_interfaces.View):
 
         if sampling_time_msec is None:
             sampling_time_msec = 1000
-            
+
         template = {
             'info' : {},
             'processors': [cls._format_columns(parsed_columns)],
@@ -181,7 +181,7 @@ class View4(_interfaces.View):
         * `start`: the time of the first packet for which data is available
         * `end`: the end time of the last sample
         * `delta`: the sampling time of each sample
-        
+
         This function adds a delta to the end time of the view provided by shark
         If you need the timeinfo provided by shark as it is use _get_timeinfo
         """
@@ -246,12 +246,12 @@ class View4(_interfaces.View):
             return 100
         if stats['input_size'] != 0:
             return int(float(stats['processed_size'])/stats['input_size'] * 100)
-        
+
 
 class Output4(_interfaces.Output):
     def __init__(self, view, ouid):
         super(Output4, self).__init__()
-        
+
         self.view = view
         self.id = ouid
         self._legend = self.get_legend()
@@ -288,7 +288,7 @@ class Output4(_interfaces.Output):
             return 10**9
         else:
             raise ValueError('invalid time format %s' % str(view.timestamp_format))
-    
+
     def _convert_sample_time(self, sample_timestamp):
         if self.view.timestamp_format == APITimestampFormat.SECOND:
             return timeutils.sec_string_to_datetime(sample_timestamp)
@@ -344,7 +344,7 @@ class Output4(_interfaces.Output):
 
         if start is None:
             start = 0
-            
+
         if end is None:
             end = 0
         elif not aggregated:
@@ -413,7 +413,7 @@ class Output4(_interfaces.Output):
         params = self._parse_output_params(start, end, delta, aggregated, sortby, sorttype, fromentry, toentry)
 
         res = self.view.shark.api.view.get_data(self.view.handle, self.id, timestamp_format=self.view.timestamp_format, **params)
-        
+
         samples = res.get('samples')
 
         # aggregated debug
@@ -425,7 +425,7 @@ class Output4(_interfaces.Output):
         for sample in samples:
             if 'vals' not in sample or sample['p'] == 0:
                 continue
-            
+
             sample['t'] = self._convert_sample_time(sample['t'])
 
             def convert_one(vec):

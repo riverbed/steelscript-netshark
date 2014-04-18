@@ -2,9 +2,9 @@
 
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -16,8 +16,8 @@ simple and common tasks:
    write it to a CSV file
 """
 
-from steelscript.shark.app import SharkApp
-from steelscript.shark.viewutils import write_csv, print_data, OutputMixer
+from steelscript.shark.core.app import SharkApp
+from steelscript.shark.core.viewutils import write_csv, print_data, OutputMixer
 
 
 class ReadView(SharkApp):
@@ -47,14 +47,14 @@ class ReadView(SharkApp):
     def _do_one_output(self, output):
         legend = output.get_legend()
         data = output.get_iterdata()
-        
+
         # If the -f option has been used, we save the data to disk as csv,
         # otherwise we print it to the screen.
         if self.options.fname is not None:
             write_csv(self.options.fname, legend, data)
         else:
             print_data(legend, data)
-        
+
     def main(self):
         if self.options.listviews:
             # If -l is specified, we show the list of views running on the

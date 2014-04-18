@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -15,7 +15,7 @@ try:
     datetimeng_available = True
 except:
     datetimeng_available = False
-    
+
 from steelscript.common import timeutils
 
 
@@ -31,10 +31,10 @@ class TimeFilter(object):
     def to_dict(self):
         return {
             'type': 'TIME',
-            'value': str(timeutils.datetime_to_nanoseconds(self.start)) + 
+            'value': str(timeutils.datetime_to_nanoseconds(self.start)) +
             ', ' + str(timeutils.datetime_to_nanoseconds(self.end))
             }
-    
+
 class SharkFilter(object):
     def __init__(self, string):
         self.string = string

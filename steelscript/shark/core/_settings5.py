@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 from _settings4 import Settings4, getted, BasicSettingsFunctionality, ProfilerExport
@@ -25,7 +25,7 @@ class DPIResource(BasicSettingsFunctionality):
             return None
         else:
             return obj
-  
+
     def _port_string_to_port_list(self, port_string, protocol='TCP'):
         if port_string is not None:
             ports = [{'port_range':range.strip(), 'protocol':protocol} for range in port_string.split(',')]
@@ -53,7 +53,7 @@ class PortDefinitions(DPIResource):
     def save(self):
         super(PortDefinitions, self).save()
         self._srt_ports_api.update(self._srtdata)
-        
+
 
     def _lookup_port(self, port):
         for port_obj in self.data:
@@ -126,9 +126,9 @@ class GroupDefinitions(DPIResource):
     def add(self, name, tcp_ports=None, udp_ports=None, priority=None):
         #sort the list first by priority
         self.data.sort(key=lambda k:k['priority'])
-        
+
         obj = self._get_by_name(name)
-        
+
         if obj is not None:
             raise ValueError('A port group with the same name already exists')
 
@@ -137,7 +137,7 @@ class GroupDefinitions(DPIResource):
         tcp = self._port_string_to_port_list(tcp_ports, 'TCP')
 
         udp = self._port_string_to_port_list(udp_ports, 'UDP')
-    
+
         self.data.insert(priority, {'name': name,
                                     'priority': priority,
                                     'ports': tcp+udp
@@ -145,7 +145,7 @@ class GroupDefinitions(DPIResource):
 
         self._refresh_priorities()
 
-        
+
     @getted
     def remove(self, name=None, priority=None):
         """Remove a port group by name or by priority
@@ -231,7 +231,7 @@ class CustomApplications(DPIResource):
     @getted
     def add(self, name, uri):
         """Add a custom application rule
-        
+
         `name` is the name of the rule
 
         `uri` is a string representing a uri
@@ -312,7 +312,7 @@ class Alerts(BasicSettingsFunctionality):
         }
         """
         return self._api.send_test_snmp(obj)
-        
+
     def test_smtp(self, address, to_address, from_address, port=25):
         obj = {
             'smtp_server_address': address,

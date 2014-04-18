@@ -2,23 +2,23 @@
 
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
 """
-This script can be used to export packets from Trace Files, Capture Jobs or 
-Trace clips on a Shark Appliance. An optional IP address can be specified to 
-restrict the exported packets to the ones of a single host. 
+This script can be used to export packets from Trace Files, Capture Jobs or
+Trace clips on a Shark Appliance. An optional IP address can be specified to
+restrict the exported packets to the ones of a single host.
 
 Note: in order to export a clip with this script, you need to make sure the
 clip has been given a name
 """
 
-from steelscript.shark.app import SharkApp
-from steelscript.shark.filters import SharkFilter
+from steelscript.shark.core.app import SharkApp
+from steelscript.shark.core.filters import SharkFilter
 
 
 class ExportApp(SharkApp):
@@ -31,7 +31,7 @@ class ExportApp(SharkApp):
                             help='export a Trace Clip')
 
     def main(self):
-    
+
         # Do the export based on the specified object type
         if self.options.filename is not None:
             # find the file

@@ -2,9 +2,9 @@
 
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -16,9 +16,9 @@ files on the appliance), and then saves the data on a csv file that can be
 opened in excel.
 """
 
-from steelscript.shark.app import SharkApp
-from steelscript.shark.types import Value, Key
-from steelscript.shark.viewutils import write_csv
+from steelscript.shark.core.app import SharkApp
+from steelscript.shark.core.types import Value, Key
+from steelscript.shark.core.viewutils import write_csv
 
 CSV_FILE_NAME = "result.csv"
 

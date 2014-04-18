@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 from _api_helpers import APIGroup, APITimestampFormat
@@ -12,15 +12,15 @@ import urllib
 class API5Group(APIGroup):
     base_headers = {}
 
-    def request(self, urlpath, method, data=None, 
-                timestamp_format=APITimestampFormat.NANOSECOND, 
-                params=None, 
+    def request(self, urlpath, method, data=None,
+                timestamp_format=APITimestampFormat.NANOSECOND,
+                params=None,
                 custom_headers=None):
         """Issue the given API request using either JSON or XML
         (dictated by the as_json parameter)."""
         self.add_base_header('X-RBT-High-Precision-Timestamp-Format',
                              timestamp_format)
-        
+
         # XXXWP Changing the method so that the caller can specify some extra headers
         headers = dict(self.base_headers)
         if isinstance(custom_headers, dict):
@@ -33,7 +33,7 @@ class API5Group(APIGroup):
 
         return self.shark.conn.json_request(method, self.uri_prefix + urlpath,
                                             data, params, headers)
-        
+
     def add_base_header(self, key, value=""):
         if isinstance(key, basestring):
             self.base_headers[key] = value

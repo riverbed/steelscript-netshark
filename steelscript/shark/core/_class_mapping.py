@@ -1,8 +1,8 @@
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -19,15 +19,15 @@ class Classes(object):
         except AttributeError:
             raise NotImplementedError('API version {0} is not available for this shark version.'.format(attr))
 
-        
+
 class Classesv4(Classes):
     def __init__(self):
         #we must import here to let automatic registration
         #of classes working. If we import at module level
         #we will have multiple registration of classes between
         #different versions
-        import steelscript.shark._source4 as v4
-        from steelscript.shark import _view4, _fs, _settings4, _fields4
+        import steelscript.shark.core._source4 as v4
+        from steelscript.shark.core import _view4, _fs, _settings4, _fields4
 
         self.Interface = v4.Interface4
         self.Job = v4.Job4
@@ -47,13 +47,13 @@ class Classesv4(Classes):
 class Classesv5(Classesv4):
     def __init__(self):
         super(Classesv5, self).__init__()
-        import steelscript.shark._source5 as v5
-        from steelscript.shark import _settings5
+        import steelscript.shark.core._source5 as v5
+        from steelscript.shark.core import _settings5
         self.Job = v5.Job5
         self.Interface = v5.Interface5
         self.Settings = _settings5.Settings5
 
-        
+
 def path_to_class(shark, path):
     mapping = dict(
         interfaces=shark.classes.Interface,
@@ -67,4 +67,3 @@ def path_to_class(shark, path):
         return mapping[p[0]].get(shark, None, p[1])
     else:
         return mapping[p[0]].get(shark, p[1])
-

@@ -2,9 +2,9 @@
 
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -17,7 +17,7 @@ import sys
 import json
 import getpass
 from steelscript.common.utils import DictObject
-from steelscript.shark.app import SharkApp
+from steelscript.shark.core.app import SharkApp
 
 
 class BackupApp(SharkApp):

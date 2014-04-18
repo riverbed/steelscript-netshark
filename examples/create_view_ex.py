@@ -2,9 +2,9 @@
 
 # Copyright (c) 2013 Riverbed Technology, Inc.
 #
-# This software is licensed under the terms and conditions of the 
+# This software is licensed under the terms and conditions of the
 # MIT License set forth at:
-#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").  
+#   https://github.com/riverbed/flyscript/blob/master/LICENSE ("License").
 # This software is distributed "AS IS" as set forth in the License.
 
 
@@ -16,10 +16,10 @@ and data retrieval scenarios.
 import time
 import datetime
 
-from steelscript.shark.app import SharkApp
-from steelscript.shark.types import Value, Key
-from steelscript.shark.filters import SharkFilter
-from steelscript.shark.viewutils import write_csv
+from steelscript.shark.core.app import SharkApp
+from steelscript.shark.core.types import Value, Key
+from steelscript.shark.core.filters import SharkFilter
+from steelscript.shark.core.viewutils import write_csv
 
 ###############################################################################
 # Script setup
