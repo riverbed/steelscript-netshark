@@ -31,21 +31,21 @@ class SharkInfo(SharkApp):
 
         stats = self.shark.get_stats()
         print '\tPacket Storage: {0} total, {1} free, status:{2}'.format(
-            bytes2human(stats['storage']['packet_storage'].total),
-            bytes2human(stats['storage']['packet_storage'].unused),
-            stats['storage']['packet_storage'].status)
+            bytes2human(stats['storage']['packet_storage']['total']),
+            bytes2human(stats['storage']['packet_storage']['unused']),
+            stats['storage']['packet_storage']['status'])
         print '\tIndex Storage: {0} total, {1} free, status:{2}'.format(
-            bytes2human(stats['storage']['os_storage']['index_storage'].total),
-            bytes2human(stats['storage']['os_storage']['index_storage'].unused),
-            stats['storage']['os_storage'].status)
+            bytes2human(stats['storage']['os_storage']['index_storage']['total']),
+            bytes2human(stats['storage']['os_storage']['index_storage']['unused']),
+            stats['storage']['os_storage']['status'])
         print '\tOS File System: {0} total, {1} free, status:{2}'.format(
-            bytes2human(stats['storage']['os_storage']['disk_storage'].total),
-            bytes2human(stats['storage']['os_storage']['disk_storage'].unused),
-            stats['storage']['os_storage'].status)
+            bytes2human(stats['storage']['os_storage']['disk_storage']['total']),
+            bytes2human(stats['storage']['os_storage']['disk_storage']['unused']),
+            stats['storage']['os_storage']['status'])
         print '\tmemory: {0} total, {1} free, status:{2}'.format(
-            bytes2human(stats['memory'].total),
-            bytes2human(stats['memory'].available),
-            stats['memory'].status)
+            bytes2human(stats['memory']['total']),
+            bytes2human(stats['memory']['available']),
+            stats['memory']['status'])
 
         # Print the list of interfaces
         print 'INTERFACES:'
