@@ -263,7 +263,7 @@ class ProfilerExport(ProfilerExport):
         for p in self.data['profilers']:
             if p['address'] == address:
                 return p
-        msg = ('No profiler with address {0} has been '
+        msg = ('No netprofiler with address {0} has been '
                'found in the configuration'.format(address))
         raise ValueError(msg)
 

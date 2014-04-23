@@ -83,7 +83,7 @@ class BackupApp(SharkApp):
                 self.config['audit'] = self.shark.api.settings.get_audit()
 
             elif t == 'profiler_export':
-                print "Backing up profiler export settings..."
+                print "Backing up netprofiler export settings..."
                 self.config['profiler_export'] = self.shark.api.settings.get_profiler_export()
 
             elif t == 'protocols':
@@ -136,7 +136,7 @@ class BackupApp(SharkApp):
                 self.shark.api.settings.update_audit(self.config['audit'])
 
             elif t == 'profiler_export':
-                print "Restoring profiler export settings..."
+                print "Restoring netprofiler export settings..."
                 self.shark.api.settings.update_profiler_export(self.config['profiler_export'])
 
             elif t == 'protocols':

@@ -218,7 +218,7 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
 
     @getted
     def use_profiler_export_certificate_for_web(self):
-        """Copies profiler export certificate and use it for webui"""
+        """Copies netprofiler export certificate and use it for webui"""
         self._api.copy_profiler_export_certificate()
 
     @getted
@@ -241,7 +241,7 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
     @getted
     def set_certificate_for_profiler_export(self, cert):
         """Give a certificate in PEM format, uploads to the server and sets
-        as profiler export certificate
+        as netprofiler export certificate
 
         The PEM certificate must contain both private key and CA-signed public certificate"""
         self._api.update_profiler_export_certificate({'pem': cert})
@@ -251,14 +251,14 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
                                                      locality=None,organization=None,
                                                      organization_unit=None, state=None,
                                                      days=None):
-        """Generates a new certificate for profiler export"""
+        """Generates a new certificate for netprofiler export"""
         kwargs = locals()
         kwargs.pop('self')
         self._api.generate_profiler_export_certificate(self._gen_cert_configuration(**kwargs))
 
     @getted
     def use_web_interface_certificate_for_profiler_export(self):
-        """Copies webui certificate and use it for profiler export"""
+        """Copies webui certificate and use it for netprofiler export"""
         self._api.copy_web_certificate()
 
     @getted

@@ -171,12 +171,12 @@ class Settings(API4Group):
 
 
     def get_profiler_export(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """Get the profiler export
+        """Get the netprofiler export
         """
         return self._xjtrans('/settings/profiler_export', 'GET', None, as_json, timestamp_format)
 
     def update_profiler_export(self, params=None, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """Set the profiler export
+        """Set the netprofiler export
         """
         return self._xjtrans('/settings/profiler_export', 'PUT', params, as_json, timestamp_format)
 
@@ -687,15 +687,15 @@ class Certificates(API4Group):
 
 
     def update_profiler_export_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """ Set a new Profiler Export certificate"""
+        """ Set a new NetProfiler Export certificate"""
         return self._xjtrans("/settings/certificates/profiler_export", "PUT", certificate_data, as_json, timestamp_format)
 
     def generate_profiler_export_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """ Generate new Trusted Profiler certificate"""
+        """ Generate new Trusted NetProfiler certificate"""
         return self._xjtrans("/settings/certificates/profiler_export/generate", "POST", certificate_data, as_json, timestamp_format)
 
     def copy_web_certificate(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """ Reuses the web certificate as profiler export certificate"""
+        """ Reuses the web certificate as netprofiler export certificate"""
         return self._xjtrans("/settings/certificates/profiler_export/copy_web", "POST", None, as_json, timestamp_format)
 
 
@@ -708,16 +708,16 @@ class Certificates(API4Group):
         return self._xjtrans("/settings/certificates/web/generate", "POST", certificate_data, as_json, timestamp_format)
 
     def copy_profiler_export_certificate(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """ Reuses the Profiler Export's certificate as web certificate"""
+        """ Reuses the NetProfiler Export's certificate as web certificate"""
         return self._xjtrans("/settings/certificates/web/copy_profiler_export", "POST", None, as_json, timestamp_format)
 
 
     def add_trusted_profiler_certificate(self, certificate_data, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """ Add a new Trusted Profiler certificate"""
+        """ Add a new Trusted NetProfiler certificate"""
         return self._xjtrans("/settings/certificates/trusted_profilers", "POST", certificate_data, as_json, timestamp_format)
 
     def delete_trusted_profiler_certificate(self, id, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """ Delete a new Trusted Profiler certificate by its id"""
+        """ Delete a new Trusted NetProfiler certificate by its id"""
         return self._xjtrans("/settings/certificates/trusted_profilers/"+id, "DELETE", None, as_json, timestamp_format)
 
 class Stats(API4Group):
@@ -726,7 +726,7 @@ class Stats(API4Group):
         return self._xjtrans("/stats/memory", "GET", None, as_json, timestamp_format)
 
     def get_profiler_export(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
-        """ Returns the profiler export stats """
+        """ Returns the netprofiler export stats """
         return self._xjtrans("/stats/profiler_export", "GET", None, as_json, timestamp_format)
 
     def get_storage(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):

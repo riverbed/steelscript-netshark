@@ -376,11 +376,11 @@ class Settings4Specific(EqualityTest,
     def test_profiler_export(self):
         profiler_export = self.shark.settings.profiler_export
         saved = profiler_export.get()
-        #remove profiler if exists
+        #remove netprofiler if exists
         for p in profiler_export.data['profilers']:
             if p.get('address') == 'test.com':
                 profiler_export.data['profilers'].remove(p)
-        #add profiler
+        #add netprofiler
         profiler_export.data['profilers'].append({
             'address': 'test.com'})
         profiler_export.save()
