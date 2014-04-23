@@ -22,7 +22,7 @@ setup_args = {
     'author_email':       'cwhite@riverbed.com',
     'url':                'http://pythonhosted.org/steelscript',
     'license':            'MIT',
-    'description':        'Python module for interacting with Riverbed Shark with SteelScript',
+    'description':        'Python module for interacting with Riverbed NetShark with SteelScript',
 
     'long_description': '''SteelScript for NetShark
 ========================
@@ -60,7 +60,7 @@ http://pythonhosted.org/steelscript/install.html
 
     'entry_points': {
         'portal.plugins': [
-            'shark = steelscript.shark.appfw.plugin:SharkPlugin'
+            'netshark = steelscript.netshark.appfw.plugin:NetSharkPlugin'
         ],
     },
 }

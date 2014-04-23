@@ -10,18 +10,18 @@
 
 """
 This script can be used to export packets from Trace Files, Capture Jobs or
-Trace clips on a Shark Appliance. An optional IP address can be specified to
+Trace clips on a NetShark Appliance. An optional IP address can be specified to
 restrict the exported packets to the ones of a single host.
 
 Note: in order to export a clip with this script, you need to make sure the
 clip has been given a name
 """
 
-from steelscript.shark.core.app import SharkApp
-from steelscript.shark.core.filters import SharkFilter
+from steelscript.netshark.core.app import NetSharkApp
+from steelscript.netshark.core.filters import NetSharkFilter
 
 
-class ExportApp(SharkApp):
+class ExportApp(NetSharkApp):
     def add_options(self, parser):
         parser.add_option('--filename', dest="filename", default=None,
                             help='export a Trace File')
@@ -35,7 +35,7 @@ class ExportApp(SharkApp):
         # Do the export based on the specified object type
         if self.options.filename is not None:
             # find the file
-            f = self.shark.get_file(self.options.filename)
+            f = self.netshark.get_file(self.options.filename)
 
             # extract the file name from the full path
             filename = str(f).split('/')[-1]
@@ -44,12 +44,12 @@ class ExportApp(SharkApp):
             f.download(filename)
         elif self.options.jobname is not None:
             # find the job
-            job = self.shark.get_capture_job_by_name(self.options.jobname)
+            job = self.netshark.get_capture_job_by_name(self.options.jobname)
 
             job.download(job.id + '.pcap')
         elif self.options.clipname is not None:
             # find the clip
-            clip = self.shark.get_trace_clip_by_description(self.options.clipname)
+            clip = self.netshark.get_trace_clip_by_description(self.options.clipname)
 
             # extract the clip
             clip.download(clip.id + '.pcap')

@@ -9,21 +9,21 @@
 
 
 """
-This script shows the simplest way to create a custom view on a Shark and
+This script shows the simplest way to create a custom view on a NetShark and
 retrieve its data. It creates a simple top talker view by processing the remote
 file specified on the command line (use the shark_info.py script to list the
 files on the appliance), and then saves the data on a csv file that can be
 opened in excel.
 """
 
-from steelscript.shark.core.app import SharkApp
-from steelscript.shark.core.types import Value, Key
-from steelscript.shark.core.viewutils import write_csv
+from steelscript.netshark.core.app import NetSharkApp
+from steelscript.netshark.core.types import Value, Key
+from steelscript.netshark.core.viewutils import write_csv
 
 CSV_FILE_NAME = "result.csv"
 
 
-class CreateView(SharkApp):
+class CreateView(NetSharkApp):
     def add_options(self, optparse):
         optparse.add_option('--file', help='filename to open')
 
@@ -33,11 +33,11 @@ class CreateView(SharkApp):
         super(CreateView, self).validate_args()
 
         if not self.options.file:
-            self.optparse.error('Filename of file on Shark machine required ("--file").')
+            self.optparse.error('Filename of file on NetShark machine required ("--file").')
 
     def main(self):
         # Open the remote file
-        source = self.shark.get_file(self.options.file)
+        source = self.netshark.get_file(self.options.file)
 
         # Specify the column list
         columns = [
@@ -48,15 +48,15 @@ class CreateView(SharkApp):
             # to try it, put a breakpoint on the line below and then type
             # "sk.columns." in the debugger. That will work in any inteactive
             # python editor as well (e.g. eclipse, bpython, dreampie...).
-            Key(self.shark.columns.ip.src),
+            Key(self.netshark.columns.ip.src),
 
             # Each of the rows in the view is going to have a value column
             # containing the amount of bytes.
-            Value(self.shark.columns.generic.bytes),
+            Value(self.netshark.columns.generic.bytes),
         ]
 
         # Create the view
-        v = self.shark.create_view(source, columns)
+        v = self.netshark.create_view(source, columns)
 
         # Retrieve the view data.
         # Aggregated=True means that we want the view data in a single big

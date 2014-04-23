@@ -15,8 +15,8 @@ following properties:
  - the clip contains only packets for the IP address 192.168.0.1
 """
 
-from steelscript.shark.core.app import SharkApp
-from steelscript.shark.core.filters import TimeFilter, SharkFilter
+from steelscript.netshark.core.app import NetSharkApp
+from steelscript.netshark.core.filters import TimeFilter, NetSharkFilter
 
 
 def main(app):
@@ -37,7 +37,7 @@ def main(app):
         TimeFilter.parse_range("last 30 m"),
 
         # IP address filter: keep only 192.168.0.1
-        SharkFilter('ip.src="192.168.0.1"')
+        NetSharkFilter('ip.src="192.168.0.1"')
     )
 
     # Create the clip
@@ -52,4 +52,4 @@ def main(app):
 
 
 if __name__ == '__main__':
-    SharkApp(main).run()
+    NetSharkApp(main).run()

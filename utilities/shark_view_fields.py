@@ -9,17 +9,17 @@
 
 
 """
-List all the key and column fields that the given shark appliance supports.
+List all the key and column fields that the given netshark appliance supports.
 For full field details, use the -v flag.
 """
 
 import optparse
 
-from steelscript.shark.core.app import SharkApp
+from steelscript.netshark.core.app import NetSharkApp
 from steelscript.common.utils import Formatter
 
 
-class FieldsApp(SharkApp):
+class FieldsApp(NetSharkApp):
 
     def add_options(self, parser):
         group = optparse.OptionGroup(parser, "Column output options")
@@ -33,7 +33,7 @@ class FieldsApp(SharkApp):
 
     def main(self):
         headers = ['ID', 'Description', 'Type']
-        data = [(f.id, f.description, f.type) for f in self.shark.get_extractor_fields()]
+        data = [(f.id, f.description, f.type) for f in self.netshark.get_extractor_fields()]
         if self.options.sort_id:
             data.sort()
         Formatter.print_table(data,

@@ -11,16 +11,16 @@
 """
 This script demonstrates how to use the View class to do two
 simple and common tasks:
-1. enumerate all the existing views on a shark (the -l command line option)
+1. enumerate all the existing views on a netshark (the -l command line option)
 2. attach to an existing view, extract a section of data from it, and
    write it to a CSV file
 """
 
-from steelscript.shark.core.app import SharkApp
-from steelscript.shark.core.viewutils import write_csv, print_data, OutputMixer
+from steelscript.netshark.core.app import NetSharkApp
+from steelscript.netshark.core.viewutils import write_csv, print_data, OutputMixer
 
 
-class ReadView(SharkApp):
+class ReadView(NetSharkApp):
     def __init__(self, *args, **kwargs):
         super(ReadView, self).__init__(*args, **kwargs)
         self.optparse.set_usage('%prog SHARK <options> -l or %prog SHARK <options> VIEWID')
@@ -59,7 +59,7 @@ class ReadView(SharkApp):
         if self.options.listviews:
             # If -l is specified, we show the list of views running on the
             #appliance, and the outputs for each of them,
-            views = self.shark.get_open_views()
+            views = self.netshark.get_open_views()
             if len(views) == 0:
                 print 'there are no views!'
             for view in views:
@@ -70,7 +70,7 @@ class ReadView(SharkApp):
 
         # Retrieve details about a specific view
         try:
-            view = self.shark.get_open_view_by_handle(self.args[1])
+            view = self.netshark.get_open_view_by_handle(self.args[1])
         except KeyError:
             print 'cannot find view {0}'.format(self.args[1])
             return -1

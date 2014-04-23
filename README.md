@@ -1,8 +1,8 @@
-Riverbed SteelScript for Cascade Shark
+Riverbed SteelScript for Cascade NetShark
 ======================================
 
 This package provides device specific bindings for interacting
-with Riverbed Cascade Shark devices as part of the Riverbed
+with Riverbed Cascade NetShark devices as part of the Riverbed
 Steelscript for Python.
 
 See [http://github.com/riverbed/steelscript.common](steelscript.common) for

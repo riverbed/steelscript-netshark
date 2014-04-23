@@ -14,11 +14,11 @@ only the required job parameters are set, while all the optional parameters
 keep their default value.
 """
 
-from steelscript.shark.core.app import SharkApp
+from steelscript.netshark.core.app import NetSharkApp
 from steelscript.common.utils import bytes2human
 
 
-class CreateJob(SharkApp):
+class CreateJob(NetSharkApp):
     def add_options(self, parser):
         parser.add_option('-j', '--jobname', default=None, help='job name')
         parser.add_option('--capture-port', help='capture port')
@@ -32,10 +32,10 @@ class CreateJob(SharkApp):
 
         # Make the user pick the capture port
         try:
-            ifc = self.shark.get_interface_by_name(self.options.capture_port)
+            ifc = self.netshark.get_interface_by_name(self.options.capture_port)
         except KeyError:
             print 'Capture Ports:'
-            interfaces = self.shark.get_interfaces()
+            interfaces = self.netshark.get_interfaces()
             for i, ifc in enumerate(interfaces):
                 print '\t{0}. {1}'.format(i+1, ifc)
 
@@ -50,13 +50,13 @@ class CreateJob(SharkApp):
         # Make the user pick the job size
         size = self.options.size
         if size is None:
-            stats = self.shark.get_stats()
+            stats = self.netshark.get_stats()
             storage = stats['storage']['packet_storage']
             print 'Storage size is {0}, {1} available'.format(bytes2human(storage.total),
                                                               bytes2human(storage.unused))
             size = raw_input('Job size, greater than 256MB (e.g. 1.1GB, 512M, 20%)? ')
 
-        job = self.shark.create_job(ifc, name, size)
+        job = self.netshark.create_job(ifc, name, size)
         print 'Capture Job successfully created with the following properties:'
         print ''
         print 'ID: %s' % job.id

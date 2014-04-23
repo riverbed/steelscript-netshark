@@ -16,10 +16,10 @@ and data retrieval scenarios.
 import time
 import datetime
 
-from steelscript.shark.core.app import SharkApp
-from steelscript.shark.core.types import Value, Key
-from steelscript.shark.core.filters import SharkFilter
-from steelscript.shark.core.viewutils import write_csv
+from steelscript.netshark.core.app import NetSharkApp
+from steelscript.netshark.core.types import Value, Key
+from steelscript.netshark.core.filters import NetSharkFilter
+from steelscript.netshark.core.viewutils import write_csv
 
 ###############################################################################
 # Script setup
@@ -34,7 +34,7 @@ def main(app):
 
     ##########################################################################
     # Applying a view asynchronously.
-    # When the amount of packets processed by a view on a shark appliance is
+    # When the amount of packets processed by a view on a netshark appliance is
     # big, it could take minutes for the view data to be generated.
     # This example shows how to use the sync parameter of create_view() to
     # create a view asynchronously and inform the user about the processing
@@ -77,13 +77,13 @@ def main(app):
     # to the view to create a "web top talkers".
     ##########################################################################
 
-    # Specify a Shark filter for port 80 packets. The SharkFilter class
+    # Specify a NetShark filter for port 80 packets. The NetSharkFilter class
     # implements Pilot filters, which means that you can paste any filter
     # from Pilot to the line below. Other valid filter types are
     # WiresharkDisplayFilter (which supports any Wireshark display filter),
     # BpfFilter (for Wireshark capture filters) and TimeFilter (for
     # time-based filtering).
-    filters = [SharkFilter('tcp.port_pair="80"')]
+    filters = [NetSharkFilter('tcp.port_pair="80"')]
 
     # Specify the column list
     columns = [
@@ -177,4 +177,4 @@ def main(app):
 
 
 if __name__ == '__main__':
-    SharkApp(main).run()
+    NetSharkApp(main).run()

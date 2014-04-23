@@ -9,27 +9,27 @@
 
 
 """
-This script connects to a Shark appliance, collects a bounch of information
+This script connects to a NetShark appliance, collects a bounch of information
 about it, and prints it the screen.
 """
 
-from steelscript.shark.core.app import SharkApp
+from steelscript.netshark.core.app import NetSharkApp
 from steelscript.common.utils import bytes2human
 
 
-class SharkInfo(SharkApp):
+class NetSharkInfo(NetSharkApp):
 
     def main(self):
-        # Print the high level shark info
+        # Print the high level netshark info
         print 'APPLIANCE INFO:'
 
-        info = self.shark.get_serverinfo()
+        info = self.netshark.get_serverinfo()
         print '\tAppliance Version: ' + info['version']
         print '\tAppliance Hostname: ' + info['hostname']
         print '\tUptime: ' + str(info['uptime'])
         print '\tWeb UI TCP Port: {0}'.format(info['webui_port'])
 
-        stats = self.shark.get_stats()
+        stats = self.netshark.get_stats()
         print '\tPacket Storage: {0} total, {1} free, status:{2}'.format(
             bytes2human(stats['storage']['packet_storage']['total']),
             bytes2human(stats['storage']['packet_storage']['unused']),
@@ -49,23 +49,23 @@ class SharkInfo(SharkApp):
 
         # Print the list of interfaces
         print 'INTERFACES:'
-        for i in self.shark.get_interfaces():
+        for i in self.netshark.get_interfaces():
             print '\t{0} (OS name: {1})'.format(i, i.name)
 
         # Print the list of trace files
         print 'TRACE FILES:'
-        for f in self.shark.get_files():
+        for f in self.netshark.get_files():
             print '\t{0} ({1} bytes, created: {2})'.format(f, f.size, f.created)
 
         # Print the list of capture jobs
         print 'JOBS:'
-        jobs = self.shark.get_capture_jobs()
+        jobs = self.netshark.get_capture_jobs()
         for j in jobs:
             print '\t{0} (size: {1}, src interface: {2})'.format(j, j.size_limit, j.interface)
 
         # Print the list of trace clips
         print 'TRACE CLIPS:'
-        for c in self.shark.get_clips():
+        for c in self.netshark.get_clips():
             if c.description == "":
                 print '\t{0} ({1} bytes)'.format(c, c.size)
             else:
@@ -73,11 +73,11 @@ class SharkInfo(SharkApp):
 
         # Print the list of open views
         print 'OPEN VIEWS:'
-        for view in self.shark.get_open_views():
+        for view in self.netshark.get_open_views():
             print '\t{0}'.format(view.handle)
             for output in view.all_outputs():
                 print '\t\t{0}'.format(output.id)
 
 
 if __name__ == '__main__':
-    SharkInfo().run()
+    NetSharkInfo().run()

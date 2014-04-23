@@ -15,13 +15,13 @@ Capture Jobs.
 
 import datetime
 
-from steelscript.shark.core.app import SharkApp
+from steelscript.netshark.core.app import NetSharkApp
 
 
-class JobCreator(SharkApp):
+class JobCreator(NetSharkApp):
     def main(self):
-        # For the sake of simplicity, we pick the first available port on the Shark
-        interface = self.shark.get_interfaces()[0]
+        # For the sake of simplicity, we pick the first available port on the NetShark
+        interface = self.netshark.get_interfaces()[0]
 
         # This creates a job that captures only web traffic (port 80), and stores
         # on disk only the first 100 bytes of each packet.
@@ -29,7 +29,7 @@ class JobCreator(SharkApp):
         # reference of which can be found here:
         #   http://wiki.wireshark.org/CaptureFilters
         name = "Test Job 1"
-        job = self.shark.create_job(interface,
+        job = self.netshark.create_job(interface,
                                     name,
                                     "257MB",
                                     bpf_filter="port 80",
@@ -42,7 +42,7 @@ class JobCreator(SharkApp):
         # Avoiding indexing the job can be beneficial if performance is very
         # important and drill-down efficiency can be sacrificed.
         name = "Test Job 2"
-        job = self.shark.create_job(interface,
+        job = self.netshark.create_job(interface,
                                     name,
                                     "257MB")
         print 'Job named %s created successfully ...' % name,
@@ -55,7 +55,7 @@ class JobCreator(SharkApp):
         # In this case, packets storage is 500MB or 1 day (whichever is smaller),
         # while index storage is 20MB or one week.
         name = "Test Job 3"
-        job = self.shark.create_job(interface,
+        job = self.netshark.create_job(interface,
                                     name,
                                     "257MB",
                                     packet_retention_time_limit=datetime.timedelta(days=1),

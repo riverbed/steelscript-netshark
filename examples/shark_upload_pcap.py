@@ -9,9 +9,9 @@
 
 
 
-from steelscript.shark.core.app import SharkApp
+from steelscript.netshark.core.app import NetSharkApp
 
-class UploadPcap(SharkApp):
+class UploadPcap(NetSharkApp):
     def add_option(self, parser):
         parser.set_usage('%prog SHARK FILE DEST')
 
@@ -20,7 +20,7 @@ class UploadPcap(SharkApp):
             self.optparse.error('wrong number of arguments')
 
     def main(self):
-        self.shark.upload_trace_file(self.args[2], self.args[1])
+        self.netshark.upload_trace_file(self.args[2], self.args[1])
 
 
 if __name__ == "__main__":

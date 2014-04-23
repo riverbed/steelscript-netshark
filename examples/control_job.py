@@ -10,16 +10,16 @@
 
 """
 This script can be used to start, stop, delete or clear a Capture Job on a
-Shark Appliance.
+NetShark Appliance.
 
 Use the -l option to list the appliance jobs.
 """
 import sys
 
-from steelscript.shark.core.app import SharkApp
+from steelscript.netshark.core.app import NetSharkApp
 
 
-class ControlJob(SharkApp):
+class ControlJob(NetSharkApp):
     def add_options(self, parser):
         parser.add_option('-l', action="store_true", dest="list", default=False,
                           help='print a list of available capture jobs')
@@ -33,12 +33,12 @@ class ControlJob(SharkApp):
         done = 0
 
         if self.options.list:
-            for j in self.shark.get_capture_jobs():
+            for j in self.netshark.get_capture_jobs():
                 print j
             done += 1
 
         if self.options.delete is not None:
-            job = self.shark.get_capture_job_by_name(self.options.delete)
+            job = self.netshark.get_capture_job_by_name(self.options.delete)
             ans = raw_input('Are you sure you want to delete Job %s [yes/no]: ' % self.options.delete)
             if ans.lower() != 'yes':
                 print 'Okay, aborting.'
@@ -48,19 +48,19 @@ class ControlJob(SharkApp):
             done += 1
 
         if self.options.start is not None:
-            job = self.shark.get_capture_job_by_name(self.options.start)
+            job = self.netshark.get_capture_job_by_name(self.options.start)
             job.start()
             print 'Job %s started.' % self.options.start
             done += 1
 
         if self.options.stop is not None:
-            job = self.shark.get_capture_job_by_name(self.options.stop)
+            job = self.netshark.get_capture_job_by_name(self.options.stop)
             job.stop()
             print 'Job %s stopped.' % self.options.stop
             done += 1
 
         if self.options.clear is not None:
-            job = self.shark.get_capture_job_by_name(self.options.clear)
+            job = self.netshark.get_capture_job_by_name(self.options.clear)
             job.clear()
             done += 1
 
