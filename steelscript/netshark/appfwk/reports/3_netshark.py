@@ -6,10 +6,10 @@
 #   https://github.com/riverbed/flyscript-portal/blob/master/LICENSE ('License').
 # This software is distributed 'AS IS' as set forth in the License.
 
-from steelscript.appfw.core.apps.report.models import Report
-import steelscript.appfw.core.apps.report.modules.yui3 as yui3
+from steelscript.appfwk.core.apps.report.models import Report
+import steelscript.appfwk.core.apps.report.modules.yui3 as yui3
 
-from steelscript.netshark.appfw.datasources.netshark import NetSharkTable
+from steelscript.netshark.appfwk.datasources.netshark import NetSharkTable
 #
 # Define a NetShark Report and Table
 #

@@ -60,7 +60,7 @@ http://pythonhosted.org/steelscript/install.html
 
     'entry_points': {
         'portal.plugins': [
-            'netshark = steelscript.netshark.appfw.plugin:NetSharkPlugin'
+            'netshark = steelscript.netshark.appfwk.plugin:NetSharkPlugin'
         ],
     },
 }
