@@ -10,7 +10,7 @@
 
 """
 This script can be used to start, stop, delete or clear a Capture Job on a
-NetShark Appliance.
+NetShark appliance.
 
 Use the -l option to list the appliance jobs.
 """

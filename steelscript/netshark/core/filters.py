@@ -8,7 +8,7 @@
 
 """
 Filters can be use to reduce the traffic that is fed to NetShark views, and are
-basic tools when doing data analysis with a NetShark Appliance.
+basic tools when doing data analysis with a NetShark appliance.
 NetShark supports 4 main classes of filters: the native NetShark filters, Time
 filters, BPF filters (also known as Wireshark capture filters) and Wireshark
 display filters.

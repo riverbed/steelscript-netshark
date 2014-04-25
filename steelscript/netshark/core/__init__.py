@@ -8,7 +8,7 @@
 
 """
 The NetShark package offers a set of interfaces to control and work with
-a Cascade NetShark Appliance.
+a SteelCentral NetShark appliance.
 The functionality in the module includes:
 
 """

@@ -10,7 +10,7 @@
 
 """
 This script can be used to export packets from Trace Files, Capture Jobs or
-Trace clips on a NetShark Appliance. An optional IP address can be specified to
+Trace clips on a NetShark appliance. An optional IP address can be specified to
 restrict the exported packets to the ones of a single host.
 
 Note: in order to export a clip with this script, you need to make sure the

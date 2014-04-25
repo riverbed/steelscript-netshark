@@ -8,7 +8,7 @@
 
 """
 This module contains the NetShark class, which is the main interface to
-a Cascade NetShark Appliance. It allows, among other things, retrieving
+a SteelCentral NetShark appliance. It allows, among other things, retrieving
 the state of the netshark, modifying its settings and performing operations
 like creating clips or starting/stopping capture jobs.
 """
@@ -46,7 +46,7 @@ __all__ = ['NetShark']
 
 
 class NetShark(Service):
-    """The NetShark class is the main interface to interact with a NetShark Appliance.
+    """The NetShark class is the main interface to interact with a NetShark appliance.
     Among other things, it makes it possible to manage views, jobs, files and
     trace clips, and to query and modify the appliance settings.
     """
@@ -526,7 +526,7 @@ class NetShark(Service):
         return res
 
     def restart(self):
-        """Restart the NetShark Appliance.
+        """Restart the NetShark appliance.
         This will issue a system reboot.
         """
         self.api.system.restart({'type':'SHARK'})
