@@ -41,8 +41,8 @@ class Dpi(common.SetUpTearDownMixin, testscenarios.TestWithScenarios):
 
         self.assertEqual(settings, pd.get())
 
-    def test_group_definitions(self):
-        gd = self.shark.settings.group_definitions
+    def test_port_groups(self):
+        gd = self.shark.settings.port_groups
         settings = gd.get()
 
         try:

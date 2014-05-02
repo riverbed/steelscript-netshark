@@ -15,6 +15,9 @@ from steelscript.netshark.core._exceptions import NetSharkException
 from steelscript.common import utils, timeutils
 
 
+__all__ = ['Interface4', 'Clip4', 'Job4' ]
+
+
 class Interface4(_interfaces._InputSource):
     """A physical interface packet source, that can be used for live packet
     capture. Interface objects are normally not instantianted directly, but

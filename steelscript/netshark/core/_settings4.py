@@ -12,27 +12,32 @@ from steelscript.common.jsondict import JsonDict
 import json
 import copy
 import time
+from decorator import decorator
 
+
+@decorator
 def getted(f):
     @functools.wraps(f)
     def wrapper(self, *args, **kwds):
         if self.data is None:
             raise LookupError('You have to get the configuration first via the get method')
         return f(self, *args, **kwds)
+
     return wrapper
 
 
 class BasicSettingsFunctionality(object):
-    """This basic mixin is used as a base for all the settings related classes.
-    It ensures that the following interface is implemented for all the settings:
-     get()
-     save()
-     cancel()
-     download()
-     load()
-    """
+    """This class is used as a base for all the settings related classes."""
+
     def __init__(self, api):
+
+        #: Current settings are stored in this property.
+        #:
+        #: This is updated by calls to :meth:`.get()` and :meth:`.load()`.
+        #: The attribute may be modified directly and the resulting
+        #: value pushed to the server via :meth:`.save()`.
         self.data = None
+
         self._api = api
 
     def _get(self, f,  force=False):
@@ -44,6 +49,11 @@ class BasicSettingsFunctionality(object):
 
     def get(self, force=False):
         """Gets the configuration from the server
+
+        :param bool force: set to true to ignore a cached copy
+
+        :returns: a dictionary of settings
+
         """
         return self._get(self._api.get, force)
 
@@ -55,22 +65,17 @@ class BasicSettingsFunctionality(object):
 
     @getted
     def save(self):
-        """Save configuration to the server
-        """
+        """Save configuration to the server."""
         self._save(self._api.update)
 
     @getted
     def cancel(self):
-        """Cancel pending changes to the configuration
-        and reloads the configuration from server
-        """
+        """Cancel pending changes and reload the configuration from server. """
         return self.get(force=True)
 
     @getted
-    def download(self, path):
-        """Download configuration to path
-        path must be a complete, including a filename
-        """
+    def download(self, filename):
+        """Download settings and save to a file."""
         data = self.get()
         with open(path, 'w') as f:
             f.write(json.dumps(data))
@@ -78,11 +83,13 @@ class BasicSettingsFunctionality(object):
     def load(self, path_or_obj, save=True):
         """Load the configuration from a path or dict
 
-        `path_or_obj` is or a string representing a path or a dict/list representing the
-        configuration
+        :param path_or_obj: a string representing a path or a
+            dict/list representing the configuration
 
-        `save` is a flag to automatically save to the server after load,
-        default to True
+        :param bool save: if true, automatically save to the server
+            after load, default to True
+
+        On success, this discards any changes to data.
         """
         if isinstance(path_or_obj, basestring):
             with open(path_or_obj, 'r') as f:
@@ -98,7 +105,7 @@ class BasicSettingsFunctionality(object):
             self.save()
 
 class NoBulk(object):
-    """Mixin class to force get of new configuration in not bulk update capable
+    """Base class to force get of new configuration in not bulk update capable
     settings
 
     This basically overrides the save method such that it doesn't perform a
@@ -116,8 +123,6 @@ class Basic(BasicSettingsFunctionality):
 
     #definining get/save here in order to do not touch _api4.py
     def get(self, force=False):
-        """Get configuration from the server
-        """
         return self._get(self._api.get_basic)
 
     @getted
@@ -129,8 +134,6 @@ class Auth(BasicSettingsFunctionality):
     """Wrapper class around authentication settings."""
 
     def get(self, force=False):
-        """Get configuration from the server
-        """
         return self._get(self._api.get_auth)
 
     @getted
@@ -142,8 +145,6 @@ class Audit(BasicSettingsFunctionality):
     """Wrapper class around audit configuration."""
 
     def get(self, force=False):
-        """Get configuration from the server
-        """
         return self._get(self._api.get_audit)
 
     @getted
@@ -160,32 +161,33 @@ class Licenses(NoBulk, BasicSettingsFunctionality):
         warnings.warn('Reboot of netshark is needed to apply the new configuration')
 
     @getted
-    def add(self, license_keys):
+    def add(self, key):
+        """Add a license key."""
         #the add wants a list of keys while the
         #delete wants a single key
-        self._api.add_license([license_keys])
+        self._api.add_license([key])
 
     @getted
     def remove(self, key):
+        """Remove a license key."""
         self._api.delete_license(key)
 
     @getted
     def clear(self):
+        """Clear all license keys."""
         for lic in self.data:
             self._api.delete_license(lic['key'])
 
     @getted
     def status(self):
+        """Return the license status."""
         return self._api.get_status()
 
 
 class Firewall(BasicSettingsFunctionality):
-    """Allows to get the current configuration of the firewall and
-    set a new one."""
+    """Wrapper class around firewall settings."""
 
     def get(self, force=False):
-        """Get configuration from the server
-        """
         return self._get(self._api.get_firewall_config)
 
     @getted
@@ -278,11 +280,9 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
 
 
 class ProfilerExport(BasicSettingsFunctionality):
-    """Wrapper class around authentication settings. """
+    """Wrapper class around Profiler Export settings. """
 
     def get(self, force=False):
-        """Get configuration from the server
-        """
         return self._get(self._api.get_profiler_export)
 
     @getted
@@ -291,10 +291,9 @@ class ProfilerExport(BasicSettingsFunctionality):
 
 
 class CorsDomain(BasicSettingsFunctionality):
+    """Wrapper class around CORS Domain settings. """
 
     def get(self, force=False):
-        """Get configuration from the server
-        """
         return self._get(self._api.get_cors_domains)
 
     @getted
@@ -303,6 +302,7 @@ class CorsDomain(BasicSettingsFunctionality):
 
 
 class Users(NoBulk, BasicSettingsFunctionality):
+    """Wrapper class around Users configuration settings. """
 
     @getted
     def add(self, username, password, groups=[], can_be_locked=False):
@@ -338,28 +338,30 @@ class Users(NoBulk, BasicSettingsFunctionality):
                                     'new_password': password})
 
 class Groups(NoBulk, BasicSettingsFunctionality):
+    """Wrapper class around settings for user groups. """
 
     @getted
     def add(self, name, description='', capabilities=[]):
         """Adds a new group to the system
 
-        `name` is the name of the group
+        :param str name: the name of the group
 
-        `description` is the description of the group
+        :param str description: the description of the group
 
-        `capabilities` is a list of permissions the group has.
-        They can be:
+        :param list capabilities: a list of permissions the group has.
+            They can be:
 
-        CAPABILITY_ADMINISTRATOR,
-        CAPABILITY_APPLY_VIEWS_ON_FILES,
-        CAPABILITY_APPLY_VIEWS_ON_INTERFACES,
-        CAPABILITY_SHARE_VIEWS,
-        CAPABILITY_CREATE_FILES,
-        CAPABILITY_IMPORT_FILES,
-        CAPABILITY_EXPORT_FILES,
-        CAPABILITY_CREATE_JOBS,
-        CAPABILITY_SCHEDULE_WATCHES,
-        CAPABILITY_ACCESS_PROBE_FILES
+            * CAPABILITY_ADMINISTRATOR,
+            * CAPABILITY_APPLY_VIEWS_ON_FILES,
+            * CAPABILITY_APPLY_VIEWS_ON_INTERFACES,
+            * CAPABILITY_SHARE_VIEWS,
+            * CAPABILITY_CREATE_FILES,
+            * CAPABILITY_IMPORT_FILES,
+            * CAPABILITY_EXPORT_FILES,
+            * CAPABILITY_CREATE_JOBS,
+            * CAPABILITY_SCHEDULE_WATCHES,
+            * CAPABILITY_ACCESS_PROBE_FILES
+
         """
         self._api.add({'name': name,
                        'description': description,
@@ -367,26 +369,32 @@ class Groups(NoBulk, BasicSettingsFunctionality):
 
     @getted
     def delete(self, name):
-        """Removes group from the groups in the NetShark
-
-        `name` is the name of the group
-        """
+        """Removes group from the groups in the NetShark"""
         self._api.delete(name)
 
 class Update(NoBulk, BasicSettingsFunctionality):
+    """Manage system update, ISOs and settings. """
 
     def load_iso_from_url(self, url):
+        """Instruct the NetShark to upload a new ISO from a URL."""
         self._api.load_iso_from_url({'url':url})
 
     def upload_iso(self, f):
+        """Upload a new ISO From a file.
+
+        :param file f: file descriptor to read from
+
+        """
         self._api.upload_iso(f)
 
     @getted
     def delete_iso(self):
+        """Clear any ISO that the NetShark is configured to use."""
         self._api.delete_iso({'state': 'NEUTRAL', 'reset': True})
 
     @getted
     def update(self):
+        """Initiate an update using the configured ISO."""
         if self.data['init_id'] is not '':
             res = self._api.update({'init_id': self.data['init_id'],
                                     'state': 'RUNNING'})
@@ -410,10 +418,12 @@ class Storage(NoBulk, BasicSettingsFunctionality):
     def reinitialize(self, wait=True):
         """Reinitializes the packet storage
 
-        If `wait` is True it will wait for the packet storage to be back again
-        before returning
+        .. warning::
+           This operation will lose all packets in every job
 
-        WARNING: This operation will lose all packets in every job
+        :param bool wait: set to True to wait for the packet storage to be back again
+            before returning
+
         """
         self._api.reinitialize()
 
@@ -431,13 +441,17 @@ class Storage(NoBulk, BasicSettingsFunctionality):
     def format(self, percentage_reserved_space=0):
         """Formats the packet storage
 
-        `percentage_reserved_space` is the percentage of disk reserved starting from the
-        outher boundaries of the disk.
-        Since I/O operations at the farmost parts of the disk have higher latency this is
-        often used to increase performances of the packet recorder.
-        `percentage_reserved_space` can be any value from 0 (default) to 95.
+        .. warning::
+           This operation will lose all packets in every job
 
-        WARNING: This operation will lose all packets in every job
+        :param int percentage_reserved_space: percentage of disk
+            reserved starting from the outher boundaries of the disk.
+
+        Since I/O operations at the farmost parts of the disk have
+        higher latency this is often used to increase performances of
+        the packet recorder.  `percentage_reserved_space` can be any
+        value from 0 (default) to 95.
+
         """
 
         assert percentage_reserved_space >=0 and percentage_reserved_space < 96

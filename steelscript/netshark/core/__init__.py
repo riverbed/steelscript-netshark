@@ -22,3 +22,6 @@ from steelscript.common.service import *
 from steelscript.netshark.core._exceptions import *
 from steelscript.netshark.core.filters import *
 from steelscript.netshark.core.types import *
+from steelscript.netshark.core._source4 import *
+from steelscript.netshark.core._source5 import *
+from steelscript.netshark.core._view4 import *

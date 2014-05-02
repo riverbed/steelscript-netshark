@@ -1,34 +1,12 @@
-:py:mod:`steelscript.netshark.core`
-===================================
+NetShark, Packet Sources and Views
+==================================
 
-.. currentmodule:: steelscript.netshark.core.netshark
+.. currentmodule:: steelscript.netshark.core
 
-This documentation assumes you are already familiar with the NetShark
-Appliance, specifically concepts like Capture Jobs and Views.  If you
-are not already familiar with these concepts, see :doc:`background`
-and the `NetShark documentation
-<https://support.riverbed.com/content/support/software/cascade/shark.html>`_
-on the support site.
+NetShark Objects
+----------------
 
-The primary interface to the NetShark related SteelScript
-functionality is the class :py:class:`NetShark`.  An instance of
-this object represents a connection to a NetShark server, and can be used
-to examine packet sources and existing views on the server, as well as
-to configure and create new views, capture jobs, etc.
-
-There are many more classes in the NetShark libraries, representing
-things like views, capture jobs, trace clips, etc.  But these should
-never be instantiated directly from scripts, they are returned by
-methods on NetShark objects.
-
-If you are new to SteelScript for NetShark, see the :doc:`Tutorial <tutorial>`.
-
-The :doc:`glossary` defines terms like View and Capture Job.
-
-:py:class:`NetShark` Objects
-----------------------------
-
-.. autoclass:: steelscript.netshark.core.netshark.NetShark
+.. autoclass:: NetShark
    :members:
 
    .. automethod:: __init__
@@ -41,8 +19,8 @@ The :doc:`glossary` defines terms like View and Capture Job.
    * :py:meth:`.get_logininfo`
    * :py:meth:`.get_stats`
 
-   The following methods are used to access [views](glossary.html#view).
-   Each of these methods returns a [view object](#viewobjects).
+   The following methods are used to access :term:`view`.  Each of
+   these methods returns a :py:class:`View <View4>`.
 
    * :py:meth:`.get_open_views`
    * :py:meth:`.get_open_view_by_handle`
@@ -95,15 +73,28 @@ external code, they are returned by methods on :py:class:`NetShark` or
 other routines.  Any of the objects in this section may be used as the
 `src` argument to :py:meth:`NetShark.create_view`.
 
-:py:class:`Job4` (Capture Job) Objects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+There are three basic data sources:
+
+* Capture Jobs
+* Interfaces
+* Trace Clips
+
+Capture Job Objects
+~~~~~~~~~~~~~~~~~~~
 
 Capture job objects are used to work with capture jobs.  These objects
 are not instantiated directly but are returned from :py:meth:`NetShark.get_capture_jobs`
 and :py:meth:`NetShark.get_capture_job_by_name`.
 
-.. autoclass:: steelscript.netshark.core._source4.Job4
+.. note::
+
+   See :py:class:`Job4` if connecting to a NetShark using API 4.0
+
+.. autoclass:: Job5
    :members:
+   :undoc-members:
+   :inherited-members:
+   :show-inheritance:
 
    Capture job objects have the following properties:
 
@@ -114,6 +105,7 @@ and :py:meth:`NetShark.get_capture_job_by_name`.
    * :py:attr:`.packet_end_time`
    * :py:attr:`.interface`
    * :py:attr:`.handle`
+   * :py:attr:`.dpi_enabled`
 
    The following methods access information about a job:
 
@@ -143,20 +135,23 @@ and :py:meth:`NetShark.get_capture_job_by_name`.
 
    Complete method and property descriptions:
 
-.. currentmodule:: steelscript.netshark.core._source4
+Interface Objects
+~~~~~~~~~~~~~~~~~
 
-:py:class:`Job5` (Capture Job) Objects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. note::
 
-.. autoclass:: steelscript.netshark.core._source5.Job5
+   See :py:class:`Interface4` if connecting to a NetShark using API 4.0
+
+.. autoclass:: Interface5
    :members:
    :undoc-members:
    :inherited-members:
+   :show-inheritance:
 
    .. automethod:: __init__
 
-:py:class:`Clip4` (Trace Clip) Objects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trace Clip Objects
+~~~~~~~~~~~~~~~~~~
 
 Trace clip objects are used to work with trace clips.
 These objects are not instantiated directly but are returned from
@@ -184,8 +179,8 @@ methods such as :py:meth:`NetShark.get_clips`.
 
    Complete method and property descriptions:
 
-Extractor Field objects
------------------------
+Extractor Fields
+----------------
 
 Extractor Field objects represent individual extractor fields.
 These objects are returned by :py:meth:`NetShark.get_extractor_fields`,
@@ -200,8 +195,8 @@ with the following fields:
 * `type`: a string describing the type of the field
   (e.g., integer, string ip address, etc.)
 
-:py:class:`View4` (View) Objects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+View Objects
+------------
 
 View objects are returned from :py:meth:`NetShark.create_view`.
 
@@ -212,22 +207,60 @@ separate outputs for "bits over time", "bytes over time", and "packets
 over time".  In flyscript, a View object contains an associated Output
 object for each output.  To read data from a view, you must first
 locate the appropriate Output object, then use the method
-:py:meth:`Output4.get_date `steelscript.netshark.core._view4.Output4.get_data>`.
+:py:meth:`Output4.get_data()`.
 
-.. autoclass:: steelscript.netshark.core._view4.View4
+.. autoclass:: View4
+   :members:
+   :inherited-members:
+
+Output Objects
+--------------
+
+.. autoclass:: Output4
+   :members:
+   :inherited-members:
+   :show-inheritance:
+
+Filters
+-------
+
+.. automodule:: steelscript.netshark.core.filters
+
+TimeFilter Objects
+~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: TimeFilter
    :members:
 
-:py:class:`Output4` (Output) Objects
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   .. automethod:: __init__
 
-.. autoclass:: steelscript.netshark.core._view4.Output4
+NetSharkFilter Objects
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: NetSharkFilter
    :members:
 
+   .. automethod:: __init__
 
-.. currentmodule:: steelscript.netshark.core
+BpfFilter Objects
+~~~~~~~~~~~~~~~~~
 
-:py:mod:`steelscript.netshark.viewutils`
-----------------------------------------
+.. autoclass:: BpfFilter
+   :members:
+
+   .. automethod:: __init__
+
+WiresharkDisplayFilter Objects
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: WiresharkDisplayFilter
+   :members:
+
+   .. automethod:: __init__
+
+
+Utilities
+---------
 
 .. automodule:: steelscript.netshark.core.viewutils
 

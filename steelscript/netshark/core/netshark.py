@@ -54,22 +54,25 @@ class NetShark(Service):
                  force_version=None):
         """Establishes a connection to a NetShark appliance.
 
-        `host` is the name or IP address of the NetShark to connect to
+        :param str host: the name or IP address of the NetShark to connect to
 
-        `port` is the TCP port on which the NetShark appliance listens.
-                 if this parameter is not specified, the function will
-                 try to automatically determine the port.
+        :param int port: the TCP port on which the NetShark appliance
+            listens.  if this parameter is not specified, the function
+            will try to automatically determine the port.
 
-        `auth` defines the authentication method and credentials to use
-                 to access the NetShark.  It should be an instance of
-                 steelscript.common.UserAuth or steelscript.common.OAuth.
+        :param auth: defines the
+            authentication method and credentials to use to access the
+            NetShark.  It should be an instance of
+            :class:`UserAuth <steelscript.common.service.UserAuth>` or
+            :class:`OAuth <steelscript.common.service.OAuth>`.
 
-        `force_version` is the API version to use when communicating.
-                 if unspecified, this will use the latest version supported
-                 by both this implementation and the NetShark appliance.
+        :param str force_version: is the API version to use when
+            communicating.  if unspecified, this will use the latest
+            version supported by both this implementation and the
+            NetShark appliance.
 
-        See the base [Service](common.html#service) class for more information
-        about additional functionality supported.
+        See the base :class:`Service <steelscript.common.service.Service>`
+        class for more information about additional functionality supported.
         """
 
         if force_version is not None:
@@ -162,8 +165,7 @@ class NetShark(Service):
         self._supports_auth_oauth  = False
 
     def get_open_views(self):
-        """Get a list of View objects, one for each open view on
-        the NetShark appliance.
+        """Get a list of View objects, one for each open view on the NetShark appliance.
         """
         self._refresh_views()
         return self.views.values()
@@ -176,14 +178,14 @@ class NetShark(Service):
         return self.views[handle]
 
     def _add_view(self, viewobj):
-        """ add ``viewobj`` to the internal cache of view objects """
+        """Add ``viewobj`` to the internal cache of view objects """
         # No handle if view hasn't yet been applied
         if not hasattr(viewobj, 'handle'):
             return
         self.views[viewobj.handle] = viewobj
 
     def _del_view(self, viewobj):
-        """ remove ``viewobj`` from the internal cache of view objects """
+        """Remove ``viewobj`` from the internal cache of view objects """
         try:
             del self.views[viewobj.handle]
         except KeyError:
@@ -223,9 +225,13 @@ class NetShark(Service):
     def create_view_from_template(self, source, template,
                                   name=None, sync=True):
         """ Create a new view on this NetShark using `template`.
+
         For 9.5.x and earlier, `template` should be an XML view
         document, for later releases, `template` should be a
         JSON view description.
+
+        :returns: :class:`View4`
+
         """
         view = self.classes.View._create_from_template(self, source, template,
                                                        name, sync)
@@ -238,16 +244,20 @@ class NetShark(Service):
                     sampling_time_msec=None):
         """ Create a new view on this NetShark.
 
-        `src` identifies the source of packets to be analyzed.
-        It may be any packet source object.
+        :param src: identifies the source of packets to be analyzed.
+            It may be any packet source object.
 
-        `columns` specifies what information is extracted from
-        packets and presented in this view.  It should be a list
-        of `Key` and `Value` objects.
+        :param columns: specifies what information is extracted from
+            packets and presented in this view.  It should be a list
+            of :py:class:`Key <steelscript.netshark.core.types.Key>`
+            and :py:class:`Value <steelscript.netshark.core.types.Value>`
+            objects
 
-        `filters` is an optional list of filters that can be used
-        to limit which packets from the packet source are processed
-        by this view.
+        :param filters: an optional list of filters that can be used
+            to limit which packets from the packet source are
+            processed by this view.
+
+        :returns: :class:`View4`
 
         """
 
@@ -285,64 +295,72 @@ class NetShark(Service):
         """Create a Capture Job on this NetShark, and return it as a
         a capture job object that can be used to work with the new job.
 
-        `interface` is an interface object identifying the source of the packets
-        that this job will capture. The method `get_interfaces()` returns
-        interface objects for all interfaces on this netshark.
+        :param interface: is an interface object identifying the
+            source of the packets that this job will capture. The
+            method `get_interfaces()` returns interface objects for
+            all interfaces on this netshark.
 
-        `name` is the name that the job will have after being created,
-        and that will be used to identify the job for successive operations.
+        :param name: is the name that the job will have after being
+            created, and that will be used to identify the job for
+            successive operations.
 
-        `packet_retention_size_limit` is the maximum size on disk that the job
-        will reach before old packets begin to be discarded.
-        `packet_retention_size_limit` can be expressed as a number
-        (in which case the unit will be bytes), or as a string.
-        The format of the string can be Number and unit (e.g. "1.3GB"),
-        or percentage of total disk spoace (e.g. "20%").
+        :param packet_retention_size_limit: is the maximum size on
+            disk that the job will reach before old packets begin to
+            be discarded.  `packet_retention_size_limit` can be
+            expressed as a number (in which case the unit will be
+            bytes), or as a string.  The format of the string can be
+            Number and unit (e.g."1.3GB"),
+            or percentage of total disk spoace (e.g. "20%").
 
-        `packet_retention_packet_limit`: the maximum number of packets that
-        the job can contain before old packets begin to be discarded.
+        :param packet_retention_packet_limit: the maximum number of
+            packets that the job can contain before old packets begin
+            to be discarded.
 
-        `packet_retention_time_limit` a `datetime.timedelta` object
-        specifying the maximum time interval that the job may contain before
-        old packets begin to be discarded.
+        :param packet_retention_time_limit: a `datetime.timedelta`
+            object specifying the maximum time interval that the job
+            may contain before old packets begin to be discarded.
 
-        `bpf_filter` is a filter, based on the Wireshark capture filter
-        syntax, that selects which incoming packets should be saved
-        in the job.
+        :param bpf_filter: is a filter, based on the Wireshark capture
+            filter syntax, that selects which incoming packets should
+            be saved in the job.
 
-        `snap_length` is the portion of each packet that will be written on
-        disk, in bytes. The default value of 65535 ensure that every packet is
-        captured in its entirety.
+        :param snap_length: is the portion of each packet that will be
+            written on disk, in bytes. The default value of 65535
+            ensure that every packet is captured in its entirety.
 
-        `indexing_size_limit` is the maximum size on disk that the index may
-        reach before old index data may be discarded.
-        It is specified in the same format as `keep_size`.
+        :param indexing_size_limit: is the maximum size on disk that
+            the index may reach before old index data may be
+            discarded.  It is specified in the same format as
+            `keep_size`.
 
-        If `indexing_synced` is True the job Microflow Index will be
-        automatically pruned to cover the same time extension of the captured
-        packets.
+        :param indexing_synced: if True the job's microflow index
+            will be automatically pruned to cover the same time
+            extension of the captured packets.
 
-        `indexing_time_limit` is a `datetime.timedelta` object indicating
-        how long index data should be retained.  This argument is only
-        meaningful if `index_and_capture_synced` is False.
+        :param indexing_time_limit: is a `datetime.timedelta` object
+            indicating how long index data should be retained.  This
+            argument is only meaningful if `index_and_capture_synced`
+            is False.
 
-        If `start_immediately` is True, the Job is started after it has been
-        created.
+        :param start_immediately: if True, the Job is started after
+            it has been created.
 
-        `requested_start_time` and `requested_stop_time` are `datetime.datetime`
-        objects that, if specified, determine the absolute time when the
-        job will start/stop.
+        :param requested_start_time: and `requested_stop_time` are
+            `datetime.datetime` objects that, if specified, determine
+            the absolute time when the job will start/stop.
 
-        If `stop_rule_size_limit` is specified, the job will stop storing
-        new packets when the given size on disk is reached.  It is specified
-        in the same format as `keep_size`.
+        :param stop_rule_size_limit: is specified, the job will stop
+            storing new packets when the given size on disk is
+            reached.  It is specified in the same format as
+            `keep_size`.
 
-        If `stop_rule_packet_limit` is specified, the job will stop storing new
-        packets when the given number of packets is reached.
+        :param stop_rule_packet_limit: if specified, the job will stop
+            storing new packets when the given number of packets is
+            reached.
 
-        If `stop_rule_time_limit` is specified, it should be a
-        `datetime.timedelta` object, and the job will stop storing new
-        packets when the given time has elapsed.
+        :param stop_rule_time_limit: if specified, it should be a
+            `datetime.timedelta` object, and the job will stop storing
+            new packets when the given time has elapsed.
         """
         self._capture_jobs_cache = None
         return self.classes.Job.create(self,
@@ -513,7 +531,7 @@ class NetShark(Service):
     def get_serverinfo(self):
         '''Get the NetShark appliance overall info.
 
-        Return Value: a named tuple with the server parameters
+        :return: a named tuple with the server parameters
         '''
         return self.api.system.get_info()
 
@@ -540,8 +558,7 @@ class NetShark(Service):
     def ping(self):
         '''Ping the probe.
 
-        Return Value: True/False depending whether the server is
-        up and running or not
+        :return: True/False depending whether the server is up and running or not
         '''
         return self.api.common.ping(self)
 
@@ -549,7 +566,8 @@ class NetShark(Service):
         """
         Create a new directory. It will trigger an exception if the directory
         exist.
-        Return Value: a reference to the new directory
+
+        :return: a reference to the new directory
         """
         return self.classes.Directory.create(self, path)
 
@@ -557,14 +575,16 @@ class NetShark(Service):
         """
         Get a directory. It will trigger an exception if the directory does not
         exist.
-        Return Value: a reference to the directory
+
+        :return: a reference to the directory
         """
         return self.classes.Directory(self, path)
 
     def exists(self, path):
         """
         Check if a path exists, works for files or directories.
-        Return Value: true if the path exists, false otherwise
+
+        :return: true if the path exists, false otherwise
         """
         return self.classes.Directory.exists(self, path)
 
@@ -572,7 +592,8 @@ class NetShark(Service):
         """
         Uploads a new trace file. 'path' is the complete destination path,
         'local_file' is the the local file to upload.
-        Return Value: reference to the new trace file
+
+        :return: reference to the new trace file
         """
         return self.classes.TraceFile.upload(self, path, local_file)
 
@@ -580,7 +601,8 @@ class NetShark(Service):
         """
         Creates a multisegment file. 'path' is the new file full name and
         'files' is a File objects list
-        Return Value: a reference to the new file
+
+        :return: a reference to the new file
         """
         return self.classes.MultisegmentFile.create_multisegment_file(self, path, files)
 
@@ -588,7 +610,8 @@ class NetShark(Service):
         """
         Creates a merged file. 'path' is the new file full name and
         'files' is a File objects list
-        Return Value: a reference to the new file
+
+        :return: a reference to the new file
         """
         return self.classes.MergedFile.create_merged_file(self, path, files)
 
@@ -597,10 +620,11 @@ class NetShark(Service):
         If path is None a temporary file is created
 
         `log_type` can be:
-            -'CURRENT'
-            -'PROBE'
-            -'PACKETRECORDER'
-            -'COMPLETE' (default)
+
+        * 'CURRENT'
+        * 'PROBE'
+        * 'PACKETRECORDER'
+        * 'COMPLETE' (default)
 
         `case_id` is an integer that represent the case id
         """

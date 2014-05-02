@@ -7,11 +7,11 @@
 
 
 """
-Filters can be use to reduce the traffic that is fed to NetShark views, and are
-basic tools when doing data analysis with a NetShark appliance.
-NetShark supports 4 main classes of filters: the native NetShark filters, Time
-filters, BPF filters (also known as Wireshark capture filters) and Wireshark
-display filters.
+Filters are used to reduce the traffic that is fed to NetShark
+views, and are basic tools when doing data analysis with a NetShark
+Appliance.  NetShark supports 4 main classes of filters: Time filters,
+the native NetShark filters, BPF filters (also known as Wireshark
+capture filters) and Wireshark display filters.
 """
 
 from __future__ import absolute_import
@@ -46,33 +46,64 @@ class Filter(object):
         return cls(**self.__dict__)
 
 
-
 class TimeFilter(Filter):
-    def __init__(self, start, end, gmtoffset=0):
+    def __init__(self, start, end):
+        """Create a TimeFilter representing a time range.
+
+        :param datetime start: Start time
+
+        :param datetime end: End time
+
+        """
         super(TimeFilter, self).__init__()
         self.start = start
         self.end = end
-        self.gmtoffset = gmtoffset
 
     @classmethod
-    def parse_range(cls, string, offset = 0):
+    def parse_range(cls, string):
+        """Creata a TimeFilter based on human readable string.
+
+        :param str string: time string
+
+        The ``string`` parameter can be any time range string
+        such as:
+
+        * ``12:00 PM to 1:00 PM``
+        * ``last 2 weeks``
+
+        """
         (start, end) = timeutils.parse_range(string)
-        return cls(start, end, offset)
+        return cls(start, end)
 
 
 class NetSharkFilter(Filter):
     def __init__(self, string):
+        """Create a filter in native NetShark syntax.
+
+        :param str string: filter string
+
+        """
         super(NetSharkFilter, self).__init__()
         self.string = string
 
 
 class WiresharkDisplayFilter(Filter):
     def __init__(self, string):
+        """Create a filter in Wireshark display syntax..
+
+        :param str string: filter string
+
+        """
         super(WiresharkDisplayFilter, self).__init__()
         self.string = string
 
 
 class BpfFilter(Filter):
     def __init__(self, string):
+        """Create a filter in BPF syntax.
+
+        :param str string: filter string
+
+        """
         super(BpfFilter, self).__init__()
         self.string = string

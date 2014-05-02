@@ -8,6 +8,10 @@
 from steelscript.common.exceptions import *
 from steelscript.netshark.core import _source4 as s4
 
+
+__all__ = ['Interface5', 'Job5' ]
+
+
 class Job5(s4.Job4):
     @property
     def dpi_enabled(self):

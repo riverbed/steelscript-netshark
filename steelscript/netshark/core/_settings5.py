@@ -39,6 +39,8 @@ class DPIResource(BasicSettingsFunctionality):
 
 
 class PortDefinitions(DPIResource):
+    """Wrapper class and port definitions."""
+
     def __init__(self, api, srt_ports_api):
         super(PortDefinitions, self).__init__(api)
         self._srt_ports_api = srt_ports_api
@@ -65,14 +67,16 @@ class PortDefinitions(DPIResource):
     def add(self, name, port, protocol, srt):
         """Add a port definition
 
-        `name` is a name for the port
+        :param str name: a name for the port
 
-        `port` is the port number
+        :param int port: the port number
 
-        `protocol` is the protocol the name is associated to can be 'tcp' or 'udp'
+        :param str protocol: is the protocol the name is associated to
+            can be `tcp` or `udp`
 
-        `srt` is a boolean that indicates either True or False to the port
-        to be enabled as srt port
+        :param bool srt: indicates if the port to be enabled as srt
+            port
+
         """
         assert port > 0 and port < 65536
         assert srt == True or srt == False
@@ -98,9 +102,10 @@ class PortDefinitions(DPIResource):
     def remove(self, name, port):
         """Remove port identified by name and port number from the Port Definitions
 
-        `name` is the name of the port
+        :param str name: a name for the port
 
-        `port` is the port number
+        :param int port: the port number
+
         """
         assert port > 0 and port < 65536
 
@@ -121,7 +126,9 @@ class PortDefinitions(DPIResource):
             self.data.remove(port_obj)
 
 
-class GroupDefinitions(DPIResource):
+class PortGroups(DPIResource):
+    """Wrapper class and port group definitions."""
+
     @getted
     def add(self, name, tcp_ports=None, udp_ports=None, priority=None):
         #sort the list first by priority
@@ -153,9 +160,10 @@ class GroupDefinitions(DPIResource):
         It accepts one of name or priority. If name and priority are issued
         it will remove the rule named `name` only if it matches `priority`
 
-        `name` is the name of the port group
+        :param str name: the name of the port group
 
-        `priority` is the priority of the port group
+        :param int priority: the priority of the port group
+
         """
         if name is None and priority is None:
             raise ValueError('name and priority cannot be both None')
@@ -180,18 +188,21 @@ class GroupDefinitions(DPIResource):
             if name is not None and priority is not None:
                 raise ValueError('Impossible to find port group with name {0} and priority {1}'.format(name, priority))
 
-class L4Mapping(GroupDefinitions):
+class L4Mapping(PortGroups):
+    """Wrapper class around Layer 4 Mappings."""
+
     @getted
     def add(self, name, hosts, tcp_ports=None, udp_ports=None, priority=None):
         """Add a l4 mapping rule
 
-        `name` is the name of the rule
+        :param str name: the name of the rule
 
-        `hosts` is a comma separated list of hosts with optional subnet mask
+        :param str hosts: comma separated list of hosts with optional subnet mask
 
-        `tcp_ports` is a comma separated list of ports or port range
+        :param str tcp_ports: comma separated list of ports or port range
 
-        `udp_ports` is a comma separated list of ports or port range
+        :param str udp_ports: comma separated list of ports or port range
+
         """
         assert tcp_ports is not None and udp_ports is not None
 
@@ -220,21 +231,24 @@ class L4Mapping(GroupDefinitions):
         It accepts one of name or priority. If name and priority are issued
         it will remove the rule named `name` only if it matches `priority`
 
-        `name` is the name of the l4 mapping
+        :param str name: the name of the l4 mapping
 
-        `priority` is the priority of the l4 mapping
+        :param int priority: the priority of the l4 mapping
         """
         super(L4Mapping, self).remove(name, priority)
 
 
 class CustomApplications(DPIResource):
+    """Wrapper class around custom application defintions."""
+
     @getted
     def add(self, name, uri):
         """Add a custom application rule
 
-        `name` is the name of the rule
+        :param str name: the name of the rule
 
-        `uri` is a string representing a uri
+        :param str uri: a string representing a uri
+
         """
 
         obj = self._get_by_name(name)
@@ -248,7 +262,8 @@ class CustomApplications(DPIResource):
     def remove(self, name):
         """Remove a custom application rule
 
-        `name` is the name of the rule
+        :param str name: the name of the rule
+
         """
         obj = self._get_by_name(name)
         if obj is not None:
@@ -258,6 +273,7 @@ class CustomApplications(DPIResource):
 
 
 class ProfilerExport(ProfilerExport):
+    """Wrapper class arouind Profiler Export"""
 
     def _lookup_profiler(self, address):
         for p in self.data['profilers']:
@@ -269,6 +285,12 @@ class ProfilerExport(ProfilerExport):
 
     @getted
     def sync_dpi_with_profiler(self, address):
+        """Helper method to select the current profiler to sync DPI with.
+
+        This method modifes `self.data` to reflect the changes.  save() must
+        be called to push the changes to the NetShark.
+
+        """
         p = self._lookup_profiler(address)
         for prof in self.data['profilers']:
             if 'sync' in prof:
@@ -280,6 +302,12 @@ class ProfilerExport(ProfilerExport):
 
     @getted
     def unsync_dpi_with_profiler(self, address):
+        """Helper method to select the current profiler to sync DPI with.
+
+        This method modifes `self.data` to reflect the changes.  save() must
+        be called to push the changes to the NetShark.
+
+        """
         p = self._lookup_profiler(address)
         if 'sync' in p:
             del p['sync']
@@ -289,31 +317,41 @@ class Alerts(BasicSettingsFunctionality):
     def test_snmp(self, obj):
         """Sends a test SNMP trap
 
-        `obj` must be in the form of:
+        :param dict obj: object representing the trap to send.
 
-        {"address":"trap.riverbed.com","version":"V1","community":"test"}
+        The ``obj`` must be of the form:
+
+        .. code-block:: python
+
+            {"address":"trap.riverbed.com","version":"V1","community":"test"}
 
         or
 
-        {"address":"trap.riverbed.com","community":"public","version":"V2C"}
+        .. code-block:: python
+
+            {"address":"trap.riverbed.com","community":"public","version":"V2C"}
 
         or
 
-        {
-         "address": "trap.riverbed.com",
-         "version": "V3",
-         "username": "test",
-         "engine_id": "testengine",
-         "security_level": "AUTH_PRIVACY",
-         "authentication": {"protocol":"MD5",
-                            "passphrase":"testpassword"},
-         "privacy": {"protocol":"DES",
-                     "passphrase":"testpassword"}
-        }
+        .. code-block:: python
+
+            {
+                "address": "trap.riverbed.com",
+                "version": "V3",
+                "username": "test",
+                "engine_id": "testengine",
+                "security_level": "AUTH_PRIVACY",
+                "authentication": {"protocol":"MD5",
+                                   "passphrase":"testpassword"},
+                "privacy": {"protocol":"DES",
+                            "passphrase":"testpassword"}
+            }
+
         """
         return self._api.send_test_snmp(obj)
 
     def test_smtp(self, address, to_address, from_address, port=25):
+        """Sends a test email via SMTP."""
         obj = {
             'smtp_server_address': address,
             'smtp_server_port': port,
@@ -331,7 +369,7 @@ class Settings5(Settings4):
     def __init__(self, shark):
         super(Settings5, self).__init__(shark)
         self.port_definitions = PortDefinitions(shark.api.port_definitions, shark.api.srt_ports)
-        self.group_definitions = GroupDefinitions(shark.api.port_groups)
+        self.port_groups = PortGroups(shark.api.port_groups)
         self.l4_mapping = L4Mapping(shark.api.l4_mappings)
         self.custom_applications = CustomApplications(shark.api.custom_applications)
         self.profiler_export = ProfilerExport(shark.api.settings)

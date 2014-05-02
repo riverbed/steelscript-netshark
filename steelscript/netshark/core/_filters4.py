@@ -20,13 +20,9 @@ from steelscript.common import timeutils
 
 
 class TimeFilter(object):
-    def __init__(self, start, end, gmtoffset=0):
+    def __init__(self, start, end):
         self.start = timeutils.force_to_utc(start)
         self.end = timeutils.force_to_utc(end)
-
-        # XXX this was a legacy from v3 TimeFilters, get rid of it
-        assert gmtoffset == 0
-
 
     def to_dict(self):
         return {
@@ -35,7 +31,7 @@ class TimeFilter(object):
             ', ' + str(timeutils.datetime_to_nanoseconds(self.end))
             }
 
-class SharkFilter(object):
+class NetSharkFilter(object):
     def __init__(self, string):
         self.string = string
 

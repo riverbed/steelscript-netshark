@@ -18,6 +18,10 @@ from steelscript.netshark.core._api_helpers import APITimestampFormat
 
 logger = logging.getLogger(__name__)
 
+
+__all__ = ['View4', 'Output4']
+
+
 def _to_native(string, legend_entry):
     """ convert `string` to an appropriate native type given `legend_entry` """
     if legend_entry['calculation'] == 'AVG':
