@@ -40,7 +40,7 @@ class _FSResource(object):
         self.shark = shark
         #detect if we have a full dictionary of the resource or just its id
         if len(data) < 2 or 'created' not in data:
-            # On the server side (and on the low level flyscript fs api) we
+            # On the server side (and on the low level steelscript fs api) we
             # have two command to get resources details. 'get_all' returns
             # info about the root directory content, 'get_details' returns
             # info about all the other directories and files. The two

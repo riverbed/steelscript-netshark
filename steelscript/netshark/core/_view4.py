@@ -315,14 +315,14 @@ class Output4(_interfaces.Output):
 
         NOTE: get_timeinfo is different from _get_timeinfo
 
-        | fs_start* | fs_end* | shark_start | shark_end | shark_delta       |
+        | ss_start* | ss_end* | shark_start | shark_end | shark_delta       |
         |-----------+---------+-------------+-----------+-------------------|
         | None      | None    | ti.start    | ti.start  | ti.end - ti.start |
         | None      | e       | ti.start    | ti.start  | e - ti.start      |
         | s         | None    | s           | s         | ti.end - s        |
         | s         | e       | s           | s         | e - s             |
 
-        (fs == flyscript)
+        (ss == steelscript)
         """
         if aggregated:
             if delta is not None:

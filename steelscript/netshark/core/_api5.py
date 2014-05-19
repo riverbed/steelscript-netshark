@@ -27,7 +27,7 @@ class API5Group(APIGroup):
             headers.update(custom_headers)
 
         # we are dealing with a url so let's sanitize it.  this may break code
-        # but at least prevents flyscript to send insane urls to the server
+        # but at least prevents steelscript to send insane urls to the server
         # define insane: url that contains spaces
         urlpath = urllib.quote(urlpath)
 

@@ -28,15 +28,15 @@ class Dpi(common.SetUpTearDownMixin, testscenarios.TestWithScenarios):
         self.assertNotEqual(pd.data, None)
 
         try:
-            pd.remove('flyscript', 65345)
+            pd.remove('steelscript', 65345)
         except ValueError:
             #it's all good, we don't have the rule in the server
             pass
 
-        pd.add('flyscript', 65345, 'tcp', True)
+        pd.add('steelscript', 65345, 'tcp', True)
         pd.save()
 
-        pd.remove('flyscript', 65345)
+        pd.remove('steelscript', 65345)
         pd.save()
 
         self.assertEqual(settings, pd.get())
@@ -46,15 +46,15 @@ class Dpi(common.SetUpTearDownMixin, testscenarios.TestWithScenarios):
         settings = gd.get()
 
         try:
-            gd.remove('flyscript')
+            gd.remove('steelscript')
         except ValueError:
             #it's all good, no rule on server
             pass
 
-        gd.add('flyscript', '1,2,3-80', priority=2)
+        gd.add('steelscript', '1,2,3-80', priority=2)
         gd.save()
 
-        gd.remove('flyscript')
+        gd.remove('steelscript')
         gd.save()
 
         self.assertEqual(settings, gd.get())
@@ -64,15 +64,15 @@ class Dpi(common.SetUpTearDownMixin, testscenarios.TestWithScenarios):
         settings = ca.get()
 
         try:
-            ca.remove('flyscript')
+            ca.remove('steelscript')
         except ValueError:
             #it's all good, no rule on server
             pass
 
-        ca.add('flyscript', 'http://test.com')
+        ca.add('steelscript', 'http://test.com')
         ca.save()
 
-        ca.remove('flyscript')
+        ca.remove('steelscript')
         ca.save()
 
         self.assertEqual(settings, ca.get())

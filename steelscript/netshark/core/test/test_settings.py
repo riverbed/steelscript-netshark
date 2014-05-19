@@ -37,7 +37,7 @@ class Settings(EqualityTest,
         basic.data['domain'] = 'local'
         basic.save()
         saved = basic.get()
-        basic.data['domain'] = 'flyscripttestdomain'
+        basic.data['domain'] = 'steelscripttestdomain'
         self._equality_test(saved, basic)
 
     def test_auth(self):
@@ -55,25 +55,25 @@ class Settings(EqualityTest,
         users = self.shark.settings.users
         saved = users.get()
         try:
-            users.delete('flyscripttestuser')
+            users.delete('steelscripttestuser')
         except:
             #all good we came from a failure of this test from
             #the past
             pass
 
-        users.add('flyscripttestuser', 'test', ['Administrators'])
+        users.add('steelscripttestuser', 'test', ['Administrators'])
         users.save()
 
         #check that user is in the system
         flag = False
         for user in users.data:
-            if user['name'] == 'flyscripttestuser':
+            if user['name'] == 'steelscripttestuser':
                 flag = True
                 break
         self.assertEqual(flag, True)
 
-        users.change_password('flyscripttestuser', 'test1234')
-        users.delete('flyscripttestuser')
+        users.change_password('steelscripttestuser', 'test1234')
+        users.delete('steelscripttestuser')
         users.save()
 
     def test_groups(self):
@@ -81,24 +81,24 @@ class Settings(EqualityTest,
         saved = groups.get()
 
         try:
-            groups.delete('flyscriptgroup')
+            groups.delete('steelscriptgroup')
         except:
             #all good we came from a failure of this test from
             #the past
             pass
 
-        groups.add('flyscriptgroup', 'test', ['CAPABILITY_ADMINISTRATOR'])
+        groups.add('steelscriptgroup', 'test', ['CAPABILITY_ADMINISTRATOR'])
         groups.save()
 
         #check that user is in the system
         flag = False
         for group in groups.data:
-            if group['name'] == 'flyscriptgroup':
+            if group['name'] == 'steelscriptgroup':
                 flag = True
                 break
         self.assertEqual(flag, True)
 
-        groups.delete('flyscriptgroup')
+        groups.delete('steelscriptgroup')
         groups.save()
 
     def test_audit(self):
@@ -142,17 +142,17 @@ class Settings(EqualityTest,
         firewall.data['rules'].append({
                 'action': 'ACCEPT',
                 'protocol': 'TCP',
-                'description': 'flyscript test',
+                'description': 'steelscript test',
                 'dest_port': 12345})
         firewall.data['rules'].append({
                 'action': 'DROP',
                 'protocol': 'UDP',
-                'description': 'flyscript test',
+                'description': 'steelscript test',
                 'dest_port': 12345})
         firewall.data['rules'].append({
                 'action': 'LOG_DROP',
                 'protocol': 'TCP',
-                'description': 'flyscript test',
+                'description': 'steelscript test',
                 'dest_port': 12367})
         self._equality_test(saved, firewall)
 
@@ -313,7 +313,7 @@ class Settings5Specific(EqualityTest,
         alerts.test_smtp(
             'notexistentsmtp.riverbed.com',
             'nonexistent@riverbed.com',
-            'flyscript_test@riverbed.com')
+            'steelscript_test@riverbed.com')
 
     def test_profiler_export(self):
         profiler_export = self.shark.settings.profiler_export
@@ -343,12 +343,12 @@ class Settings5Specific(EqualityTest,
     def test_snmp(self):
         snmp = self.shark.settings.snmp
         saved = snmp.get()
-        snmp.data['description'] = "flyscript test"
+        snmp.data['description'] = "steelscript test"
         snmp.data['enabled'] = True
         snmp.data['community'] = "public"
-        snmp.data['contact'] = 'flyscript@test.com'
+        snmp.data['contact'] = 'steelscript@test.com'
         snmp.data['version'] = 'V2C'
-        snmp.data['location'] = 'first floor flyscript'
+        snmp.data['location'] = 'first floor steelscript'
         self._equality_test(saved, snmp)
 
 
