@@ -13,7 +13,7 @@ from steelscript.netshark.appfwk.datasources.netshark import NetSharkTable
 # Define a NetShark Report and Table
 #
 
-report = Report.create('NetShark', position=3)
+report = Report.create('NetShark', position=10)
 
 report.add_section()
 
