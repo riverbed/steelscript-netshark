@@ -12,8 +12,11 @@ from steelscript.common.jsondict import JsonDict
 import json
 import copy
 import time
-from decorator import decorator
-
+try:
+    from decorator import decorator
+except ImportError:
+    def decorator(ob):
+        return ob
 
 @decorator
 def getted(f):
