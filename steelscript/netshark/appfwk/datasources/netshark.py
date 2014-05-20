@@ -70,7 +70,7 @@ def netshark_source_name_choices(form, id, field_kwargs, params):
                 choices.append((clip, clip))
         else:
             raise KeyError('Unknown source type: %s' % source_type)
-        
+
     field_kwargs['label'] = label
     field_kwargs['choices'] = choices
 
@@ -160,10 +160,10 @@ class TableQuery:
             logger.debug('%s: No netshark device selected' % self.table)
             self.job.mark_error("No NetShark Device Selected")
             return False
-            
+
         #self.fake_run()
         #return True
-    
+
         shark = DeviceManager.get_device(criteria.netshark_device)
 
         logger.debug("Creating columns for NetShark table %d" % self.table.id)
@@ -179,7 +179,7 @@ class TableQuery:
                 self.column_names.append('time')
                 continue
             elif tc.iskey:
-                c = Key(tc_options.extractor, 
+                c = Key(tc_options.extractor,
                         description=tc.label,
                         default_value=tc_options.default_value)
             else:
@@ -204,8 +204,10 @@ class TableQuery:
 
         # Identify Sort Column
         sortidx = None
-        if self.table.sortcol is not None:
-            sort_name = self.table.sortcol.options.extractor
+        if self.table.sortcols is not None:
+            sortcol = Column.objects.get(table=self.table,
+                                         name=self.table.sortcols[0])
+            sort_name = sortcol.options.extractor
             for i, c in enumerate(columns):
                 if c.field == sort_name:
                     sortidx = i
@@ -249,7 +251,7 @@ class TableQuery:
                 raise ValueError(msg)
         else:
             sampling_time_msec = 1000
- 
+
         # Setup the view
         if source is not None:
             with lock:

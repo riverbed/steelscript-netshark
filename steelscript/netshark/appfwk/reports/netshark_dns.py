@@ -40,7 +40,7 @@ s.add_column('dns_is_success_str', label='DNS Success', iskey=True,
              operation='none')
 s.add_column('dns_total_queries', label='DNS Total Queries',
              datatype='integer', extractor='dns.query.count',
-             operation='sum', issortcol=True)
+             operation='sum', sortdesc=True)
 
 report.add_widget(yui3.PieWidget, s, name, width=6)
 
@@ -52,7 +52,7 @@ s.add_column('dns_query_type', label='DNS Query Type', iskey=True,
              datatype='string', extractor='dns.query.type', operation='none')
 s.add_column('dns_total_queries', label='DNS Total Queries',
              datatype='integer', extractor='dns.query.count', operation='sum',
-             issortcol=True)
+             sortdesc=True)
 
 report.add_widget(yui3.PieWidget, s, name, width=6)
 
@@ -61,7 +61,7 @@ name = 'DNS Requests'
 s = NetSharkTable.create(name, duration=15, aggregated=True)
 
 s.add_column('dns_query_name', label='DNS Request', iskey=True,
-             datatype='string', extractor='dns.query.name', issortcol=True)
+             datatype='string', extractor='dns.query.name', sortasc=True)
 s.add_column('dns_query_type', label='# Requests',
              datatype='string', extractor='dns.query.count', operation='sum')
 s.add_column('dns_is_success', label='# Successful',

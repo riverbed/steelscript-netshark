@@ -39,7 +39,7 @@ t.add_column('ip_dst', label='Dest IP', iskey=True, extractor='ip.dst',
              datatype='string')
 t.add_column('generic_bytes', label='Bytes', iskey=False,
              extractor='generic.bytes', operation='sum', units='B',
-             issortcol=True)
+             sortdesc=True)
 t.add_column('generic_packets', label='Packets', iskey=False,
              extractor='generic.packets', operation='sum')
 
