@@ -3,8 +3,8 @@ NetShark, Packet Sources and Views
 
 .. currentmodule:: steelscript.netshark.core
 
-NetShark Objects
-----------------
+:py:class:`NetShark` Objects
+----------------------------
 
 .. autoclass:: NetShark
    :members:
@@ -79,6 +79,8 @@ There are three basic data sources:
 * Interfaces
 * Trace Clips
 
+.. _capture-job-objects:
+
 Capture Job Objects
 ~~~~~~~~~~~~~~~~~~~
 
@@ -148,8 +150,6 @@ Interface Objects
    :inherited-members:
    :show-inheritance:
 
-   .. automethod:: __init__
-
 Trace Clip Objects
 ~~~~~~~~~~~~~~~~~~
 
@@ -159,8 +159,6 @@ methods such as :py:meth:`NetShark.get_clips`.
 
 .. autoclass:: Clip4
    :members:
-
-   .. automethod:: __init__
 
    Trace clip objects have the following properties:
 
@@ -174,10 +172,12 @@ methods such as :py:meth:`NetShark.get_clips`.
    These methods provide a way to obtain clip objects, though it
    is usually easier to use methods like `NetShark.get_clips`.
 
-   * :py:meth:`.get`
+   * :py:meth:`Clip4.get`
    * :py:meth:`.get_all`
 
    Complete method and property descriptions:
+
+.. _extractor-fields:
 
 Extractor Fields
 ----------------
@@ -213,6 +213,8 @@ locate the appropriate Output object, then use the method
    :members:
    :inherited-members:
 
+.. _output-objects:
+
 Output Objects
 --------------
 
@@ -220,6 +222,8 @@ Output Objects
    :members:
    :inherited-members:
    :show-inheritance:
+
+.. _netshark-filters:
 
 Filters
 -------

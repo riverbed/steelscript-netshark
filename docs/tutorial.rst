@@ -29,11 +29,11 @@ NetShark Objects
 ----------------
 
 As with any Python code, the first step is to import the module(s) we
-intend to use.  The SteelScript code for working with NetShark appliances
-resides in a module called :py:mod:`steelscript.netshark.core`.  The main
-class in this module is :py:class:`NetShark
-<steelscript.netshark.core.netshark.NetShark>`.  This object represents a
-connection to a NetShark appliance.
+intend to use.  The SteelScript code for working with NetShark
+appliances resides in a module called
+:py:mod:`steelscript.netshark.core`.  The main class in this module is
+:py:class:`NetShark <steelscript.netshark.core.netshark.NetShark>`.
+This object represents a connection to a NetShark appliance.
 
 To start, start python from the shell or command line:
 
@@ -59,15 +59,16 @@ appliance.  The second argument is a named parameter and identifies
 the authentication method to use -- in this case, simple
 username/password is used.
 
-As soon as the NetShark object is created, a connection is established to
-the NetShark appliance, and the authentication credentials are validated.
-If the username and password are not correct, you will immediately see
-an exception.
+As soon as the NetShark object is created, a connection is established
+to the NetShark appliance, and the authentication credentials are
+validated.  If the username and password are not correct, you will
+immediately see an exception.
 
 The ``sk`` object is the basis for all communication with the NetShark
 appliance, whether that is running views, checking configuration, or
 simply retrieving information about the appliance.  Lets take a look
-at some basic information about the netshark that we just connected to:
+at some basic information about the netshark that we just connected
+to:
 
 .. code-block:: python
 
@@ -121,14 +122,15 @@ Before moving on, exit the python interactive shell:
 Views
 -----
 
-Let's create our first script.  We're going write a simple script that creates
-and applies a view on the first capture interface on our NetShark appliance.
+Let's create our first script.  We're going write a simple script that
+creates and applies a view on the first capture interface on our
+NetShark appliance.
 
-This script will use packets in a pcap file.  To start, download a copy of
-:download:`tutorial.pcap` and save it in a new directory.
+This script will use packets in a pcap file.  To start, download a
+copy of :download:`tutorial.pcap` and save it in a new directory.
 
-In the same directory as the pcap file, create a file called ``view.py``
-and insert the following code:
+In the same directory as the pcap file, create a file called
+``view.py`` and insert the following code:
 
 .. code-block:: python
 
@@ -170,8 +172,9 @@ and insert the following code:
    printer = pprint.PrettyPrinter(2)
    printer.pprint(data)
 
-Be sure to fill in appropriate values for ``$host``, ``$username`` and ``$password``.
-Run this script as follows and you should see something like the following:
+Be sure to fill in appropriate values for ``$host``, ``$username`` and
+``$password``.  Run this script as follows and you should see
+something like the following:
 
 .. code-block:: bash
 
@@ -198,16 +201,16 @@ lines are simply importing a few libraries that we'll be using:
    from steelscript.netshark.core import Value, Key
    import pprint
 
-Next, we create a NetShark object that establishes our connection to the target
-appliance:
+Next, we create a NetShark object that establishes our connection to
+the target appliance:
 
 .. code-block:: python
 
    # Open a connection to the appliance and authenticate
    sk = NetShark(host, auth=UserAuth(username, password))
 
-This next section ensures that the pcap file that we want to analyze is up
-on the appliance.
+This next section ensures that the pcap file that we want to analyze
+is up on the appliance.
 
 .. code-block:: python
 
@@ -219,11 +222,12 @@ on the appliance.
        # If it's already there, just grab a handle to it
        tracefile = sk.get_file('/{0}/tutorial.pcap'.format(username))
 
-At this point, the variable ``tracefile`` is a handle to the tracefile 'tutorial.pacap'
-that now present on the filesystem of the NetShark appliance.
+At this point, the variable ``tracefile`` is a handle to the tracefile
+'tutorial.pacap' that now present on the filesystem of the NetShark
+appliance.
 
-Next, we're going to actually create a view.  The first step is to select the set
-of columns that we're interested in collecting:
+Next, we're going to actually create a view.  The first step is to
+select the set of columns that we're interested in collecting:
 
 .. code-block:: python
 
@@ -231,11 +235,12 @@ of columns that we're interested in collecting:
                Value(sk.columns.generic.packets),
                Value(sk.columns.generic.bytes) ]
 
-NetShark supports numerous columns, and any column can be either a key column or a value column.
-Each row of data will be aggregated according to the set of key columns selected.  The
-value columns define the set of additional data to collect per row.  In this
-example, we are asking to collect total packets and bytes for each IP address
-seen in the pcap file.
+NetShark supports numerous columns, and any column can be either a key
+column or a value column.  Each row of data will be aggregated
+according to the set of key columns selected.  The value columns
+define the set of additional data to collect per row.  In this
+example, we are asking to collect total packets and bytes for each IP
+address seen in the pcap file.
 
 Now create the view:
 
@@ -243,12 +248,13 @@ Now create the view:
 
    view = sk.create_view(tracefile, columns, name="tutorial view")
 
-The first argument is the ``packet source``.  When creating a view, the packet source can
-be one of four types of source objects: Interfaces, Trace Files, Capture Jobs
-and Trace Clips.  A packet source can be live (e.g. a NetShark capture port) or
-offline (e.g. a Trace Clip). General information about packet sources can be
-found in the :doc:`glossary`.  See :ref:`packet-source-objects`
-for details on how to work with the various source types as objects.
+The first argument is the ``packet source``.  When creating a view,
+the packet source can be one of four types of source objects:
+Interfaces, Trace Files, Capture Jobs and Trace Clips.  A packet
+source can be live (e.g. a NetShark capture port) or offline (e.g. a
+Trace Clip). General information about packet sources can be found in
+the :doc:`glossary`.  See :ref:`packet-source-objects` for details on
+how to work with the various source types as objects.
 
 We can now use the view object to get data:
 
@@ -260,19 +266,21 @@ We can now use the view object to get data:
 Data Objects
 ------------
 
-The data object returned by the `get_data()` method contains the key and value columns
-requested, but also returns a few addition fields of meta data.
+The data object returned by the ``get_data()`` method contains the key
+and value columns requested, but also returns a few addition fields of
+meta data.
 
-First, edit `view.py` and comment out the line that closes the view - add a '#' in front of `view.close()`:
+First, edit ``view.py`` and comment out the line that closes the
+view - add a '#' in front of ``view.close()``:
 
 .. code-block:: python
 
    # Close the view
    # view.close()
 
-Now rerun the python script, but pass the `-i` argument to python to drop into an interactive
-shell after running the script.  This will allow us to inspect the data that
-was returned:
+Now rerun the python script, but pass the ``-i`` argument to python to
+drop into an interactive shell after running the script.  This will
+allow us to inspect the data that was returned:
 
 .. code-block:: bash
 
@@ -293,8 +301,8 @@ was returned:
        'value_count': 11}]
    $
 
-We are now back at the python prompt, but all the variables assigned in the
-script are available to use for inspection.
+We are now back at the python prompt, but all the variables assigned
+in the script are available to use for inspection.
 
 First of all, note that the data object itself is a list of length 1:
 
@@ -306,19 +314,21 @@ First of all, note that the data object itself is a list of length 1:
    >>> len(data)
    1
 
-Each element in the list is called a `sample`.  We only have a single sample
-in this output - we'll cover more about samples later.
+Each element in the list is called a ``sample``.  We only have a
+single sample in this output - we'll cover more about samples later.
 
 A sample has 3 fields in it:
 
-   - `p` - number of packets processed
-   - `t` - timestamp of the beginning of the sample interval
-   - `vals` - the key and value columns that were requested when the view was created
+* ``p`` - number of packets processed
+* ``t`` - timestamp of the beginning of the sample interval
+* ``vals`` - the key and value columns that were requested when the
+  view was created
 
-For this output, there is only one sample.  In the sample interval, 388
-packets were processed.  The sample interval started as 12:41:33.808202 on Dec 18, 2012.
+For this output, there is only one sample.  In the sample interval,
+388 packets were processed.  The sample interval started as
+12:41:33.808202 on Dec 18, 2012.
 
-The `get_data()` method supports a number of additional options that
+The ``get_data()`` method supports a number of additional options that
 allow us to change how the data is returned. For example, we can ask
 for the data to be sorted by bytes, the third column (index 2 starting
 from 0):
@@ -360,22 +370,25 @@ Or sort by packets (index 1), in ascending order:
      ['184.31.179.172', 263, 195713],
      ['11.1.1.90', 384, 255208]]
 
-Note that the list of columns has the same order as requested when the view was created.
+Note that the list of columns has the same order as requested when the
+view was created.
 
 Aggregated or Not
 -----------------
 
-Notice that with each call to `get_data()`, we are passing the argument `aggregated=True`.
-This argument indicates that we are not interested in time-series data, we want
-only care about the `Key()` columns that were used to create the view.  But what happens
-if you set `aggregated=False`?
+Notice that with each call to ``get_data()``, we are passing the
+argument ``aggregated=True``.  This argument indicates that we are not
+interested in time-series data, we want only care about the ``Key()``
+columns that were used to create the view.  But what happens if you
+set ``aggregated=False``?
 
-Normally all data on the NetShark appliance is collected in time intervals and will
-return that data by time.  This is what happens when `aggregrated=False`.  The
-time interval must be set when you create the view, but by default it is 1 second.
+Normally all data on the NetShark appliance is collected in time
+intervals and will return that data by time.  This is what happens
+when ``aggregrated=False``.  The time interval must be set when you
+create the view, but by default it is 1 second.
 
-Let's see what the output would look like when it's not aggregated.  Change the True to False
-and rerun the script:
+Let's see what the output would look like when it's not aggregated.
+Change the True to False and rerun the script:
 
 .. code-block:: python
 
@@ -420,9 +433,9 @@ The output should look like this:
                  ['11.1.1.90', 10, 1484],
                  ['216.34.181.45', 4, 264]]}]
 
-Where as before `data` was a list of length one, it now has multiple
-samples.  Each sample provides a snapshot of the key and value columns requested for
-one interval starting at the time indicated by `t`.
+Where as before ``data`` was a list of length one, it now has multiple
+samples.  Each sample provides a snapshot of the key and value columns
+requested for one interval starting at the time indicated by ``t``.
 
 Looking in detail at the second sample:
 
@@ -445,12 +458,14 @@ Looking in detail at the second sample:
    >>> data[1]['t'].strftime("%x %X")
    '12/18/12 12:41:34'
 
-From this, we can tell that the sample covers the time from 12:41:34 to 12:41:35.
-(Note, to be precise, it actually covers from 12:41:34.808202 to 12:41:35.808202)
-Within that interval 289 packets were processed and host 11.1.1.90 was involved in each and
-every one of those packets accountoing for 193,299 bytes.
+From this, we can tell that the sample covers the time from 12:41:34
+to 12:41:35.  (Note, to be precise, it actually covers from
+12:41:34.808202 to 12:41:35.808202) Within that interval 289 packets
+were processed and host 11.1.1.90 was involved in each and every one
+of those packets accountoing for 193,299 bytes.
 
-Let's take a look at the time range covered for each sample using a little Python magic.
+Let's take a look at the time range covered for each sample using a
+little Python magic.
 
 .. code-block:: python
 
@@ -470,16 +485,17 @@ Let's take a look at the time range covered for each sample using a little Pytho
    lines above.  After typing in the first line (``for sample``), and
    press enter, Python will prompt you with ``...`` for additional
    commands to be executed for each iteration of the for loop.  You
-   *must* type in the 4 leading spaces before ``print``.  At the end of
-   the second line, when you press enter it will prompt again with
-   ``...``, indicating that you may enter additional commands.  In this
-   case, we are done so just press enter again, and Python will
-   execute the for loop.  See `Dive Into Python - 2.5: Indenting
-   Code <http://www.diveintopython.net/getting_to_know_python/indenting_code.html>`_
+   *must* type in the 4 leading spaces before ``print``.  At the end
+   of the second line, when you press enter it will prompt again with
+   ``...``, indicating that you may enter additional commands.  In
+   this case, we are done so just press enter again, and Python will
+   execute the for loop.  See `Dive Into Python - 2.5: Indenting Code
+   <http://www.diveintopython.net/getting_to_know_python/indenting_code.html>`_
    for more information.
 
-Notice that 12:41:38 is missing?  This is not a bug -- it just means that there were no
-packets in the trace file during that sample interval, so there is no data to show.
+Notice that 12:41:38 is missing?  This is not a bug -- it just means
+that there were no packets in the trace file during that sample
+interval, so there is no data to show.
 
 Before continuing on, exit from the Python shell:
 
@@ -505,8 +521,9 @@ Open up view.py and add a new import to the top of the file:
    from steelscript.netshark.core.filters import *            # <--- Add this line
    import pprint
 
-Next, uncomment the line the closes the view, delete the lines that print the data
-and replace the last section that prints the output to the screen with the following code:
+Next, uncomment the line the closes the view, delete the lines that
+print the data and replace the last section that prints the output to
+the screen with the following code:
 
 .. code-block:: python
 
@@ -540,7 +557,7 @@ and replace the last section that prints the output to the screen with the follo
        for pp_row in data[0].vals:
            print "{0}\t{1} bytes/pkt".format(pp_row[0],pp_row[2] / pp_row[1])
 
-Save your changes and rerun the script (without the `-i` this time):
+Save your changes and rerun the script (without the ``-i`` this time):
 
 .. code-block:: bash
 
@@ -559,28 +576,29 @@ Save your changes and rerun the script (without the `-i` this time):
    Host 11.1.1.100
    ICMP	50 bytes/pkt
 
-This script now runs a total of 4 views, the first view collects bytes and packets per IP address.
-The subsequent views collect bytes and packets per protocol for an individual IP address
-using a `NetSharkFilter`:
+This script now runs a total of 4 views, the first view collects bytes
+and packets per IP address.  The subsequent views collect bytes and
+packets per protocol for an individual IP address using a
+:py:class:`NetSharkFilter`:
 
 .. code-block:: python
 
    filters = [NetSharkFilter('ip.address="{0}"'.format(row[0]))]
 
-A NetSharkFilter allows you to form complex expressions using operators and various fields
-within a packet.
+A NetSharkFilter allows you to form complex expressions using
+operators and various fields within a packet.
 
 Existing Views
 --------------
 
-In the above examples, we have always created a new view from scratch, then
-closed that view when we were done.  Often, a view may be created and
-running for a longer period of time.  For example, a live view is
-continually being updated as new traffic is received.  Views may also be
-created using the `Pilot` application.
+In the above examples, we have always created a new view from scratch,
+then closed that view when we were done.  Often, a view may be created
+and running for a longer period of time.  For example, a live view is
+continually being updated as new traffic is received.  Views may also
+be created using the :term:`Packet Analyzer` application.
 
-If there are already open views on the NetShark appliance,
-we can access them with the `get_open_views()` method.  Start up a new
+If there are already open views on the NetShark appliance, we can
+access them with the ``get_open_views()`` method.  Start up a new
 Python shell and lets give this a try:
 
 .. code-block:: python
@@ -602,12 +620,14 @@ Python shell and lets give this a try:
     <View source="fs/admin/noon.cap" title="TCP Flags by Protocol Over Time"
     <View source="fs/admin/tutorial.pcap">]
 
-> Your appliance will likely show a different set of open views.  You should
-at least see the tutorail-1.pcap view in the list.
+.. note::
+
+   Your appliance will likely show a different set of open views.  You
+   should at least see the tutorail-1.pcap view in the list.
 
 This method returns a list of objects, one representing each open
 view.  We can get information about the time interval covered by the
-view with the `get_timeinfo()` method:
+view with the ``get_timeinfo()`` method:
 
 .. code-block:: python
 
@@ -618,29 +638,28 @@ view with the `get_timeinfo()` method:
 
 This method returns a struct with 3 fields:
 
-   * `start` and `end` indicate the timestamp of the first and last samples
-   covered by the view
-   * `delta` specifies the interval of time covered by a single sample
-   in nanoseconds (defaults to 1 second)
+* ``start`` and ``end`` indicate the timestamp of the first and last samples
+  covered by the view
+* ``delta`` specifies the interval of time covered by a single sample
+  in nanoseconds (defaults to 1 second)
 
-For a view applied to a `trace clip` or a static file,
-the `start` and `end` times will be fixed for a particular view.
-For a view applied to a `capture port` or the virtual device
-associated with a `capture job`, the `end` time will be
-regularly updated as new packets arrive and are processed.
+For a view applied to a ``trace clip`` or a static file, the ``start``
+and ``end`` times will be fixed for a particular view.  For a view
+applied to a ``capture port`` or the virtual device associated with a
+``capture job``, the ``end`` time will be regularly updated as new
+packets arrive and are processed.
 
-The views created above by the view.py script had only a single `output`
-associated with it.  In general,
-a view may have multiple outputs associated with it.
-Each output has the same basic structure - it contains a list of samples as
-described above.
+The views created above by the view.py script had only a single
+``output`` associated with it.  In general, a view may have multiple
+outputs associated with it.  Each output has the same basic
+structure - it contains a list of samples as described above.
 
-In this example, we are looking at the "TCP Flags by Protocol Over Time"
-view which has separate outputs for the different flags that can appear
-in TCP headers.
-In `Pilot`, these outputs show up as separate graphs.
-In SteelScript, there is a separate `output object <outputobjects>`
-for each output, we can get at them with the `all_outputs()` method:
+In this example, we are looking at the "TCP Flags by Protocol Over
+Time" view which has separate outputs for the different flags that can
+appear in TCP headers.  In :term:`Packet Analyzer`, these outputs show
+up as separate graphs.  In SteelScript, there is a separate
+:ref:`output object <output-objects>` for each output, we can get at
+them with the ``all_outputs()`` method:
 
 .. code-block:: python
 
@@ -652,14 +671,15 @@ for each output, we can get at them with the `all_outputs()` method:
     <view output OUID_Rst>,
     <view output OUID_Syn>]
 
-> The number of outputs returned is based upon the view selected.  The view
-created above as part of the tutorial only has a single output at index 0.
-Note that if the view you have selected does not have 6 outputs, adjust the
-array index below.
+.. note::
 
-Let's use the helper routine `print_data()` in the module
-:py:mod:`steelscript.netshark.core.viewutils` to print the data in the view to
-the console:
+   The number of outputs returned is based upon the view selected.
+   The view created above as part of the tutorial only has a single
+   output at index 0.  Note that if the view you have selected does
+   not have 6 outputs, adjust the array index below.
+
+Let's use the helper routine :py:meth:`viewutils.print_data()` to
+print the data in the view to the console:
 
 .. code-block:: python
 
@@ -683,8 +703,9 @@ the console:
    2012/05/10 12:33:51.502796  http                1
    ...
 
-Note that the method `View.get_data()` simply calls the get_data() function for
-the first output of a view.  As such, the following are equivalent:
+Note that the method :py:meth:`View.get_data()` simply calls the
+get_data() function for the first output of a view.  As such, the
+following are equivalent:
 
 .. code-block:: python
 
