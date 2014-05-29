@@ -18,7 +18,8 @@ from steelscript.common.exceptions import RvbdHTTPException
 from steelscript.common import timeutils
 from steelscript.common.timeutils import (parse_timedelta,
                                           timedelta_total_seconds)
-from steelscript.appfwk.apps.datasource.models import DatasourceTable
+from steelscript.appfwk.apps.datasource.models import (DatasourceTable,
+                                                       TableQueryBase)
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
 from steelscript.appfwk.apps.datasource.models import Column, TableField
@@ -88,7 +89,8 @@ class NetSharkTable(DatasourceTable):
     class Meta:
         proxy = True
 
-    _column_class = NetSharkColumn
+    _column_class = 'NetSharkColumn'
+    _query_class = 'NetSharkQuery'
 
     TABLE_OPTIONS = {'aggregated': False}
 
@@ -133,19 +135,7 @@ class NetSharkTable(DatasourceTable):
         self.fields_add_filterexpr()
 
 
-class TableQuery:
-    # Used by Table to actually run a query
-    def __init__(self, table, job):
-        self.table = table
-        self.job = job
-        self.timeseries = False         # if key column called 'time' is created
-        self.column_names = []
-
-        # Resolution comes in as a time_delta
-        resolution = timedelta_total_seconds(job.criteria.resolution)
-
-        default_delta = 1000000000                      # one second
-        self.delta = int(default_delta * resolution)    # sample size interval
+class NetSharkQuery(TableQueryBase):
 
     def fake_run(self):
         import fake_data
@@ -155,6 +145,16 @@ class TableQuery:
         """ Main execution method
         """
         criteria = self.job.criteria
+
+        self.timeseries = False         # if key column called 'time' is created
+        self.column_names = []
+
+        # Resolution comes in as a time_delta
+        resolution = timedelta_total_seconds(criteria.resolution)
+
+        default_delta = 1000000000                      # one second
+        self.delta = int(default_delta * resolution)    # sample size interval
+
 
         if criteria.netshark_device == '':
             logger.debug('%s: No netshark device selected' % self.table)
