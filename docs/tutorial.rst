@@ -134,10 +134,11 @@ In the same directory as the pcap file, create a file called
 
 .. code-block:: python
 
+   import pprint
+
    from steelscript.netshark.core import NetShark
    from steelscript.common import UserAuth
    from steelscript.netshark.core import Value, Key
-   import pprint
 
    # Fill these in with appropriate values
    host = '$host'
@@ -198,8 +199,11 @@ lines are simply importing a few libraries that we'll be using:
 
 .. code-block:: python
 
-   from steelscript.netshark.core import Value, Key
    import pprint
+
+   from steelscript.netshark.core import NetShark
+   from steelscript.common import UserAuth
+   from steelscript.netshark.core import Value, Key
 
 Next, we create a NetShark object that establishes our connection to
 the target appliance:
@@ -535,7 +539,7 @@ the screen with the following code:
    # printer.pprint(data)
 
    # Compute avg bytes/packet, and resort      # <--- add the rest of this to the script
-   rows = data[0].vals
+   rows = data[0]['vals']
    filtered_rows = [row for row in rows if (row[2] / row[1]) < 100]
 
    print "{0} Hosts are sending small packets (avg size < 100 bytes)".format(len(filtered_rows))
@@ -554,7 +558,7 @@ the screen with the following code:
        view.close()
 
        print "\nHost {0}".format(row[0])
-       for pp_row in data[0].vals:
+       for pp_row in data[0]['vals']:
            print "{0}\t{1} bytes/pkt".format(pp_row[0],pp_row[2] / pp_row[1])
 
 Save your changes and rerun the script (without the ``-i`` this time):

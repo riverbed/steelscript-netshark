@@ -144,29 +144,29 @@ def print_data(legend, stream, timeformat='%Y/%m/%d %H:%M:%S.%f',
     labels = []
     if include_sample_times:
         labels.append('Time')
-    labels += [f.name for f in legend]
+    labels += [f['name'] for f in legend]
 
     def get_width(field):
-        if field.type in ('INT16', 'UINT16', 'TCP_PORT', 'UDP_PORT'):
+        if field['type'] in ('INT16', 'UINT16', 'TCP_PORT', 'UDP_PORT'):
             return 5
-        if field.type in ('INT32', 'UINT32'):
+        if field['type'] in ('INT32', 'UINT32'):
             return 10
-        if field.type in ('INT64', 'UINT64', 'RELATIVE_TIME'):
+        if field['type'] in ('INT64', 'UINT64', 'RELATIVE_TIME'):
             return 20
-        if field.type in ('FLOAT', 'DOUBLE'):
+        if field['type'] in ('FLOAT', 'DOUBLE'):
             return 20
-        if field.type == 'BOOLEAN':
+        if field['type'] == 'BOOLEAN':
             return 5
-        if field.type == 'IPv4':
+        if field['type'] == 'IPv4':
             return 15
-        if field.type in ('STRING', 'SHORT_STRING'):
+        if field['type'] in ('STRING', 'SHORT_STRING'):
             # TODO should this be smaller?
             return 64
-        if field.type == 'ABSOLUTE_TIME':
+        if field['type'] == 'ABSOLUTE_TIME':
             return max_width(timeformat)
 
         #XXX
-        logging.warn('uh oh do not know width of %s' % field.type)
+        logging.warn('uh oh do not know width of %s' % field['type'])
         return 10
 
     if widths is None:
@@ -184,8 +184,8 @@ def print_data(legend, stream, timeformat='%Y/%m/%d %H:%M:%S.%f',
         if 'gap_start' in s or 'gap_end' in s:
             continue
 
-        base = [s.t.strftime(timeformat).ljust(widths[0])]
-        for vec in s.vals:
+        base = [s['t'].strftime(timeformat).ljust(widths[0])]
+        for vec in s['vals']:
             fields = base + [str(v).ljust(widths[i + 1]) for i, v in enumerate(vec)]
 
             print line_prefix + '  '.join(fields)
@@ -220,14 +220,14 @@ def write_csv(filename, legend, stream, include_column_names=True, include_sampl
         if include_sample_times:
             labels.append('Time')
 
-            labels += [ f.name for f in legend ]
+            labels += [ f['name'] for f in legend ]
         writer.writerow(labels)
 
     for s in stream:
-        for v in s["vals"]:
+        for v in s['vals']:
             sample = []
             if include_sample_times:
-                sample.append(s["t"])
+                sample.append(s['t'])
 
             sample += [str(f) for f in v]
 
