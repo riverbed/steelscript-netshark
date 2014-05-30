@@ -5,8 +5,9 @@ This package provides device specific bindings for interacting
 with Riverbed SteelCentral NetShark devices as part of the Riverbed
 SteelScript for Python.
 
-See [https://github.com/riverbed/steelscript](https://github.com/riverbed/steelscript) for
-installation instructions.
+For a complete guide to installation, see:
+
+  `https://support.riverbed.com/apis/steelscript/index.html <https://support.riverbed.com/apis/steelscript/index.html>`_
 
 License
 =======
