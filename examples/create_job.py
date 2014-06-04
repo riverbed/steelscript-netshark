@@ -20,6 +20,7 @@ from steelscript.common.utils import bytes2human
 
 class CreateJob(NetSharkApp):
     def add_options(self, parser):
+        super(CreateJob, self).add_options(parser)
         parser.add_option('-j', '--jobname', default=None, help='job name')
         parser.add_option('--capture-port', help='capture port')
         parser.add_option('-s', '--size', help='size', default=None)
@@ -52,8 +53,8 @@ class CreateJob(NetSharkApp):
         if size is None:
             stats = self.netshark.get_stats()
             storage = stats['storage']['packet_storage']
-            print 'Storage size is {0}, {1} available'.format(bytes2human(storage.total),
-                                                              bytes2human(storage.unused))
+            print 'Storage size is {0}, {1} available'.format(bytes2human(storage['total']),
+                                                              bytes2human(storage['unused']))
             size = raw_input('Job size, greater than 256MB (e.g. 1.1GB, 512M, 20%)? ')
 
         job = self.netshark.create_job(ifc, name, size)

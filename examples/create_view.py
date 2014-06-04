@@ -24,8 +24,9 @@ CSV_FILE_NAME = "result.csv"
 
 
 class CreateView(NetSharkApp):
-    def add_options(self, optparse):
-        optparse.add_option('--file', help='filename to open')
+    def add_options(self, parser):
+        super(CreateView, self).add_options(parser)
+        parser.add_option('--file', help='filename to open')
 
     def validate_args(self):
         """ Ensure columns are included
@@ -33,7 +34,7 @@ class CreateView(NetSharkApp):
         super(CreateView, self).validate_args()
 
         if not self.options.file:
-            self.optparse.error('Filename of file on NetShark machine required ("--file").')
+            self.parser.error('Filename of file on NetShark machine required ("--file").')
 
     def main(self):
         # Open the remote file

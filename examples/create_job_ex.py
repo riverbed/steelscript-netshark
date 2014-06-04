@@ -30,10 +30,10 @@ class JobCreator(NetSharkApp):
         #   http://wiki.wireshark.org/CaptureFilters
         name = "Test Job 1"
         job = self.netshark.create_job(interface,
-                                    name,
-                                    "257MB",
-                                    bpf_filter="port 80",
-                                    snap_length=100)
+                                       name,
+                                       "257MB",
+                                       bpf_filter="port 80",
+                                       snap_length=100)
         print 'Job named %s created successfully ...' % name,
         job.delete()
         print 'and deleted.'
@@ -43,8 +43,8 @@ class JobCreator(NetSharkApp):
         # important and drill-down efficiency can be sacrificed.
         name = "Test Job 2"
         job = self.netshark.create_job(interface,
-                                    name,
-                                    "257MB")
+                                       name,
+                                       "257MB")
         print 'Job named %s created successfully ...' % name,
         job.delete()
         print 'and deleted.'
@@ -55,12 +55,14 @@ class JobCreator(NetSharkApp):
         # In this case, packets storage is 500MB or 1 day (whichever is smaller),
         # while index storage is 20MB or one week.
         name = "Test Job 3"
-        job = self.netshark.create_job(interface,
-                                    name,
-                                    "257MB",
-                                    packet_retention_time_limit=datetime.timedelta(days=1),
-                                    indexing_size_limit="25MB",
-                                    indexing_time_limit=datetime.timedelta(days=7))
+        job = self.netshark.create_job(
+            interface,
+            name,
+            "257MB",
+            packet_retention_time_limit=datetime.timedelta(days=1),
+            indexing_size_limit="25MB",
+            indexing_time_limit=datetime.timedelta(days=7)
+        )
         print 'Job named %s created successfully ...' % name,
         job.delete()
         print 'and deleted.'

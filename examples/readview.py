@@ -21,11 +21,9 @@ from steelscript.netshark.core.viewutils import write_csv, print_data, OutputMix
 
 
 class ReadView(NetSharkApp):
-    def __init__(self, *args, **kwargs):
-        super(ReadView, self).__init__(*args, **kwargs)
-        self.optparse.set_usage('%prog SHARK <options> -l or %prog SHARK <options> VIEWID')
 
     def add_options(self, parser):
+        super(ReadView, self).add_options(parser)
         parser.add_option('-l', action="store_true", dest="listviews", default=False,
                           help='print a list of running views')
         parser.add_option('-f', dest='fname', default=None,
@@ -34,15 +32,16 @@ class ReadView(NetSharkApp):
                           help='retrieve only the specified output field')
 
     def validate_args(self):
+        super(ReadView, self).validate_args()
         if self.options.listviews:
             nargs = 1
         else:
             nargs = 2
 
         if len(self.args) < nargs:
-            self.optparse.error('too few arguments')
+            self.parser.error('too few arguments')
         elif len(self.args) > nargs:
-            self.optparse.error('too many arguments')
+            self.parser.error('too many arguments')
 
     def _do_one_output(self, output):
         legend = output.get_legend()

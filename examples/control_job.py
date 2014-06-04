@@ -21,6 +21,7 @@ from steelscript.netshark.core.app import NetSharkApp
 
 class ControlJob(NetSharkApp):
     def add_options(self, parser):
+        super(ControlJob, self).add_options(parser)
         parser.add_option('-l', action="store_true", dest="list", default=False,
                           help='print a list of available capture jobs')
         parser.add_option('-d', dest="delete", help='delete a job')
@@ -65,7 +66,7 @@ class ControlJob(NetSharkApp):
             done += 1
 
         if done == 0:
-            self.optparse.error('nothing to do!')
+            self.parser.error('nothing to do!')
 
 
 if __name__ == '__main__':

@@ -13,14 +13,19 @@ class NetSharkApp(Application):
     """Simple class to wrap common command line parsing"""
     def __init__(self, *args, **kwargs):
         super(NetSharkApp, self).__init__(*args, **kwargs)
-        self.optparse.set_usage('%prog NETSHARK_HOSTNAME <options>')
         self.netshark = None
+
+    def parse_args(self):
+        super(NetSharkApp, self).parse_args()
+
+    def add_positional_args(self):
+        self.add_positional_arg('host', 'NetShark hostname or IP address')
+
+    def add_options(self, parser):
+        super(NetSharkApp, self).add_options(parser)
+        self.add_standard_options()
 
     def setup(self):
         self.netshark = NetShark(self.args[0], port=self.options.port,
                                  auth=self.auth,
                                  force_version=self.options.api_version)
-
-    def validate_args(self):
-        if len(self.args) < 1:
-            self.optparse.error('missing NETSHARK_HOSTNAME')

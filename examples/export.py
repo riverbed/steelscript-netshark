@@ -23,6 +23,7 @@ from steelscript.netshark.core.filters import NetSharkFilter
 
 class ExportApp(NetSharkApp):
     def add_options(self, parser):
+        super(ExportApp, self).add_options(parser)
         parser.add_option('--filename', dest="filename", default=None,
                             help='export a Trace File')
         parser.add_option('--jobname', dest="jobname", default=None,

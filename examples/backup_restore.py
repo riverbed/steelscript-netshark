@@ -24,6 +24,7 @@ class BackupApp(NetSharkApp):
     config_types = ['basic', 'auth', 'jobs', 'profiler_export', 'audit', 'protocols', 'users']
 
     def add_options(self, parser):
+        super(BackupApp, self).add_options(parser)
         parser.add_option('-f', '--filename',
                           help='Filename to use for backup/restore')
         parser.add_option('-b', '--backup', action='store_true',
