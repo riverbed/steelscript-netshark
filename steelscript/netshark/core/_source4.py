@@ -288,7 +288,7 @@ class Job4(_interfaces.Job):
              indexing_size_limit=None,
              indexing_synced=False,
              indexing_time_limit=None,
-             start_immediately=False,
+             start_immediately=True,
              requested_start_time=None,
              requested_stop_time=None,
              stop_rule_size_limit=None,
@@ -307,7 +307,7 @@ class Job4(_interfaces.Job):
         packet_storage_total = stats['storage']['packet_storage']['total']
         index_storage_total = stats['storage']['os_storage']['index_storage']['total']
 
-        packet_retention_size_limit = _calc_size(packet_retention_size_limit, packet_storage_total) if packet_retention_size_limit else None
+        packet_retention_size_limit = _calc_size(packet_retention_size_limit, packet_storage_total)
         stop_rule_size_limit = _calc_size(stop_rule_size_limit, packet_storage_total) if stop_rule_size_limit else None
         indexing_size_limit = _calc_size(indexing_size_limit, index_storage_total) if indexing_size_limit else None
 
@@ -330,9 +330,8 @@ class Job4(_interfaces.Job):
             requested_stop_time = requested_stop_time.strftime(cls._timefmt)
 
         jobrequest = { 'interface_name': interface.id }
+        jobrequest['name'] = name
 
-        if name:
-            jobrequest['name'] = name
         if packet_retention_size_limit or packet_retention_packet_limit or packet_retention_time_limit:
             jobrequest['packet_retention'] = dict()
             if packet_retention_size_limit:
@@ -357,21 +356,25 @@ class Job4(_interfaces.Job):
                 jobrequest['stop_rule']['time_limit'] = stop_rule_time_limit
         if snap_length:
             jobrequest['snap_length'] = int(snap_length)
-        if indexing_synced or indexing_size_limit or indexing_time_limit:
+        if indexing_synced or indexing_time_limit:
             jobrequest['indexing'] = dict()
             if indexing_synced:
                 jobrequest['indexing']['synced'] = indexing_synced
-            if indexing_size_limit:
-                jobrequest['indexing']['size_limit'] = indexing_size_limit
             if indexing_time_limit:
                 jobrequest['indexing']['time_limit'] = indexing_time_limit
-        if start_immediately:
-            jobrequest['start_immediately'] = start_immediately
+            jobrequest['indexing']['size_limit'] = indexing_size_limit
+            if not indexing_size_limit:
+                raise NetSharkException(
+                    'indexing_size_limit must be specified '
+                    'with indexing_synced or indexing_time_limit')
+
+        jobrequest['start_immediately'] = start_immediately
 
         job_id = shark.api.jobs.add(jobrequest)
 
         job = cls(shark, job_id)
         return job
+
 
     def start(self):
         """Start a job in the NetShark appliance

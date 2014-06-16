@@ -26,6 +26,6 @@ class NetSharkApp(Application):
         self.add_standard_options()
 
     def setup(self):
-        self.netshark = NetShark(self.args[0], port=self.options.port,
+        self.netshark = NetShark(self.options.host, port=self.options.port,
                                  auth=self.auth,
                                  force_version=self.options.api_version)

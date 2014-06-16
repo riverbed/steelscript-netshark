@@ -286,7 +286,7 @@ class NetShark(Service):
              indexing_size_limit=None,
              indexing_synced=False,
              indexing_time_limit=None,
-             start_immediately=False,
+             start_immediately=True,
              requested_start_time=None,
              requested_stop_time=None,
              stop_rule_size_limit=None,
