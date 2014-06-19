@@ -51,12 +51,12 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 trace_files_dir = os.path.join(HERE, "traces")
 
 
-def create_shark(host):
+def create_shark(host, version):
 
     username = 'admin'
     password = 'admin'
     auth = UserAuth(username, password)
-    sk = NetShark(host, auth=auth)
+    sk = NetShark(host, auth=auth, force_version=version)
 
     return sk
 
@@ -155,8 +155,7 @@ class SetUpTearDownMixin(object):
     """Used to store the setUp and tearDown function used by
     the test classes"""
     def setUp(self):
-        host = self.host
-        self.shark = create_shark(host)
+        self.shark = create_shark(self.host, self.version)
 
     def tearDown(self):
         cleanup_shark(self.shark)

@@ -7,8 +7,13 @@
 
 import common
 import testscenarios
+import sys
 from steelscript.common.exceptions import RvbdHTTPException
 
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 class EqualityTest(object):
     def _equality_test(self, saved, settings):
@@ -115,7 +120,8 @@ class Settings(EqualityTest,
         saved = audit.get()
         audit.data['audit_categories'][0]['name'] = 'AUTHENTICATION'
         self._equality_test(saved, audit)
-
+    
+    @unittest.skip("Licences test skipped")
     def test_licenses(self):
         licenses = self.shark.settings.licenses
         saved = licenses.get()

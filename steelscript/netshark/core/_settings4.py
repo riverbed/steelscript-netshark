@@ -80,7 +80,7 @@ class BasicSettingsFunctionality(object):
     def download(self, filename):
         """Download settings and save to a file."""
         data = self.get()
-        with open(path, 'w') as f:
+        with open(filename, 'w') as f:
             f.write(json.dumps(data))
 
     def load(self, path_or_obj, save=True):
