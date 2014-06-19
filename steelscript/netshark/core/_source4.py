@@ -5,8 +5,6 @@
 # as set forth in the License.
 
 
-
-
 from __future__ import absolute_import
 
 from steelscript.netshark.core import _interfaces
@@ -169,6 +167,7 @@ class Clip4(_interfaces.Clip):
         """
         return open(self._api.get_packets(self.id, path), 'rb')
 
+
 class Job4(_interfaces.Job):
     """A capture job packet source. These objects are normally not
     instantiated directly, but are instead obtained by calling
@@ -261,7 +260,6 @@ class Job4(_interfaces.Job):
         """
         return self.data['id']
 
-
     @classmethod
     def get_all(cls, shark):
         """Get the complete list of capture jobs on given a NetShark.
@@ -329,7 +327,7 @@ class Job4(_interfaces.Job):
         if requested_stop_time:
             requested_stop_time = requested_stop_time.strftime(cls._timefmt)
 
-        jobrequest = { 'interface_name': interface.id }
+        jobrequest = {'interface_name': interface.id}
         jobrequest['name'] = name
 
         if packet_retention_size_limit or packet_retention_packet_limit or packet_retention_time_limit:
@@ -356,17 +354,18 @@ class Job4(_interfaces.Job):
                 jobrequest['stop_rule']['time_limit'] = stop_rule_time_limit
         if snap_length:
             jobrequest['snap_length'] = int(snap_length)
-        if indexing_synced or indexing_time_limit:
+        if indexing_synced or indexing_size_limit or indexing_time_limit:
+            if not indexing_size_limit and not indexing_time_limit:
+                raise NetSharkException(
+                    'indexing_size_limit must be specified '
+                    'with indexing_synced or indexing_time_limit')
             jobrequest['indexing'] = dict()
             if indexing_synced:
                 jobrequest['indexing']['synced'] = indexing_synced
             if indexing_time_limit:
                 jobrequest['indexing']['time_limit'] = indexing_time_limit
-            jobrequest['indexing']['size_limit'] = indexing_size_limit
-            if not indexing_size_limit:
-                raise NetSharkException(
-                    'indexing_size_limit must be specified '
-                    'with indexing_synced or indexing_time_limit')
+            if indexing_size_limit:
+                jobrequest['indexing']['size_limit'] = indexing_size_limit
 
         jobrequest['start_immediately'] = start_immediately
 
@@ -374,7 +373,6 @@ class Job4(_interfaces.Job):
 
         job = cls(shark, job_id)
         return job
-
 
     def start(self):
         """Start a job in the NetShark appliance
@@ -401,7 +399,6 @@ class Job4(_interfaces.Job):
         except:
             pass
         self._api.delete(self.id)
-
 
     def add_clip(self, filters, description, locked=True):
         """
