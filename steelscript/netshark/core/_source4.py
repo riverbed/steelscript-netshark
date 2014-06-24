@@ -13,7 +13,7 @@ from steelscript.netshark.core._exceptions import NetSharkException
 from steelscript.common import utils, timeutils
 
 
-__all__ = ['Interface4', 'Clip4', 'Job4' ]
+__all__ = ['Interface4', 'Clip4', 'Job4']
 
 
 class Interface4(_interfaces._InputSource):
@@ -60,7 +60,7 @@ class Interface4(_interfaces._InputSource):
     @classmethod
     def get_all(cls, shark):
         interfaces = shark.api.interfaces.get_all()
-        return [ cls(shark, data) for data in interfaces ]
+        return [cls(shark, data) for data in interfaces]
 
     def update(self):
         """Update current object with the values from the server
@@ -77,7 +77,7 @@ class Clip4(_interfaces.Clip):
         self.id = self.data['id']
 
     def __str__(self):
-        return 'clips/'+self.id
+        return 'clips/' + self.id
 
     def _ensure_loaded(self):
         if self.data is None or len(self.data) == 1:
@@ -206,7 +206,7 @@ class Job4(_interfaces.Job):
     @loaded
     def source_options(self):
         if not self.index_enabled:
-            return {'disable_index' : True}
+            return {'disable_index': True}
         else:
             return {}
 
@@ -278,25 +278,25 @@ class Job4(_interfaces.Job):
 
     @classmethod
     def create(cls, shark, interface, name,
-             packet_retention_size_limit,
-             packet_retention_packet_limit=None,
-             packet_retention_time_limit=None,
-             bpf_filter=None,
-             snap_length=65525,
-             indexing_size_limit=None,
-             indexing_synced=False,
-             indexing_time_limit=None,
-             start_immediately=True,
-             requested_start_time=None,
-             requested_stop_time=None,
-             stop_rule_size_limit=None,
-             stop_rule_packet_limit=None,
-             stop_rule_time_limit=None):
+               packet_retention_size_limit,
+               packet_retention_packet_limit=None,
+               packet_retention_time_limit=None,
+               bpf_filter=None,
+               snap_length=65525,
+               indexing_size_limit=None,
+               indexing_synced=False,
+               indexing_time_limit=None,
+               start_immediately=True,
+               requested_start_time=None,
+               requested_stop_time=None,
+               stop_rule_size_limit=None,
+               stop_rule_packet_limit=None,
+               stop_rule_time_limit=None):
         """Create a new capture job"""
 
         def _calc_size(size, total):
             if isinstance(size, str) and size[-1] == '%':
-                size = total * int(size[:-1]) /100
+                size = total * int(size[:-1]) / 100
             elif not isinstance(size, (int, long)) and size is not None:
                 size = utils.human2bytes(size)
             return size
@@ -354,18 +354,29 @@ class Job4(_interfaces.Job):
                 jobrequest['stop_rule']['time_limit'] = stop_rule_time_limit
         if snap_length:
             jobrequest['snap_length'] = int(snap_length)
-        if indexing_synced or indexing_size_limit or indexing_time_limit:
-            if not indexing_size_limit and not indexing_time_limit:
-                raise NetSharkException(
-                    'indexing_size_limit must be specified '
-                    'with indexing_synced or indexing_time_limit')
+
+        # Indexing logic table
+        # case   size   synced    time    valid?
+        # 1      None   False     None    valid - index is disabled
+        # 2      None   False     int     error
+        # 3      None   True      None    error
+        # 4      None   True      int     error
+        # 5      int    False     None    valid
+        # 6      int    False     int     valid
+        # 7      int    True      None    valid
+        # 8      int    True      int     valid
+
+        if (indexing_synced or indexing_time_limit) and not indexing_size_limit:
+            raise NetSharkException(
+                'indexing_size_limit must be specified '
+                'with indexing_synced or indexing_time_limit')
+        elif indexing_size_limit:
             jobrequest['indexing'] = dict()
+            jobrequest['indexing']['size_limit'] = indexing_size_limit
             if indexing_synced:
                 jobrequest['indexing']['synced'] = indexing_synced
             if indexing_time_limit:
                 jobrequest['indexing']['time_limit'] = indexing_time_limit
-            if indexing_size_limit:
-                jobrequest['indexing']['size_limit'] = indexing_size_limit
 
         jobrequest['start_immediately'] = start_immediately
 
@@ -387,7 +398,8 @@ class Job4(_interfaces.Job):
     def clear(self, restart=False):
         """Clear data in the NetShark appliance
         """
-        self._api.state_update(self.id, {'state':'STOPPED', 'clear_packets':True})
+        self._api.state_update(self.id, {'state': 'STOPPED',
+                                         'clear_packets': True})
         if restart:
             self.start()
 
