@@ -1,6 +1,6 @@
 .. py:currentmodule:: steelscript.netshark.core
 
-NetShark Tutorial
+SteelScript NetShark Tutorial
 =================
 
 This tutorial will show you how to interface with a :term:`NetShark`

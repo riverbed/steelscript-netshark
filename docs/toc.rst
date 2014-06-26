@@ -3,7 +3,7 @@ SteelScript NetShark
 
 .. toctree::
 
-   overview
+   SteelScript NetShark Overview <overview>
    background
    tutorial
    netshark
