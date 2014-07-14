@@ -120,28 +120,29 @@ class Settings(API4Group):
 
     def get_raw(self):
         """ Returns the raw settings contained in the configuration file in plain text"""
-        resp = self.shark.conn.request(self.uri_prefix + "/settings/raw", "GET")
-        data = resp.read()
+        resp = self.shark.conn.request("GET", self.uri_prefix + "/settings/raw")
+        data = resp.content
         return data
 
     def update_raw(self, settings):
-        self.shark.conn.request(self.uri_prefix + "/settings/raw", "PUT",
+        self.shark.conn.request("PUT", self.uri_prefix + "/settings/raw",
                                 body=settings, extra_headers={'Content-Type' : 'text/plain'})
 
     def reset_raw(self):
-        self.shark.conn.request(self.uri_prefix + "/settings/raw", "PUT",
+        self.shark.conn.request("PUT", self.uri_prefix + "/settings/raw",
                                 body='', extra_headers={'Content-Type' : 'text/plain', 'Content-length' : 0})
 
     def get_protocol_groups(self):
         """ Returns the protocol_groups settings contained in the configuration file in plain text"""
-        resp = self.shark.conn.request(self.uri_prefix + "/settings/protocol_groups", "GET")
-        data = resp.read()
+        resp = self.shark.conn.request("GET", self.uri_prefix + "/settings/protocol_groups")
+        data = resp.content
         return data
 
     def update_protocol_groups(self, settings):
-        resp = self.shark.conn.request(self.uri_prefix + "/settings/protocol_groups", "PUT",
+        resp = self.shark.conn.request("PUT", self.uri_prefix + "/settings/protocol_groups",
                                        body=settings, extra_headers={'Content-Type' : 'text/plain'})
-        resp.read()
+        data = resp.content
+        return data
 
     def get_protocol_names(self):
         """ Returns the protocol_names settings contained in the configuration file in plain text"""
@@ -150,9 +151,9 @@ class Settings(API4Group):
         return data
 
     def update_protocol_names(self, settings):
-        resp = self.shark.conn.request(self.uri_prefix + "/settings/protocol_names", "PUT",
-                                       body=settings, extra_headers={'Content-Type' : 'text/plain'})
-        resp.read()
+        resp = self.shark.conn.request("GET", self.uri_prefix + "/settings/protocol_names")
+        data = resp.content
+        return data
 
     def get_notification(self, as_json=True, timestamp_format=APITimestampFormat.NANOSECOND):
         """ Returns notification and SMTP settings from management daemon"""
@@ -749,8 +750,7 @@ class Misc(API4Group):
         For GET, the content type can be requested using an Accept
         header of either text/xml or application/json.
         """
-        resp = self.shark.conn.request(self.uri_prefix + "/ping", method, body=data, extra_headers=headers)
-        return resp.read()
+        return self._xjtrans(self.uri_prefix + "/ping", method, data, True, custom_headers=headers)
 
 
 class Update(API4Group):
