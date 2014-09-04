@@ -22,6 +22,7 @@ from steelscript.common.utils import Formatter
 class FieldsApp(NetSharkApp):
 
     def add_options(self, parser):
+        super(FieldsApp, self).add_options(parser)
         group = optparse.OptionGroup(parser, "Column output options")
         group.add_option('--sort-id', default=False, action='store_true',
                             help='sort by ID column instead of description')
