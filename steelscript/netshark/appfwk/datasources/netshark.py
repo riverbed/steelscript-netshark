@@ -8,12 +8,14 @@
 import time
 import logging
 import threading
+import hashlib
 
 from django import forms
 
 from steelscript.netshark.core.types import Operation, Value, Key
 from steelscript.netshark.core.filters import NetSharkFilter, TimeFilter
 from steelscript.netshark.core._class_mapping import path_to_class
+from steelscript.netshark.appfwk.models import NetSharkViews
 from steelscript.common.exceptions import RvbdHTTPException
 from steelscript.common import timeutils
 from steelscript.common.timeutils import (parse_timedelta,
@@ -52,27 +54,27 @@ def netshark_source_name_choices(form, id, field_kwargs, params):
     """ Query netshark for available capture jobs / trace clips. """
     netshark_device = form.get_field_value('netshark_device', id)
     if netshark_device == '':
-        label = 'Source'
         choices = [('', '<No netshark device>')]
     else:
         netshark = DeviceManager.get_device(netshark_device)
-        #source_type = form.get_field_value('shark_source_type', id)
-        source_type = 'job'
 
         choices = []
-        if source_type == 'job':
-            for job in netshark.get_capture_jobs():
-                choices.append(('jobs/' + job.name, job.name))
-            label = 'Capture Job'
-        elif source_type == 'clip':
-            # Not tested
-            label = 'Trace Clip'
-            for clip in netshark.get_clips():
-                choices.append((clip, clip))
-        else:
-            raise KeyError('Unknown source type: %s' % source_type)
 
-    field_kwargs['label'] = label
+        for job in netshark.get_capture_jobs():
+            choices.append((job.source_path, job.name))
+
+        for clip in netshark.get_clips():
+            choices.append((clip.source_path, 'Clip: ' + clip.name))
+
+        if params['include_files']:
+            for f in netshark.get_files():
+                choices.append((f.source_path, 'File: ' + f.path))
+
+        if params['include_interfaces']:
+            for iface in netshark.get_interfaces():
+                choices.append((iface.source_path, 'If: ' + iface.description))
+
+    field_kwargs['label'] = 'Source'
     field_kwargs['choices'] = choices
 
 
@@ -92,7 +94,11 @@ class NetSharkTable(DatasourceTable):
     _column_class = 'NetSharkColumn'
     _query_class = 'NetSharkQuery'
 
-    TABLE_OPTIONS = {'aggregated': False}
+    TABLE_OPTIONS = {'aggregated': False,
+                     'include_files': False,
+                     'include_interfaces': False,
+                     'include_persistent': False
+                     }
 
     FIELD_OPTIONS = {'duration': '1m',
                      'durations': ('1m', '15m'),
@@ -119,12 +125,20 @@ class NetSharkTable(DatasourceTable):
                                     label='NetShark', module='netshark',
                                     enabled=True)
 
+        func = Function(netshark_source_name_choices,
+                        self.options)
         TableField.create(keyword='netshark_source_name', label='Source',
                           obj=self,
                           field_cls=forms.ChoiceField,
                           parent_keywords=['netshark_device'],
                           dynamic=True,
-                          pre_process_func=Function(netshark_source_name_choices))
+                          pre_process_func=func)
+
+        if self.options.include_persistent:
+            TableField.create(keyword='netshark_persistent',
+                              label='Persistent View', obj=self,
+                              field_cls=forms.BooleanField,
+                              initial=False)
 
         fields_add_time_selection(self,
                                   initial_duration=duration,
@@ -224,22 +238,6 @@ class NetSharkQuery(TableQueryBase):
         if filterexpr:
             filters.append(NetSharkFilter(filterexpr))
 
-        tf = TimeFilter(start=criteria.starttime, end=criteria.endtime)
-        filters.append(tf)
-
-        logger.info("Setting netshark table %d timeframe to %s" % (self.table.id,
-                                                                str(tf)))
-
-        # Get source type from options
-        try:
-            with lock:
-                source = path_to_class(shark,
-                                       self.job.criteria.netshark_source_name)
-
-        except RvbdHTTPException, e:
-            source = None
-            raise e
-
         resolution = criteria.resolution
         if resolution.seconds == 1:
             sampling_time_msec = 1000
@@ -252,36 +250,98 @@ class NetSharkQuery(TableQueryBase):
         else:
             sampling_time_msec = 1000
 
-        # Setup the view
-        if source is not None:
-            with lock:
-                view = shark.create_view(source, columns, filters=filters,
-                                         sync=False,
-                                         sampling_time_msec=sampling_time_msec)
-        else:
-            # XXX raise other exception
-            return None
+        # Get source type from options
+        logger.debug("NetShark Source: %s" %
+                     self.job.criteria.netshark_source_name)
 
-        done = False
-        logger.debug("Waiting for netshark table %d to complete" % self.table.id)
-        while not done:
-            time.sleep(0.5)
+        source = path_to_class(
+            shark, self.job.criteria.netshark_source_name)
+        live = source.is_live()
+        persistent = criteria.netshark_persistent
+
+        if live and not persistent:
+            raise ValueError("Live views must be run with persistent set")
+
+        view = None
+        if persistent:
+            # First, see a view by this title already exists
+            # Title is the table name plus a criteria hash including
+            # all criteria *except* the timeframe
+            h = hashlib.md5()
+            h.update('.'.join([c.name for c in
+                               self.table.get_columns()]))
+            for k, v in criteria.iteritems():
+                if criteria.is_timeframe_key(k):
+                    continue
+                h.update('%s:%s' % (k, v))
+
+            title = '/'.join(['steelscript-appfwk', str(self.table.id),
+                              self.table.namespace, self.table.name, h.hexdigest()])
+            view = NetSharkViews.find_by_name(shark, title)
+            logger.debug("Persistent view title: %s" % title)
+        else:
+            # Only assign a title for persistent views
+            title = None
+
+        if not view:
+            # Not persistent, or not yet created...
+
+            if not live:
+                # Cannot attach time filter to a live view,
+                # it will be added later at get_data() time
+                tf = TimeFilter(start=criteria.starttime,
+                                end=criteria.endtime)
+                filters.append(tf)
+
+                logger.info("Setting netshark table %d timeframe to %s" %
+                            (self.table.id, str(tf)))
+
+            # Create it
             with lock:
-                s = view.get_progress()
-                self.job.progress = s
-                self.job.save()
-            done = (s == 100)
+                logger.debug("%s: Creating view for table %s" %
+                             (str(self), str(self.table)))
+                view = shark.create_view(
+                    source, columns, filters=filters, sync=False,
+                    name=title, sampling_time_msec=sampling_time_msec)
+
+            if not live:
+                done = False
+                logger.debug("Waiting for netshark table %d to complete" %
+                             self.table.id)
+                while not done:
+                    time.sleep(0.5)
+                    with lock:
+                        s = view.get_progress()
+                        self.job.progress = s
+                        self.job.save()
+                    done = (s == 100)
+
+        logger.debug("Retrieving data for timeframe: %s - %s" %
+                     (timeutils.datetime_to_nanoseconds(criteria.starttime),
+                      timeutils.datetime_to_nanoseconds(criteria.endtime)))
 
         # Retrieve the data
         with lock:
+            getdata_kwargs = {}
+            if sortidx:
+                getdata_kwargs['sortby'] = sortidx
+
             if self.table.options.aggregated:
-                self.data = view.get_data(
-                    aggregated=self.table.options.aggregated,
-                    sortby=sortidx
-                )
+                getdata_kwargs['aggregated'] = self.table.options.aggregated
             else:
-                self.data = view.get_data(delta=self.delta, sortby=sortidx)
-            view.close()
+                getdata_kwargs['delta'] = self.delta
+
+            if live:
+                # For live views, attach the time frame to the get_data()
+                getdata_kwargs['start'] = (
+                    timeutils.datetime_to_nanoseconds(criteria.starttime))
+                getdata_kwargs['end'] = (
+                    timeutils.datetime_to_nanoseconds(criteria.endtime))
+
+            self.data = view.get_data(**getdata_kwargs)
+
+            if not persistent:
+                view.close()
 
         if self.table.rows > 0:
             self.data = self.data[:self.table.rows]

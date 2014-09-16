@@ -63,7 +63,8 @@ def path_to_class(shark, path):
     )
     p = path.split('/', 1)
     if p[0] == 'jobs':
-        # lookup by name instead of id
-        return mapping[p[0]].get(shark, None, p[1])
+        # Try name, then id
+        return (mapping[p[0]].get(shark, None, p[1]) or
+                mapping[p[0]].get(shark, p[1]))
     else:
         return mapping[p[0]].get(shark, p[1])
