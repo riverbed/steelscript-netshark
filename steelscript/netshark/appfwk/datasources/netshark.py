@@ -257,7 +257,7 @@ class NetSharkQuery(TableQueryBase):
         source = path_to_class(
             shark, self.job.criteria.netshark_source_name)
         live = source.is_live()
-        persistent = criteria.netshark_persistent
+        persistent = criteria.get('netshark_persistent', False)
 
         if live and not persistent:
             raise ValueError("Live views must be run with persistent set")
