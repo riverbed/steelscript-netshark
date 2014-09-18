@@ -314,7 +314,7 @@ class NetSharkQuery(TableQueryBase):
                         s = view.get_progress()
                         self.job.progress = s
                         self.job.save()
-                    done = (s == 100)
+                    done = view.is_ready()
 
         logger.debug("Retrieving data for timeframe: %s - %s" %
                      (timeutils.datetime_to_nanoseconds(criteria.starttime),
