@@ -23,7 +23,7 @@ from steelscript.netshark.core._exceptions import NetSharkException
 from steelscript.netshark.core._api_helpers import NetSharkAPIVersions
 from steelscript.netshark.core._api4 import API4_0
 from steelscript.netshark.core._api5 import API5_0
-from steelscript.common.utils import ColumnProxy
+from steelscript.common.datastructures import ColumnProxy
 from steelscript.netshark.core._class_mapping import Classesv4, Classes, Classesv5
 
 
@@ -88,7 +88,7 @@ class NetShark(Service):
 
         self.api = API_TABLE[str(self.api_version)](self)
         self.classes = CLASS_TABLE[str(self.api_version)]()
-        #these module may not be available
+        # these module may not be available
         try:
             self.settings = self.classes.Settings(self)
         except NotImplementedError:
@@ -160,9 +160,9 @@ class NetShark(Service):
             # 4.0 netshark supports the standard GL7 method
             return Service._detect_auth_methods(self)
 
-        self._supports_auth_basic  = self.api_version >= APIVersion("3.0")
+        self._supports_auth_basic = self.api_version >= APIVersion("3.0")
         self._supports_auth_cookie = self.api_version >= APIVersion("3.1")
-        self._supports_auth_oauth  = False
+        self._supports_auth_oauth = False
 
     def get_open_views(self):
         """Get a list of View objects, one for each open view on the NetShark appliance.
@@ -460,7 +460,7 @@ class NetShark(Service):
         be added to a clip by right-clicking on it in Pilot.
         """
         if not force_refetch or self._traceclips_cache is None:
-            #get_clips already set up the cache for us
+            # get_clips already set up the cache for us
             clips = self.get_clips(force_refetch)
         else:
             clips = self._traceclips_cache

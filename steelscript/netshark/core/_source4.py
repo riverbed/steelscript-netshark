@@ -298,7 +298,7 @@ class Job4(_interfaces.Job):
             if isinstance(size, str) and size[-1] == '%':
                 size = total * int(size[:-1]) / 100
             elif not isinstance(size, (int, long)) and size is not None:
-                size = utils.human2bytes(size)
+                size = datautils.human2bytes(size)
             return size
 
         stats = shark.get_stats()

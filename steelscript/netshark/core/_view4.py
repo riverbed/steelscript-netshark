@@ -11,7 +11,7 @@ import json
 import logging
 
 from steelscript.common import timeutils
-from steelscript.common.utils import DictObject
+from steelscript.common.datastructures import DictObject
 from steelscript.netshark.core import _interfaces
 from steelscript.netshark.core._class_mapping import path_to_class
 from steelscript.netshark.core._api_helpers import APITimestampFormat
@@ -32,7 +32,7 @@ def _to_native(string, legend_entry):
 
     if legend_entry['type'].startswith('INT') \
       or legend_entry['type'].startswith('UINT') \
-      or legend_entry['type'] in ( 'TCP_PORT', 'UDP_PORT'):
+      or legend_entry['type'] in ('TCP_PORT', 'UDP_PORT'):
         if legend_entry['base'] == 'DEC':
             baseval = 10
         elif legend_entry['base'] == 'HEX':
@@ -97,7 +97,7 @@ class View4(_interfaces.View):
         # Partial support. Just take the view in JSON format and apply it.
         #
         template_json = json.loads(template)
-        #change the source
+        # change the source
         template_json['input_source']['path'] = source.source_path
         res = shark.api.view.add(template_json, timestamp_format=timestamp_format)
         handle = res.get('id')
@@ -161,14 +161,14 @@ class View4(_interfaces.View):
         res['metrics'] = list()
         for i, column in enumerate(columns):
             key = 'keys' if column.key else 'metrics'
-            value = dict([('field', str(column)), ('id', 'c'+str(i))])
+            value = dict([('field', str(column)), ('id', 'c' + str(i))])
             if key == 'metrics':
                 value['operation'] = column.operation
             if column.default_value is not None:
                 value['default_value'] = column.default_value
             res[key].append(value)
         res['id'] = 'Flyscript_Processor'
-        res['outputs'] = [dict(fields=list(dict(id='c'+str(i)) for i in range(len(columns))),
+        res['outputs'] = [dict(fields=list(dict(id='c' + str(i)) for i in range(len(columns))),
                                            id='OOUID_Flyscript')]
         return res
 
@@ -249,7 +249,7 @@ class View4(_interfaces.View):
         if stats['state'] == 'DONE' or stats['input_size'] == 0:
             return 100
         if stats['input_size'] != 0:
-            return int(float(stats['processed_size'])/stats['input_size'] * 100)
+            return int(float(stats['processed_size']) / stats['input_size'] * 100)
 
 
 class Output4(_interfaces.Output):
@@ -285,11 +285,11 @@ class Output4(_interfaces.Output):
         if self.view.timestamp_format == APITimestampFormat.SECOND:
             return 1
         elif self.view.timestamp_format == APITimestampFormat.MILLISECOND:
-            return 10**3
+            return 10 ** 3
         elif self.view.timestamp_format == APITimestampFormat.MICROSECOND:
-            return 10**6
+            return 10 ** 6
         elif self.view.timestamp_format == APITimestampFormat.NANOSECOND:
-            return 10**9
+            return 10 ** 9
         else:
             raise ValueError('invalid time format %s' % str(view.timestamp_format))
 
@@ -328,13 +328,13 @@ class Output4(_interfaces.Output):
             if delta is not None:
                 raise ValueError('delta cannot be used with aggregated requests')
             if start is None or end is None:
-                #retrieve the timeinfo only if you need it
+                # retrieve the timeinfo only if you need it
                 ti = self.view.get_timeinfo()
 
-            #normalize to reduce complexity
+            # normalize to reduce complexity
             start = start or ti.start
             end = end or ti.end
-            #now that it's normalized, time for easy math
+            # now that it's normalized, time for easy math
             delta = end - start
             end = start
 
@@ -343,7 +343,7 @@ class Output4(_interfaces.Output):
             delta = ((delta.days * 24 * 3600) + delta.seconds) * self._get_time_resolution()
 
         if delta is None:
-            #default value = 1s
+            # default value = 1s
             delta = self._get_time_resolution()
 
         if start is None:
@@ -352,7 +352,7 @@ class Output4(_interfaces.Output):
         if end is None:
             end = 0
         elif not aggregated:
-            #this is to remove the delta added by get_timeinfo()
+            # this is to remove the delta added by get_timeinfo()
             end -= delta
 
         params = {
@@ -366,7 +366,7 @@ class Output4(_interfaces.Output):
 
         if sortby:
             params.update({
-                'sortby' : 'x'+str(sortby),
+                'sortby' : 'x' + str(sortby),
                 'sorttype' : sorttype,
                 'fromentry' : int(fromentry),
                 'toentry' : int(toentry)

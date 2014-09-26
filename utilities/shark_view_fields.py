@@ -16,7 +16,7 @@ For full field details, use the -v flag.
 import optparse
 
 from steelscript.netshark.core.app import NetSharkApp
-from steelscript.common.utils import Formatter
+from steelscript.common.datautils import Formatter
 
 
 class FieldsApp(NetSharkApp):

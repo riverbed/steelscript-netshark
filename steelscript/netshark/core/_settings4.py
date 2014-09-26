@@ -8,7 +8,7 @@
 import functools
 import warnings
 
-from steelscript.common.jsondict import JsonDict
+from steelscript.common.datastructures import JsonDict
 import json
 import copy
 import time
@@ -34,16 +34,16 @@ class BasicSettingsFunctionality(object):
 
     def __init__(self, api):
 
-        #: Current settings are stored in this property.
-        #:
-        #: This is updated by calls to :meth:`.get()` and :meth:`.load()`.
-        #: The attribute may be modified directly and the resulting
-        #: value pushed to the server via :meth:`.save()`.
+        # : Current settings are stored in this property.
+        # :
+        # : This is updated by calls to :meth:`.get()` and :meth:`.load()`.
+        # : The attribute may be modified directly and the resulting
+        # : value pushed to the server via :meth:`.save()`.
         self.data = None
 
         self._api = api
 
-    def _get(self, f,  force=False):
+    def _get(self, f, force=False):
         """Gets the configuration calling the f function
         """
         if self.data is None or force is True:
@@ -117,14 +117,14 @@ class NoBulk(object):
 
     @getted
     def save(self):
-        #this mimics settings behaviour
-        #for all the resources that do not allow bulk update
+        # this mimics settings behaviour
+        # for all the resources that do not allow bulk update
         self.get(force=True)
 
 class Basic(BasicSettingsFunctionality):
     """Wrapper class around basic system settings."""
 
-    #definining get/save here in order to do not touch _api4.py
+    # definining get/save here in order to do not touch _api4.py
     def get(self, force=False):
         return self._get(self._api.get_basic)
 
@@ -166,8 +166,8 @@ class Licenses(NoBulk, BasicSettingsFunctionality):
     @getted
     def add(self, key):
         """Add a license key."""
-        #the add wants a list of keys while the
-        #delete wants a single key
+        # the add wants a list of keys while the
+        # delete wants a single key
         self._api.add_license([key])
 
     @getted
@@ -253,7 +253,7 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
 
     @getted
     def generate_new_certificate_for_profiler_export(self, country=None, email=None,
-                                                     locality=None,organization=None,
+                                                     locality=None, organization=None,
                                                      organization_unit=None, state=None,
                                                      days=None):
         """Generates a new certificate for netprofiler export"""
@@ -457,7 +457,7 @@ class Storage(NoBulk, BasicSettingsFunctionality):
 
         """
 
-        assert percentage_reserved_space >=0 and percentage_reserved_space < 96
+        assert percentage_reserved_space >= 0 and percentage_reserved_space < 96
         self._api.format({'reserved_space': percentage_reserved_space})
 
 class NotImplementedSetting(object):
@@ -465,7 +465,7 @@ class NotImplementedSetting(object):
         self.msg = msg
 
     def get(self, force=True):
-        raise NotImplementedError('This setting is not available for this version of NetShark'+self.msg)
+        raise NotImplementedError('This setting is not available for this version of NetShark' + self.msg)
 
 class Settings4(object):
     """Interface to various configuration settings on the netshark appliance."""
@@ -492,12 +492,12 @@ class Settings4(object):
         self.update_raw = shark.api.settings.update_raw
         self.reset_raw = shark.api.settings.reset_raw
 
-        #these are now DPI in NetShark API 5.0
+        # these are now DPI in NetShark API 5.0
         self.get_protocol_groups = shark.api.settings.get_protocol_groups
         self.update_protocol_groups = shark.api.settings.update_protocol_groups
         self.get_protocol_names = shark.api.settings.get_protocol_names
         self.update_protocol_names = shark.api.settings.update_protocol_names
 
-        #these have been implemented from API >= 5.0
+        # these have been implemented from API >= 5.0
         self.alerts = NotImplementedSetting()
         self.snmp = NotImplementedSetting()

@@ -16,7 +16,7 @@ to a NetShark appliance.
 import sys
 import json
 import getpass
-from steelscript.common.utils import DictObject
+from steelscript.common.datastructures import DictObject
 from steelscript.netshark.core.app import NetSharkApp
 
 

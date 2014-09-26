@@ -15,7 +15,7 @@ keep their default value.
 """
 
 from steelscript.netshark.core.app import NetSharkApp
-from steelscript.common.utils import bytes2human
+from steelscript.common.datautils import bytes2human
 
 
 class CreateJob(NetSharkApp):
@@ -38,12 +38,12 @@ class CreateJob(NetSharkApp):
             print 'Capture Ports:'
             interfaces = self.netshark.get_interfaces()
             for i, ifc in enumerate(interfaces):
-                print '\t{0}. {1}'.format(i+1, ifc)
+                print '\t{0}. {1}'.format(i + 1, ifc)
 
             while 1:
                 idx = raw_input('Port number(1-{0})? '.format(len(interfaces)))
                 try:
-                    ifc = interfaces[int(idx)-1]
+                    ifc = interfaces[int(idx) - 1]
                     break
                 except IndexError:
                     print 'Bad index try again'

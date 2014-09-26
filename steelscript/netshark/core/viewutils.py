@@ -18,7 +18,7 @@ import logging
 from datetime import datetime, timedelta
 from collections import namedtuple
 
-from steelscript.common.utils import DictObject
+from steelscript.common.datastructures import DictObject
 from steelscript.common.timeutils import tzutc, max_width
 
 
@@ -165,7 +165,7 @@ def print_data(legend, stream, timeformat='%Y/%m/%d %H:%M:%S.%f',
         if field['type'] == 'ABSOLUTE_TIME':
             return max_width(timeformat)
 
-        #XXX
+        # XXX
         logging.warn('uh oh do not know width of %s' % field['type'])
         return 10
 

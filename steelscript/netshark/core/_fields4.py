@@ -7,7 +7,7 @@
 
 
 
-from steelscript.common.utils import DictObject
+from steelscript.common.datastructures import DictObject
 
 class ExtractorField(DictObject):
     @classmethod

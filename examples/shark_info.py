@@ -14,7 +14,7 @@ about it, and prints it the screen.
 """
 
 from steelscript.netshark.core.app import NetSharkApp
-from steelscript.common.utils import bytes2human
+from steelscript.common.datautils import bytes2human
 
 
 class NetSharkInfo(NetSharkApp):

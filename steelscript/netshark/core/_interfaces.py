@@ -9,7 +9,7 @@
 
 import functools
 
-from steelscript.common.utils import DictObject
+from steelscript.common.datastructures import DictObject
 
 def loaded(f):
     @functools.wraps(f)
@@ -68,8 +68,8 @@ class View(object):
 
     def _ensure_output(self):
         if len(self._outputs) == 0:
-            #change this since postapply doesn't load
-            #the view parameters
+            # change this since postapply doesn't load
+            # the view parameters
             self._postapply()
 
     @classmethod
