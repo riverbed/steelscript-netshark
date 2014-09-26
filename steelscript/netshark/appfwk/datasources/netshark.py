@@ -64,7 +64,7 @@ def netshark_source_name_choices(form, id, field_kwargs, params):
             choices.append((job.source_path, job.name))
 
         for clip in netshark.get_clips():
-            choices.append((clip.source_path, 'Clip: ' + clip.name))
+            choices.append((clip.source_path, 'Clip: ' + clip.description))
 
         if params['include_files']:
             for f in netshark.get_files():
