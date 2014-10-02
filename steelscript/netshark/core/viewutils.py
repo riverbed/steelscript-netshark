@@ -165,8 +165,8 @@ def print_data(legend, stream, timeformat='%Y/%m/%d %H:%M:%S.%f',
         if field['type'] == 'ABSOLUTE_TIME':
             return max_width(timeformat)
 
-        # XXX
-        logging.warn('uh oh do not know width of %s' % field['type'])
+        logging.warn('NetShark field %s has unknown max_width, guessing 10' %
+                     field['type'])
         return 10
 
     if widths is None:
