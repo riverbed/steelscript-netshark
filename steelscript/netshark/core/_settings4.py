@@ -8,7 +8,6 @@
 import functools
 import warnings
 
-from steelscript.common.datastructures import JsonDict
 import json
 import copy
 import time
@@ -18,12 +17,14 @@ except ImportError:
     def decorator(ob):
         return ob
 
+
 @decorator
 def getted(f):
     @functools.wraps(f)
     def wrapper(self, *args, **kwds):
         if self.data is None:
-            raise LookupError('You have to get the configuration first via the get method')
+            raise LookupError('You have to get the configuration first via '
+                              'the get method')
         return f(self, *args, **kwds)
 
     return wrapper
@@ -102,10 +103,12 @@ class BasicSettingsFunctionality(object):
         elif isinstance(path_or_obj, list):
             self.data = path_or_obj
         else:
-            raise ValueError('path_or_obj muth be a filepath, a dict or a list')
+            raise ValueError('path_or_obj muth be a filepath, '
+                             'a dict or a list')
 
         if save is True:
             self.save()
+
 
 class NoBulk(object):
     """Base class to force get of new configuration in not bulk update capable
@@ -120,6 +123,7 @@ class NoBulk(object):
         # this mimics settings behaviour
         # for all the resources that do not allow bulk update
         self.get(force=True)
+
 
 class Basic(BasicSettingsFunctionality):
     """Wrapper class around basic system settings."""
@@ -161,7 +165,8 @@ class Licenses(NoBulk, BasicSettingsFunctionality):
     @getted
     def save(self):
         NoBulk.save(self)
-        warnings.warn('Reboot of netshark is needed to apply the new configuration')
+        warnings.warn('Reboot of netshark is needed to apply the new '
+                      'configuration')
 
     @getted
     def add(self, key):
@@ -202,16 +207,16 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
     '''Wrapper class around the certificates configuration'''
 
     def _gen_cert_configuration(self, *args, **kwargs):
-        return {
-                'issued_to':{
-                    'country': kwargs.get('country') or 'US',
-                    'email': kwargs.get('email') or '',
-                    'locality': kwargs.get('locality') or 'San Francisco',
-                    'organization': kwargs.get('organization') or 'Riverbed Technology',
-                    'organization_unit': kwargs.get('organization_unit') or '',
-                    'state': kwargs.get('state') or 'CA'
-                    },
-                'validity':{
+        return {'issued_to': {
+                'country': kwargs.get('country') or 'US',
+                'email': kwargs.get('email') or '',
+                'locality': kwargs.get('locality') or 'San Francisco',
+                'organization': (kwargs.get('organization') or
+                                 'Riverbed Technology'),
+                'organization_unit': kwargs.get('organization_unit') or '',
+                'state': kwargs.get('state') or 'CA'
+                },
+                'validity': {
                     'days': kwargs.get('days') or 365
                     }
                 }
@@ -219,7 +224,8 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
     @getted
     def save(self):
         NoBulk.save(self)
-        warnings.warn('Reboot of netshark is needed to apply the new configuration')
+        warnings.warn('Reboot of netshark is needed to apply the new '
+                      'configuration')
 
     @getted
     def use_profiler_export_certificate_for_web(self):
@@ -231,35 +237,41 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
         """Given a certificate in PEM format, uploads to the server and
         sets as webui certificate.
 
-        The PEM certificate must contain both private key and CA-signed public certificate"""
-        self._api.update_web_certificate({'pem':cert})
+        The PEM certificate must contain both private key and CA-signed
+        public certificate"""
+        self._api.update_web_certificate({'pem': cert})
 
     @getted
-    def generate_new_certificate_for_web(self, country=None, email=None, locality=None,
-                                         organization=None, organization_unit=None,
+    def generate_new_certificate_for_web(self, country=None, email=None,
+                                         locality=None, organization=None,
+                                         organization_unit=None,
                                          state=None, days=None):
         """Generates a new certificate for the webui"""
         kwargs = locals()
         kwargs.pop('self')
-        self._api.generate_web_certificate(self._gen_cert_configuration(**kwargs))
+        self._api.generate_web_certificate(self._gen_cert_configuration(
+                                           **kwargs))
 
     @getted
     def set_certificate_for_profiler_export(self, cert):
         """Give a certificate in PEM format, uploads to the server and sets
         as netprofiler export certificate
 
-        The PEM certificate must contain both private key and CA-signed public certificate"""
+        The PEM certificate must contain both private key and CA-signed public
+        certificate"""
         self._api.update_profiler_export_certificate({'pem': cert})
 
     @getted
-    def generate_new_certificate_for_profiler_export(self, country=None, email=None,
-                                                     locality=None, organization=None,
-                                                     organization_unit=None, state=None,
-                                                     days=None):
+    def generate_new_certificate_for_profiler_export(self, country=None,
+                                                     email=None, locality=None,
+                                                     organization=None,
+                                                     organization_unit=None,
+                                                     state=None, days=None):
         """Generates a new certificate for netprofiler export"""
         kwargs = locals()
         kwargs.pop('self')
-        self._api.generate_profiler_export_certificate(self._gen_cert_configuration(**kwargs))
+        self._api.generate_profiler_export_certificate(
+            self._gen_cert_configuration(**kwargs))
 
     @getted
     def use_web_interface_certificate_for_profiler_export(self):
@@ -270,15 +282,14 @@ class Certificates(NoBulk, BasicSettingsFunctionality):
     def add_profiler_trusted_certificate(self, name, cert):
         """Adds the given PEM certificate to the list of trusted certificates
         under the given name"""
-        self._api.add_trusted_profiler_certificate({
-                'id': name,
-                'pem': cert
-                })
+        self._api.add_trusted_profiler_certificate({'id': name,
+                                                    'pem': cert
+                                                    })
 
     @getted
     def remove_profiler_trusted_certificate(self, name):
-        """Removes the name of a PEM certificate that is trusted, removes from the list of
-        trusted certificates"""
+        """Removes the name of a PEM certificate that is trusted, removes from the
+        list of trusted certificates"""
         self._api.delete_trusted_profiler_certificate(name)
 
 
@@ -325,6 +336,7 @@ class Users(NoBulk, BasicSettingsFunctionality):
                        'groups': groups,
                        'can_be_locked': can_be_locked
                        })
+
     @getted
     def delete(self, username):
         """Delete user from the system
@@ -339,6 +351,7 @@ class Users(NoBulk, BasicSettingsFunctionality):
         """
         self._api.update(username, {'existing_password': '',
                                     'new_password': password})
+
 
 class Groups(NoBulk, BasicSettingsFunctionality):
     """Wrapper class around settings for user groups. """
@@ -375,12 +388,13 @@ class Groups(NoBulk, BasicSettingsFunctionality):
         """Removes group from the groups in the NetShark"""
         self._api.delete(name)
 
+
 class Update(NoBulk, BasicSettingsFunctionality):
     """Manage system update, ISOs and settings. """
 
     def load_iso_from_url(self, url):
         """Instruct the NetShark to upload a new ISO from a URL."""
-        self._api.load_iso_from_url({'url':url})
+        self._api.load_iso_from_url({'url': url})
 
     def upload_iso(self, f):
         """Upload a new ISO From a file.
@@ -403,7 +417,8 @@ class Update(NoBulk, BasicSettingsFunctionality):
                                     'state': 'RUNNING'})
         else:
             msg = ('Server does not have any iso image loaded for upload. '
-                   'Upload an iso first and save the configuration to proceed.')
+                   'Upload an iso first and save the configuration to proceed.'
+                   )
             raise SystemError(msg)
 
         while res['state'] == 'RUNNING':
@@ -416,6 +431,7 @@ class Update(NoBulk, BasicSettingsFunctionality):
 
         return res
 
+
 class Storage(NoBulk, BasicSettingsFunctionality):
 
     def reinitialize(self, wait=True):
@@ -424,9 +440,8 @@ class Storage(NoBulk, BasicSettingsFunctionality):
         .. warning::
            This operation will lose all packets in every job
 
-        :param bool wait: set to True to wait for the packet storage to be back again
-            before returning
-
+        :param bool wait: set to True to wait for the packet storage to be
+        back again before returning
         """
         self._api.reinitialize()
 
@@ -437,7 +452,8 @@ class Storage(NoBulk, BasicSettingsFunctionality):
             res = self.get(force=True)
 
         if res['state'] != 'OK':
-            raise SystemError('Server returned error while reinitializing packet storage')
+            raise SystemError('Server returned error while reinitializing '
+                              'packet storage')
 
         return res
 
@@ -457,18 +473,25 @@ class Storage(NoBulk, BasicSettingsFunctionality):
 
         """
 
-        assert percentage_reserved_space >= 0 and percentage_reserved_space < 96
+        assert (percentage_reserved_space >= 0 and
+                percentage_reserved_space < 96)
         self._api.format({'reserved_space': percentage_reserved_space})
+
 
 class NotImplementedSetting(object):
     def __init__(self, msg=''):
         self.msg = msg
 
     def get(self, force=True):
-        raise NotImplementedError('This setting is not available for this version of NetShark' + self.msg)
+        raise NotImplementedError('This setting is not available for this '
+                                  'version of NetShark' + self.msg)
+
 
 class Settings4(object):
-    """Interface to various configuration settings on the netshark appliance."""
+    """Interface to various configuration settings on the netshark
+
+    appliance.
+    """
 
     def __init__(self, shark):
         super(Settings4, self).__init__()

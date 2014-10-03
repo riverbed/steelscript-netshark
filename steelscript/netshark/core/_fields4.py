@@ -5,9 +5,8 @@
 # as set forth in the License.
 
 
-
-
 from steelscript.common.datastructures import DictObject
+
 
 class ExtractorField(DictObject):
     @classmethod
