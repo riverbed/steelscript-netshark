@@ -23,7 +23,7 @@ from steelscript.common.app import Application
 from steelscript.netshark.core import NetShark
 from steelscript.netshark.core.filters import NetSharkFilter, TimeFilter
 from steelscript.netshark.core.types import Value
-from steelscript.common.utils import Formatter
+from steelscript.common.datautils import Formatter
 from steelscript.common.service import UserAuth
 from steelscript.common.timeutils import TimeParser
 
