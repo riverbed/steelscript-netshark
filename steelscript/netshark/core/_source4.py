@@ -10,7 +10,7 @@ from __future__ import absolute_import
 from steelscript.netshark.core import _interfaces
 from steelscript.netshark.core._interfaces import loaded
 from steelscript.netshark.core._exceptions import NetSharkException
-from steelscript.common import utils, timeutils
+from steelscript.common import datautils, timeutils
 
 
 __all__ = ['Interface4', 'Clip4', 'Job4']

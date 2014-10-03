@@ -30,9 +30,9 @@ def _to_native(string, legend_entry):
     else:
         denominator = 1
 
-    if legend_entry['type'].startswith('INT') \
-      or legend_entry['type'].startswith('UINT') \
-      or legend_entry['type'] in ('TCP_PORT', 'UDP_PORT'):
+    if (legend_entry['type'].startswith('INT')
+            or legend_entry['type'].startswith('UINT')
+                or legend_entry['type'] in ('TCP_PORT', 'UDP_PORT')):
         if legend_entry['base'] == 'DEC':
             baseval = 10
         elif legend_entry['base'] == 'HEX':
@@ -168,8 +168,8 @@ class View4(_interfaces.View):
                 value['default_value'] = column.default_value
             res[key].append(value)
         res['id'] = 'Flyscript_Processor'
-        res['outputs'] = [dict(fields=list(dict(id='c' + str(i)) for i in range(len(columns))),
-                                           id='OOUID_Flyscript')]
+        res['outputs'] = [dict(fields=list(dict(id='c' + str(i))
+                          for i in range(len(columns))), id='OOUID_Flyscript')]
         return res
 
 
@@ -249,7 +249,8 @@ class View4(_interfaces.View):
         if stats['state'] == 'DONE' or stats['input_size'] == 0:
             return 100
         if stats['input_size'] != 0:
-            return int(float(stats['processed_size']) / stats['input_size'] * 100)
+            return int(float(stats['processed_size']) /
+                       stats['input_size'] * 100)
 
 
 class Output4(_interfaces.Output):
@@ -366,10 +367,10 @@ class Output4(_interfaces.Output):
 
         if sortby:
             params.update({
-                'sortby' : 'x' + str(sortby),
-                'sorttype' : sorttype,
-                'fromentry' : int(fromentry),
-                'toentry' : int(toentry)
+                'sortby': 'x' + str(sortby),
+                'sorttype': sorttype,
+                'fromentry': int(fromentry),
+                'toentry': int(toentry)
                 })
 
         return params
