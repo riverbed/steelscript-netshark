@@ -546,6 +546,10 @@ class TraceFile4(File4):
         assert path is not None and len(path) > 0
         cls._validate_local_file(local_path, error_msg)
 
+        if cls.exists(shark, path):
+            raise NetSharkException(error_msg + ": A file " +
+                                    "at that path already exists")
+
         file_dir, file_name = os.path.split(path)
 
         #Remove leading and trailing white space from a string
@@ -553,11 +557,7 @@ class TraceFile4(File4):
 
         local_file_ref = open(local_path, "rb")
 
-        headers = { 'Content-Disposition' : file_name,
-                    'Content-Type' : 'application/octet-stream'
-        }
-
-        shark.api.fs.upload_raw(file_dir, local_file_ref, headers)
+        shark.api.fs.upload_trace(file_dir, file_name, local_file_ref)
         local_file_ref.close()
         new_path = file_dir + shark._file_separator + file_name
         return TraceFile4(shark, {'id':new_path})
