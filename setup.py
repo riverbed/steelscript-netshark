@@ -66,7 +66,7 @@ http://pythonhosted.org/steelscript/
     ),
 
     'install_requires': (
-        'steelscript>=0.6',
+        'steelscript>=0.9.5',
     ),
 
     'entry_points': {
