@@ -26,7 +26,7 @@ from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
 from steelscript.appfwk.apps.datasource.models import Column, TableField
 from steelscript.appfwk.apps.datasource.forms import (fields_add_time_selection,
-                                               fields_add_resolution)
+                                                      fields_add_resolution)
 from steelscript.appfwk.libs.fields import Function
 
 
@@ -369,3 +369,4 @@ class NetSharkQuery(TableQueryBase):
                 out.extend(x for x in d['vals'])
 
         self.data = out
+

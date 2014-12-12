@@ -25,7 +25,7 @@ import copy
 import datetime
 
 from steelscript.appfwk.apps.datasource.models import \
-    TableField, Job, Table, BatchJobRunner
+    Job, Table, BatchJobRunner
 
 from steelscript.appfwk.apps.datasource.modules.analysis import \
     AnalysisTable, AnalysisQuery
@@ -47,6 +47,7 @@ class SharksTable(AnalysisTable):
         proxy = True
 
     _query_class = 'SharksQuery'
+
 
 class SharksQuery(AnalysisQuery):
     def post_run(self):
@@ -78,7 +79,6 @@ class SharksQuery(AnalysisQuery):
 
         batch.run()
 
-      
         out = []
         for job in batch.jobs:
             sharkdata = job.data()
