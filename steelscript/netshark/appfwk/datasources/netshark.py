@@ -16,7 +16,6 @@ from steelscript.netshark.core.types import Operation, Value, Key
 from steelscript.netshark.core.filters import NetSharkFilter, TimeFilter
 from steelscript.netshark.core._class_mapping import path_to_class
 from steelscript.netshark.appfwk.models import NetSharkViews
-from steelscript.common.exceptions import RvbdHTTPException
 from steelscript.common import timeutils
 from steelscript.common.timeutils import (parse_timedelta,
                                           timedelta_total_seconds)
@@ -25,8 +24,8 @@ from steelscript.appfwk.apps.datasource.models import (DatasourceTable,
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
 from steelscript.appfwk.apps.datasource.models import Column, TableField
-from steelscript.appfwk.apps.datasource.forms import (fields_add_time_selection,
-                                                      fields_add_resolution)
+from steelscript.appfwk.apps.datasource.forms import \
+    fields_add_time_selection, fields_add_resolution
 from steelscript.appfwk.libs.fields import Function
 
 
@@ -106,7 +105,8 @@ class NetSharkTable(DatasourceTable):
                      'resolutions': ('1s', '1m'),
                      }
 
-    def fields_add_filterexpr(self, keyword='netshark_filterexpr', initial=None):
+    def fields_add_filterexpr(self, keyword='netshark_filterexpr',
+                              initial=None):
         field = TableField(keyword=keyword,
                            label='NetShark Filter Expression',
                            help_text='Traffic expression using '
@@ -169,7 +169,6 @@ class NetSharkQuery(TableQueryBase):
         default_delta = 1000000000                      # one second
         self.delta = int(default_delta * resolution)    # sample size interval
 
-
         if criteria.netshark_device == '':
             logger.debug('%s: No netshark device selected' % self.table)
             self.job.mark_error("No NetShark Device Selected")
@@ -186,8 +185,8 @@ class NetSharkQuery(TableQueryBase):
         columns = []
         for tc in self.table.get_columns(synthetic=False):
             tc_options = tc.options
-            if ( tc.iskey and tc.name == 'time' and
-                 tc_options.extractor == 'sample_time'):
+            if (tc.iskey and tc.name == 'time' and
+                    tc_options.extractor == 'sample_time'):
                 # don't create column, use the sample time for timeseries
                 self.timeseries = True
                 self.column_names.append('time')
@@ -276,7 +275,8 @@ class NetSharkQuery(TableQueryBase):
                 h.update('%s:%s' % (k, v))
 
             title = '/'.join(['steelscript-appfwk', str(self.table.id),
-                              self.table.namespace, self.table.name, h.hexdigest()])
+                              self.table.namespace, self.table.name,
+                              h.hexdigest()])
             view = NetSharkViews.find_by_name(shark, title)
             logger.debug("Persistent view title: %s" % title)
         else:
@@ -354,8 +354,7 @@ class NetSharkQuery(TableQueryBase):
         return True
 
     def parse_data(self):
-        """ Reformat netshark data results to be uniform tabular format
-        """
+        """Reformat netshark data results to be uniform tabular format."""
         out = []
         if self.timeseries:
             # use sample times for each row
@@ -369,4 +368,3 @@ class NetSharkQuery(TableQueryBase):
                 out.extend(x for x in d['vals'])
 
         self.data = out
-
