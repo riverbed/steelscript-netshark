@@ -42,50 +42,11 @@ t.add_column('generic_bits', label='Bits', iskey=False,
 t.add_column('generic_packets', label='Packets', iskey=False, sortdesc=True,
              extractor='generic.packets', operation='sum')
 
-#### XXX is traffic the right name for this?
-report.add_widget(yui3.TableWidget, t, 'Top 100 Packet Traffic', width=12)
+report.add_widget(yui3.TableWidget, t, 'Top 100 Conversations', width=12)
 
-# Microbursts Graph for NetShark
-t = NetSharkTable.create(name='MicroburstsTime', duration=1, aggregated=False)
-
-t.add_column('time', label='Time (ns)', iskey=True,
-             extractor='sample_time', datatype='time')
-
-t.add_column('max_microburst_1ms_bits', label='uBurst 1ms',
-             extractor='generic.max_microburst_1ms.bits',
-             operation='max', units='B')
-
-t.add_column('max_microburst_10ms_bits', label='uBurst 10ms',
-             extractor='generic.max_microburst_10ms.bits',
-             operation='max', units='B')
-
-t.add_column('max_microburst_100ms_bits', label='uburst 100ms',
-             extractor='generic.max_microburst_100ms.bits',
-             operation='max', units='B')
-
-report.add_widget(yui3.TimeSeriesWidget, t,
-                  'Microbursts Summary Bits', width=6)
-
-# Microbursts Table for NetShark
-t = NetSharkTable.create(name='MicroburstsTable', duration=1, aggregated=False)
-
-t.add_column('max_microburst_1ms_bits', label='uBurst 1ms',
-             extractor='generic.max_microburst_1ms.bits',
-             operation='max', units='B')
-
-t.add_column('max_microburst_10ms_bits', label='uBurst 10ms',
-             extractor='generic.max_microburst_10ms.bits',
-             operation='max', units='B')
-
-t.add_column('max_microburst_100ms_bits', label='uburst 100ms',
-             extractor='generic.max_microburst_100ms.bits',
-             operation='max', units='B')
-
-report.add_widget(yui3.TableWidget, t, 'Microbursts Bits Summary', width=6)
-
-# Table and Widget 2
-
-t = NetSharkTable.create(name='Traffic by TCP/UDP', duration=1, aggregated=False)
+# TCP/UDP Traffic tables
+t = NetSharkTable.create(name='Traffic by TCP/UDP', duration=1,
+                         aggregated=False)
 
 t.add_column('time', label='Time (ns)', iskey=True,
              extractor='sample_time', datatype='time')

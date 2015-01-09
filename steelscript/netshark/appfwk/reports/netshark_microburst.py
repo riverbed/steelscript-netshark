@@ -17,9 +17,10 @@ report = Report.create('NetShark Microburst Summary', position=10)
 report.add_section()
 
 # Microbursts Graph for NetShark
-t = NetSharkTable.create(name='MicroburstsTime', duration=1, aggregated=False)
+t = NetSharkTable.create(name='MicroburstsTime', duration=1,
+                         resolution='1sec', aggregated=False)
 
-t.add_column('time', label='Time (ns)', iskey=True,
+t.add_column('time', label='Time', iskey=True,
              extractor='sample_time', datatype='time')
 
 t.add_column('max_microburst_1ms_bits', label='uBurst 1ms',
