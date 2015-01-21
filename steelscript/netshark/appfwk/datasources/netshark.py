@@ -16,14 +16,15 @@ from steelscript.netshark.core.types import Operation, Value, Key
 from steelscript.netshark.core.filters import NetSharkFilter, TimeFilter
 from steelscript.netshark.core._class_mapping import path_to_class
 from steelscript.netshark.appfwk.models import NetSharkViews
+
 from steelscript.common import timeutils
 from steelscript.common.timeutils import (parse_timedelta,
                                           timedelta_total_seconds)
-from steelscript.appfwk.apps.datasource.models import (DatasourceTable,
-                                                       TableQueryBase)
+
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
-from steelscript.appfwk.apps.datasource.models import Column, TableField
+from steelscript.appfwk.apps.datasource.models import \
+    Column, TableField, DatasourceTable, TableQueryBase
 from steelscript.appfwk.apps.datasource.forms import \
     fields_add_time_selection, fields_add_resolution
 from steelscript.appfwk.libs.fields import Function
@@ -160,7 +161,7 @@ class NetSharkQuery(TableQueryBase):
         """
         criteria = self.job.criteria
 
-        self.timeseries = False         # if key column called 'time' is created
+        self.timeseries = False       # if key column called 'time' is created
         self.column_names = []
 
         # Resolution comes in as a time_delta
