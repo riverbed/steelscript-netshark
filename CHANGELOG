@@ -1,0 +1,203 @@
+CHANGELOG
+=========
+
+[0.9.5rc1]
+
+[0.9.5]
+ * Add clip cleanup script
+ * Update microburst report with zoomed detail
+ * Clean up DNS report and trim down base netshark report
+ * Add microburst report; switch to bits from bytes
+
+[0.9.4]
+ * Update minimum steelscript version
+ * Cleanup upload example script
+ * Update to gitpy 0.2.1
+ * Update gitpy to version 0.2.0
+ * Added check to see if trace file exists before upload
+ * Minor tweak for datasource
+ * fix one import error
+ * Added App Framework report
+ * update imports due to refactor of steelscript.common.utils
+ * Fix problem with listing clips in netshark reports
+ * Use is_ready() instead of progress=100 for done for shark views in appfwk
+ * Add default 'netshark_persistent' value
+ * Added support for persisent shark views, interfaces and trace clips
+ * Add missing super() call in NetShark App
+
+[0.9.3]
+ * Updated request method calls for shark api
+ * Avoid minor doc warning
+ * Add download.py example script
+ * Cleanup table of contents in docs
+ * Correct job creation indexing logic
+
+[0.9.2]
+ * Fix skipping test failing on py 2.6
+ * Fix missing indexing_size_limit config for new jobs
+ * Use force version for tests and small bug fixes
+ * Fix create job with start_immediately = False
+ * Cleanup and fix example scripts
+
+[0.9.1]
+ * Update setup.py info
+
+[0.9.0]
+ * Update README
+ * Update tutorial, fix old DictObject style reference
+ * Rename TableQuery, add _query_class
+ * Docs: Updated background, cleaned up warnings
+ * Implement multi-column sorting with sortcols/sortdir
+
+[0.9.0rc2]
+ * Handle missing import decorator
+
+[0.9.0rc1]
+ * Rename to steelscript
+ * Refactor package directories
+ * Refactor shark to netshark
+ * Refactor profiler to netprofiler
+ * Refactor rvbd_portal to steelscript.appfw.core
+ * Add app framework support
+ * Update README, LICENSE and add other documentation
+ * Change position to be a decimal, renumber reports
+ * Update setup.py packaging and include docs
+ * Update gitpy-versioning url reference
+ * Move versioning to gitpy_versioning, add license tag
+ * Fix shark_info example
+ * Clean up exception handling around connections with the initial request on a session
+
+[0.6.0]
+ * Fix tests
+ * Cleanup shark tests for 2.6 and repeatability
+ * Update docs for installing requests package too
+ * Update setup.py to add requests dependency
+ * Remove response as instance variable, report.py no longer looks to header for report ID
+ * Incorporate reviewboard comments.
+ * One minor dict update
+ * Cleanup shark tests for compatibility and better error handling.
+ * Shark updates for new Connection class support and some PEP8 changes
+ * Converted shark, mostly.
+ * Fix total_seconds python2.6 issue, add test
+ * Moved file separator into shark. Fixed tests.
+ * Fixed a call to serverinfo: additional parameter specified.
+ * Added the method _get_separator() in FS so that Flyscrip can be used against a server running on windows as well
+ * Set time resolution explicitly for view timestamps
+
+[0.5.8]
+ * Support for sub-second sampling times for a view
+ * Fix setup.py using core distutils
+ * Added documentation in how to run tests
+ * Simplified code for looking up the debug level of the logger
+ * Scream and throw error if tests are not compatible with nosetests
+ * If nosetests is used in Shark tests, skip them all
+ * Unittest assertRaises can be used with context manager only from 2.7+
+ * Getting rid of old test management for Shark
+ * Removed missed import in _api4 and fixed a test that fails on newly installed shark
+ * Added snmp and smtp test configuration calls
+ * Tests refactoring to handle different groups of shark based on their version
+ * Fix for NotImplemented methods on Settings4
+ * Fix for NotImplementedError of deprecated methods
+ * Splitting tests in groups based on the api version to easily enable/disable scenarios based on the api version of the sharks
+ * Added test for raising NotImplementedError for:
+ * Raise NotImplementedError if a script designed for Settings4 runs over Settings5 and access to deprecated methods.
+ * Fixed typo
+ * Better documentation for restart and restart_probe
+ * Removed duplicate code in tests and fixed name of test_update
+ * Fix for _api call
+ * Adapt shark sources, interfaces and fs to having a _api method referencing the respective api calls
+ * Fix for tests
+ * Fix for api call url and setup job for tests
+ * Added storage and update support
+ * Added update and storage api calls
+ * Added test_groups for shark
+ * Fixed settings group api calls
+ * JsonDict approach for settings was too confusing and error phrone, switching to a simpler model
+ * test_shark changes
+ * More robust Shark BasicSettingsFunctinality
+ * Shark settings refactoring
+ * Fix for shark api 4.0 handlers
+ * Added settings tests and refactored _settings4.py
+ * Added Alerts support
+ * Added dpi test for download/load a configuration
+ * update -> save
+ * Small fix for the generate priority function
+ * Small fix for _settings5 and added more tests
+ * Finished dpi support
+ * Fix for _api5.py
+ * Api5 dpi calls
+ * Updated settings to have explicit get and update
+ * Implemented all API 5.0 changes except SNMP and DPI
+ * Test refactoring
+ * Initial Settings5 support
+ * Added dpi_enabled support in jobs
+ * New SNMP handlers
+ * Make all test pass in both mako10 and vdorothy5
+ * Fixed test_create_job_parameters
+ * Added copyright notice to new files
+ * Improved test_shark
+ * Fix for filters
+ * Added update feature to InputSource and made it work for Interface5
+ * Shark.versions and Shark.model calls
+ * Api and classes for shark 5.0
+ * Added Common.info api call
+ * Scenarios in test to test against vdorothy5 (vshark) and oak-mako10 (shark)
+ * Removed unused API class
+ * Restored compatibility with 4.0
+ * Small api management refactoring in order to reuse code
+
+[0.5.7]
+ * Fix some shark interfaces, and add tests
+ * Fixed export example and shark.get_clip_by_description
+ * Refactor post_raw/upload_file to single upload method
+ * Cleanup shark example scripts
+ * Add execute bit for utility scripts
+
+[0.5.6]
+ * When all Profilers are removed from the Profiler Export request the Profiler Export itself has to be disabled.
+
+[0.5.5]
+ * Fix encoding and setup config
+ * Move example scripts to docs directory
+ * Updated LICENSE
+ * shark_test.py try to load test config from testconfig.py even if nose/pytest is not used
+ * Update README with License info
+ * Fix shark tests to only cleanup items prefixed with 'test_'
+ * Update handling of Boolean column types plus odds n' ends
+ * Add wan_report example script to setup.py
+
+[0.5.4]
+ * Add new scripts to setup.py
+ * Expand handling of native shark types Boolean and RelativeTime
+ * Ensure that files are deleted before tests start
+ * Shark.download_log for log downloading
+ * Job and Clip exports
+ * Job export
+ * Shark tests compatibility with shark instances and test job contextual manager
+ * Ignore .tox files
+ * Use interface.id instead of str(interface) to retrieve interface id
+ * Context manager support for Jobs
+ * ARX support
+
+[0.5.3]
+ * Add default value for shark Keys/Values
+ * Remove references to virtualenv's from install docs
+ * Better fix for Job size_on_disk lookup bug, add tests for Job interface
+ * Fix Job size_on_disk lookup bug
+ * Update README for FlyScript regarding docs/html/index.html
+ * Add Job for possible path lookup, minor docs cleanup
+ * Update setup.py to include better metadata
+
+[0.5.2]
+ * Include live view tests
+ * Cleanup docstrings, and tearDowns.  Uncomment two live_view tests.
+ * fixed timing for NOT aggregated case, test sanitization
+ * get_timeinfo adds delta to the end time
+ * Applied operation table for aggregated=True calls
+ * Aggregation updates, handle get_data interface more fluidly.
+ * Add gitignore file
+
+[0.5.1]
+ * Initial import of project files
+ * Setup LICENSE and AUTHORS files
+ * Initial commit
