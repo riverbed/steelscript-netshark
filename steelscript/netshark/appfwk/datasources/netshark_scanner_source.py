@@ -24,8 +24,8 @@ import logging
 import copy
 import datetime
 
-from steelscript.appfwk.apps.datasource.models import \
-    Job, Table, BatchJobRunner
+from steelscript.appfwk.apps.datasource.models import Table
+from steelscript.appfwk.apps.jobs.models import Job, BatchJobRunner
 
 from steelscript.appfwk.apps.datasource.modules.analysis import \
     AnalysisTable, AnalysisQuery
