@@ -313,7 +313,7 @@ class NetSharkQuery(TableQueryBase):
                     time.sleep(0.5)
                     with lock:
                         s = view.get_progress()
-                        self.job.progress = s
+                        self.job.mark_progress(s)
                         self.job.save()
                         done = view.is_ready()
 
