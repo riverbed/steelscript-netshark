@@ -7,7 +7,6 @@
 # as set forth in the License.
 
 
-
 """
 This script demonstrates how to use the View class to do two
 simple and common tasks:
@@ -17,31 +16,30 @@ simple and common tasks:
 """
 
 from steelscript.netshark.core.app import NetSharkApp
-from steelscript.netshark.core.viewutils import write_csv, print_data, OutputMixer
+from steelscript.netshark.core import viewutils
 
 
 class ReadView(NetSharkApp):
 
     def add_options(self, parser):
         super(ReadView, self).add_options(parser)
-        parser.add_option('-l', action="store_true", dest="listviews", default=False,
-                          help='print a list of running views')
-        parser.add_option('-f', dest='fname', default=None,
+        parser.add_option('-l', '--listviews', action="store_true",
+                          default=False, help='print a list of running views')
+        parser.add_option('-v', '--viewname', default=None,
+                          help='view name to read')
+        parser.add_option('-f', '--filename', default=None,
                           help='write CSV file to given file name')
-        parser.add_option('-o', dest='output', default=None,
+        parser.add_option('-o', '--output', default=None,
                           help='retrieve only the specified output field')
 
     def validate_args(self):
         super(ReadView, self).validate_args()
         if self.options.listviews:
-            nargs = 1
-        else:
-            nargs = 2
+            # list views ignores other options
+            return
 
-        if len(self.args) < nargs:
-            self.parser.error('too few arguments')
-        elif len(self.args) > nargs:
-            self.parser.error('too many arguments')
+        if not self.options.viewname:
+            self.parser.error('view name required, use "-v" option to specify')
 
     def _do_one_output(self, output):
         legend = output.get_legend()
@@ -49,15 +47,15 @@ class ReadView(NetSharkApp):
 
         # If the -f option has been used, we save the data to disk as csv,
         # otherwise we print it to the screen.
-        if self.options.fname is not None:
-            write_csv(self.options.fname, legend, data)
+        if self.options.filename is not None:
+            viewutils.write_csv(self.options.filename, legend, data)
         else:
-            print_data(legend, data)
+            viewutils.print_data(legend, data)
 
     def main(self):
         if self.options.listviews:
             # If -l is specified, we show the list of views running on the
-            #appliance, and the outputs for each of them,
+            # appliance, and the outputs for each of them,
             views = self.netshark.get_open_views()
             if len(views) == 0:
                 print 'there are no views!'
@@ -69,13 +67,13 @@ class ReadView(NetSharkApp):
 
         # Retrieve details about a specific view
         try:
-            view = self.netshark.get_open_view_by_handle(self.args[1])
+            view = self.netshark.get_open_view_by_handle(self.options.viewname)
         except KeyError:
-            print 'cannot find view {0}'.format(self.args[1])
+            print 'cannot find view {0}'.format(self.options.viewname)
             return -1
 
-        # A view can have one or more outputs. Each output corresponds to one of
-        # the charts that can be seend when opening the view in Pilot.
+        # A view can have one or more outputs. Each output corresponds to one
+        # of the charts that can be seend when opening the view in Pilot.
         # If an output name is specified, we will print (or save) the data for
         # that output only.
         # Otherwise, we merge all the outputs and print them all.
@@ -85,7 +83,7 @@ class ReadView(NetSharkApp):
             outputs = view.all_outputs()
             if len(outputs) > 1:
                 try:
-                    mixer = OutputMixer()
+                    mixer = viewutils.OutputMixer()
                     for o in outputs:
                         mixer.add_source(o, '')
                     self._do_one_output(mixer)
