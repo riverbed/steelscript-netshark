@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+[0.9.5.1]
+ * Fix readview.py example script
+
 [0.9.5rc1]
 
 [0.9.5]

@@ -61,15 +61,14 @@ http://pythonhosted.org/steelscript/
         ('share/doc/steelscript/examples/netshark', glob('examples/*')),
     ),
 
-    'scripts': (
-        'utilities/shark_view_fields.py',
-    ),
-
     'install_requires': (
         'steelscript>=0.9.5',
     ),
 
     'entry_points': {
+        'steel.commands': [
+            'netshark = steelscript.netshark.commands'
+        ],
         'portal.plugins': [
             'netshark = steelscript.netshark.appfwk.plugin:NetSharkPlugin'
         ],
