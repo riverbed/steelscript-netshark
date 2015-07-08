@@ -77,7 +77,7 @@ class DownloadApp(NetSharkApp):
             end = string_to_datetime(float(self.options.end_time))
             timefilter = TimeFilter(start, end)
         else:
-            self.optparse.error('Select either --timerange or --start and --end times')
+            self.parser.error('Select either --timerange or --start and --end times')
 
         config = {
             #'output_filename': filename,
