@@ -60,6 +60,10 @@ NetShark, Packet Sources and Views
    * :py:meth:`.find_extractor_field_by_name`
    * :py:meth:`.search_extractor_fields`
 
+   The following method is used to create an export from a source:
+
+   * :py:meth:`.create_export`
+
    Complete method descriptions:
 
 .. _packet-source-objects:
@@ -212,6 +216,14 @@ locate the appropriate Output object, then use the method
 .. autoclass:: View4
    :members:
    :inherited-members:
+
+Export Objects
+--------------
+
+.. autoclass:: Export4
+   :members:
+   :inherited-members:
+   :show-inheritance:
 
 .. _output-objects:
 

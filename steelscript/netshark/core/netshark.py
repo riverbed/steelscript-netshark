@@ -633,6 +633,21 @@ class NetShark(Service):
             config['case_id'] = int(case_id)
         return self.api.system.get_sysdump(path, config)
 
+    def create_export(self, source, timefilter, filters=None):
+        """Create a pcap Export object.
+
+        :param source: source to use for packets: Job, View, Interface
+            or TraceClip
+
+        :param timefilter: time range of packets to export
+
+        :param filters: additional filters
+
+        :returns: :class:`Export4`
+
+        """
+        return self.classes.Export.create(self, source, timefilter, filters)
+
     @property
     def version(self):
         """Returns the NetShark software version

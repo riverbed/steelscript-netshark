@@ -43,6 +43,8 @@ class Classesv4(Classes):
         self.ExtractorField = _fields4.ExtractorField
         self.Settings = _settings4.Settings4
 
+        self.Export = v4.Export4
+
 
 class Classesv5(Classesv4):
     def __init__(self):
@@ -52,7 +54,6 @@ class Classesv5(Classesv4):
         self.Job = v5.Job5
         self.Interface = v5.Interface5
         self.Settings = _settings5.Settings5
-
 
 def path_to_class(shark, path):
     mapping = dict(

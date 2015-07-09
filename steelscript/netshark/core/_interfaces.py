@@ -5,11 +5,11 @@
 # as set forth in the License.
 
 
-
-
 import functools
 
 from steelscript.common.datastructures import DictObject
+from steelscript.common.timeutils import datetime_to_seconds
+
 
 def loaded(f):
     @functools.wraps(f)
@@ -178,9 +178,71 @@ class File(_InputSource):
         The result is always False for a File."""
         return False
 
+
 class Job(_InputSource):
     def __enter__(self):
         return self
 
     def __exit__(self, _type, value, traceback):
         self.delete()
+
+
+class Export(object):
+    """A pcap export object.
+
+    Export objects are not instantiated directly, but are instead
+    obtained by calling
+    :py:func:`steelscript.netshark.core.netshark.NetShark.create_export`
+
+    """
+
+    def __init__(self, shark, id, source):
+        self.shark = shark
+        self.id = id
+        self.source = source
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.delete()
+
+    @classmethod
+    def create(cls, shark, source, timefilter, filters=None):
+        """Create a new pcap export from the gien source."""
+        config = {
+            'output_format': 'PCAP_US',
+            'start_time': datetime_to_seconds(timefilter.start),
+            'end_time': datetime_to_seconds(timefilter.end)
+            }
+
+        if filters:
+            config['filters'] = [filt.bind(shark) for filt in filters]
+
+        r = source._api.create_export(source.id, config=config)
+
+        return cls(shark, r['id'], source)
+
+    def details(self):
+        """Return details about an export."""
+        return self.source._api.get_export_details(self.source.id, self.id)
+
+    def download(self, filename, overwrite=False):
+        """Download the packets as a pcapfile to a local file."""
+        if self.details()['status']['state'] != 'RUNNING':
+            return False
+
+        self.source._api.get_packets_from_export(self.source.id, self.id,
+                                                 filename, overwrite=overwrite)
+        return True
+
+    def delete(self):
+        """Delete the export on the shark.
+
+        Note that downloading an export automatically deletes the export.
+        """
+        try:
+            self.source._api.delete_export(self.source.id, self.id)
+        except:
+            # Export probably no longer exists
+            pass
