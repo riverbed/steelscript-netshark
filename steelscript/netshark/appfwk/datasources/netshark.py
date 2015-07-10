@@ -4,7 +4,7 @@
 # accompanying the software ("License").  This software is distributed "AS IS"
 # as set forth in the License.
 
-
+import os
 import time
 import logging
 import threading
@@ -28,7 +28,8 @@ from steelscript.appfwk.apps.datasource.models import \
 from steelscript.appfwk.apps.datasource.forms import \
     fields_add_time_selection, fields_add_resolution
 from steelscript.appfwk.libs.fields import Function
-
+from steelscript.wireshark.appfwk.datasources.wireshark_source import \
+    WiresharkQuery, fields_add_filterexpr
 
 logger = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -369,3 +370,87 @@ class NetSharkQuery(TableQueryBase):
                 out.extend(x for x in d['vals'])
 
         self.data = out
+
+
+class NetSharkPcapColumn(Column):
+    class Meta:
+        proxy = True
+
+    COLUMN_OPTIONS = {'field': None,
+                      'operation': 'sum'}
+
+
+class NetSharkPcapTable(DatasourceTable):
+
+    class Meta:
+        proxy = True
+
+    _column_class = 'NetSharkPcapColumn'
+    _query_class = 'NetSharkPcapQuery'
+
+    TABLE_OPTIONS = {'aggregated': False,
+                     'include_files': False,
+                     'include_interfaces': False,
+                     'include_persistent': False
+                     }
+
+    FIELD_OPTIONS = {'resolution': '1s',
+                     'resolutions': ('1s', '1m', '15min', '1h')}
+
+    def post_process_table(self, field_options):
+        fields_add_device_selection(self, keyword='netshark_device',
+                                    label='NetShark', module='netshark',
+                                    enabled=True)
+        fields_add_time_selection(self, show_start=True,
+                                  initial_start_time='now-1m',
+                                  show_end=True,
+                                  show_duration=False)
+
+        fields_add_resolution(self,
+                              initial=field_options['resolution'],
+                              resolutions=field_options['resolutions'])
+
+        func = Function(netshark_source_name_choices, self.options)
+        TableField.create(keyword='netshark_source_name', label='Source',
+                          obj=self,
+                          field_cls=forms.ChoiceField,
+                          parent_keywords=['netshark_device'],
+                          dynamic=True,
+                          pre_process_func=func)
+        fields_add_filterexpr(obj=self)
+
+
+class NetSharkPcapQuery(WiresharkQuery):
+
+    def run(self):
+        criteria = self.job.criteria
+
+        netshark = DeviceManager.get_device(criteria.netshark_device)
+
+        export_name = str(path_to_class(netshark,
+                                        criteria.netshark_source_name))
+
+        source = netshark.get_capture_job_by_name(export_name)
+
+        timefilter = TimeFilter(criteria.starttime, criteria.endtime)
+
+        filename = '%s_export.pcap' % export_name
+
+        with netshark.create_export(source, timefilter, filters=None) as e:
+            logger.debug('beginning download to file %s' % filename)
+            e.download(filename, overwrite=True)
+
+        self.job.criteria.pcapfilename = filename
+        self.job.criteria.entire_pcap = True
+
+        try:
+            super(NetSharkPcapQuery, self).run()
+        finally:
+            try:
+                logger.debug("Deleting file on disk %s" % filename)
+                os.remove(filename)
+            except:
+                logger.debug('Error when trying to delete file %s. Ignoring'
+                             % filename)
+                pass
+        return True
