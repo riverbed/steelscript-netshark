@@ -440,7 +440,8 @@ class NetSharkPcapQuery(WiresharkQuery):
         filename = '%s_export.pcap' % export_name
 
         with netshark.create_export(source, timefilter, filters=None) as e:
-            logger.debug('NetSharkPcapQuery: Starting download to file %s' % filename)
+            logger.debug('NetSharkPcapQuery: Starting download to file %s'
+                         % filename)
             download_start = time.time()
             e.download(filename, overwrite=True)
 
@@ -466,6 +467,7 @@ class NetSharkPcapQuery(WiresharkQuery):
 
         query_end = time.time()
         logger.debug("NetSharkPcapQuery: Query ended. "
-                     "It took %s." % datetime.timedelta(0, query_end - download_end))
+                     "It took %s."
+                     % datetime.timedelta(0, query_end - download_end))
 
         return True
