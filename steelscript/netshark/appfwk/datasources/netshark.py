@@ -9,7 +9,7 @@ import time
 import logging
 import threading
 import hashlib
-
+import datetime
 from django import forms
 
 from steelscript.netshark.core.types import Operation, Value, Key
@@ -30,6 +30,7 @@ from steelscript.appfwk.apps.datasource.forms import \
 from steelscript.appfwk.libs.fields import Function
 from steelscript.wireshark.appfwk.datasources.wireshark_source import \
     WiresharkQuery, fields_add_filterexpr
+from steelscript.wireshark.core.pcap import PcapFile
 
 logger = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -417,12 +418,14 @@ class NetSharkPcapTable(DatasourceTable):
                           parent_keywords=['netshark_device'],
                           dynamic=True,
                           pre_process_func=func)
+
         fields_add_filterexpr(obj=self)
 
 
 class NetSharkPcapQuery(WiresharkQuery):
 
     def run(self):
+
         criteria = self.job.criteria
 
         netshark = DeviceManager.get_device(criteria.netshark_device)
@@ -437,20 +440,32 @@ class NetSharkPcapQuery(WiresharkQuery):
         filename = '%s_export.pcap' % export_name
 
         with netshark.create_export(source, timefilter, filters=None) as e:
-            logger.debug('beginning download to file %s' % filename)
+            logger.debug('NetSharkPcapQuery: Starting download to file %s' % filename)
+            download_start = time.time()
             e.download(filename, overwrite=True)
+
+        download_end = time.time()
+
+        logger.debug("NetSharkPcapQuery: Downloading finished. "
+                     "It took %s to download data of duration %s. "
+                     "starttime %s, endtime %s, "
+                     "downloaded file %s, size %sM"
+                     % (datetime.timedelta(0, download_end - download_start),
+                        criteria.endtime - criteria.starttime,
+                        criteria.starttime, criteria.endtime,
+                        filename, os.stat(filename).st_size/1000000.0))
+
+        pcap = PcapFile(filename)
+        logger.debug("NetSharkPcapQuery: File info %s" % pcap.info())
 
         self.job.criteria.pcapfilename = filename
         self.job.criteria.entire_pcap = True
 
-        try:
-            super(NetSharkPcapQuery, self).run()
-        finally:
-            try:
-                logger.debug("Deleting file on disk %s" % filename)
-                os.remove(filename)
-            except:
-                logger.debug('Error when trying to delete file %s. Ignoring'
-                             % filename)
-                pass
+        logger.debug("NetSharkPcapQuery: Starting Query")
+        super(NetSharkPcapQuery, self).run()
+
+        query_end = time.time()
+        logger.debug("NetSharkPcapQuery: Query ended. "
+                     "It took %s." % datetime.timedelta(0, query_end - download_end))
+
         return True
