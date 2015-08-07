@@ -4,12 +4,13 @@
 # accompanying the software ("License").  This software is distributed "AS IS"
 # as set forth in the License.
 
-import os
+from __future__ import division
+
 import time
 import logging
 import threading
 import hashlib
-import datetime
+
 from django import forms
 
 from steelscript.netshark.core.types import Operation, Value, Key
@@ -28,9 +29,7 @@ from steelscript.appfwk.apps.datasource.models import \
 from steelscript.appfwk.apps.datasource.forms import \
     fields_add_time_selection, fields_add_resolution
 from steelscript.appfwk.libs.fields import Function
-from steelscript.wireshark.appfwk.datasources.wireshark_source import \
-    WiresharkQuery, fields_add_filterexpr
-from steelscript.wireshark.core.pcap import PcapFile
+
 
 logger = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -371,103 +370,3 @@ class NetSharkQuery(TableQueryBase):
                 out.extend(x for x in d['vals'])
 
         self.data = out
-
-
-class NetSharkPcapColumn(Column):
-    class Meta:
-        proxy = True
-
-    COLUMN_OPTIONS = {'field': None,
-                      'operation': 'sum'}
-
-
-class NetSharkPcapTable(DatasourceTable):
-
-    class Meta:
-        proxy = True
-
-    _column_class = 'NetSharkPcapColumn'
-    _query_class = 'NetSharkPcapQuery'
-
-    TABLE_OPTIONS = {'aggregated': False,
-                     'include_files': False,
-                     'include_interfaces': False,
-                     'include_persistent': False
-                     }
-
-    FIELD_OPTIONS = {'resolution': '1s',
-                     'resolutions': ('1s', '1m', '15min', '1h')}
-
-    def post_process_table(self, field_options):
-        fields_add_device_selection(self, keyword='netshark_device',
-                                    label='NetShark', module='netshark',
-                                    enabled=True)
-        fields_add_time_selection(self, show_start=True,
-                                  initial_start_time='now-1m',
-                                  show_end=True,
-                                  show_duration=False)
-
-        fields_add_resolution(self,
-                              initial=field_options['resolution'],
-                              resolutions=field_options['resolutions'])
-
-        func = Function(netshark_source_name_choices, self.options)
-        TableField.create(keyword='netshark_source_name', label='Source',
-                          obj=self,
-                          field_cls=forms.ChoiceField,
-                          parent_keywords=['netshark_device'],
-                          dynamic=True,
-                          pre_process_func=func)
-
-        fields_add_filterexpr(obj=self)
-
-
-class NetSharkPcapQuery(WiresharkQuery):
-
-    def run(self):
-
-        criteria = self.job.criteria
-
-        netshark = DeviceManager.get_device(criteria.netshark_device)
-
-        export_name = str(path_to_class(netshark,
-                                        criteria.netshark_source_name))
-
-        source = netshark.get_capture_job_by_name(export_name)
-
-        timefilter = TimeFilter(criteria.starttime, criteria.endtime)
-
-        filename = '%s_export.pcap' % export_name
-
-        with netshark.create_export(source, timefilter, filters=None) as e:
-            logger.debug('NetSharkPcapQuery: Starting download to file %s'
-                         % filename)
-            download_start = time.time()
-            e.download(filename, overwrite=True)
-
-        download_end = time.time()
-
-        logger.debug("NetSharkPcapQuery: Downloading finished. "
-                     "It took %s to download data of duration %s. "
-                     "starttime %s, endtime %s, "
-                     "downloaded file %s, size %sM"
-                     % (datetime.timedelta(0, download_end - download_start),
-                        criteria.endtime - criteria.starttime,
-                        criteria.starttime, criteria.endtime,
-                        filename, os.stat(filename).st_size/1000000.0))
-
-        pcap = PcapFile(filename)
-        logger.debug("NetSharkPcapQuery: File info %s" % pcap.info())
-
-        self.job.criteria.pcapfilename = filename
-        self.job.criteria.entire_pcap = True
-
-        logger.debug("NetSharkPcapQuery: Starting Query")
-        super(NetSharkPcapQuery, self).run()
-
-        query_end = time.time()
-        logger.debug("NetSharkPcapQuery: Query ended. "
-                     "It took %s."
-                     % datetime.timedelta(0, query_end - download_end))
-
-        return True

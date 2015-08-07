@@ -7,6 +7,8 @@
 
 import pkg_resources
 
+from django.apps import AppConfig
+
 from steelscript.appfwk.apps.plugins import Plugin
 
 
@@ -22,3 +24,9 @@ class NetSharkPlugin(Plugin):
     devices = ['devices']
     datasources = ['datasources']
     reports = ['reports']
+
+
+class SteelScriptNetsharkConfig(AppConfig):
+    name = 'steelscript.netshark.appfwk'
+    label = 'steelscript-netshark'
+    verbose_name = 'SteelScript Netshark'

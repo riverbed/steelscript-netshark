@@ -9,6 +9,7 @@ import pytz
 
 from django.db import models
 
+
 class NetSharkViews(models.Model):
 
     netsharkname = models.CharField(max_length=300)
@@ -51,9 +52,41 @@ class NetSharkViews(models.Model):
                 title = view.config['info']['title']
                 nv = NetSharkViews(netsharkname=netshark.host,
                                    viewname=title,
-                                   viewid = view.handle)
+                                   viewid=view.handle)
                 nv.save()
                 if title == viewname:
                     match = view
 
         return match
+
+
+class PcapFilter(models.Model):
+    name = models.CharField(max_length=30)
+    filter = models.TextField(default='')
+
+
+class SplitThresh(models.Model):
+    min_pkt_num = models.IntegerField()
+
+
+class JobsStartTime(models.Model):
+    jobs_start_time = models.IntegerField()
+
+    @classmethod
+    def set(cls, tstamp):
+        objs = cls.objects.all()
+
+        if not objs:
+            obj = cls(jobs_start_time=tstamp)
+            obj.save()
+        else:
+            objs[0].jobs_start_time = tstamp
+            objs[0].save()
+
+    @classmethod
+    def get(cls):
+        objs = cls.objects.all()
+        if objs:
+            return cls.objects.all()[0].jobs_start_time
+        else:
+            return None
