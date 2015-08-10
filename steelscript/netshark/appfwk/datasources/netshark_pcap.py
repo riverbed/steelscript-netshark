@@ -15,8 +15,6 @@ from functools import wraps
 
 from steelscript.netshark.core.filters import TimeFilter
 from steelscript.netshark.core._class_mapping import path_to_class
-from steelscript.netshark.appfwk.models import (SplitThresh, PcapFilter,
-                                                JobsStartTime)
 
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
@@ -78,7 +76,9 @@ class NetSharkPcapTable(AnalysisTable):
     TABLE_OPTIONS = {'aggregated': False,
                      'include_files': False,
                      'include_interfaces': False,
-                     'include_persistent': False
+                     'include_persistent': False,
+                     'filters': None,
+                     'split_threshold': 0,
                      }
 
     FIELD_OPTIONS = {'resolution': '1s',
@@ -152,8 +152,7 @@ class NetSharkPcapQuery(AnalysisQuery):
 
         self.filename = '%s_export.pcap' % self.export_name
 
-        filters = [BpfFilter(filt) for filt in
-                   map(lambda x: x.filter, PcapFilter.objects.all())] or None
+        filters = [BpfFilter(filt) for filt in self.table.options.filters]
 
         with netshark.create_export(source, timefilter, filters=filters) as e:
             self.download(e)
@@ -164,8 +163,7 @@ class NetSharkPcapQuery(AnalysisQuery):
 
         self.pkt_num = int(pcap_info['Number of packets'])
 
-        thresh = SplitThresh.objects.all()
-        min_pkt_num = thresh[0].min_pkt_num if thresh else 0
+        min_pkt_num = self.table.options.split_threshold
 
         basetable = Table.from_ref(
             self.table.options.related_tables['basetable']
@@ -200,8 +198,6 @@ class NetSharkPcapQuery(AnalysisQuery):
 
             depjobs[job.id] = job
 
-        JobsStartTime.set(int(time.time()))
-
         logger.debug("NetSharkPcapQuery starting multiple jobs")
 
         return QueryContinue(self.collect, jobs=depjobs)
@@ -224,8 +220,6 @@ class NetSharkPcapQuery(AnalysisQuery):
 
         df = pandas.concat(dfs, ignore_index=True)
 
-        logger.debug("NetSharkPcapQuery: Query ended. It took %s"
-                     % (datetime.timedelta(
-                        0, time.time() - JobsStartTime.get())))
+        logger.debug("NetSharkPcapQuery: Query ended.")
 
         return QueryComplete(df)
