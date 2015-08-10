@@ -1,3 +1,9 @@
+# Copyright (c) 2013-2015 Riverbed Technology, Inc.
+#
+# This software is licensed under the terms and conditions of the MIT License
+# accompanying the software ("License").  This software is distributed "AS IS"
+# as set forth in the License.
+
 
 from __future__ import division
 
@@ -41,17 +47,18 @@ logger = logging.getLogger(__name__)
 # /python-decorator-makes-function-forget-that-it-belongs-to-a-class"
 
 
+SPLIT_DIR_PREFIX = '/tmp/splits_'
+
+
 def logtime(func):
     @wraps(func)
     def inner(*args, **kwargs):
-        logger.debug("NetSharkPcapQuery: %s starting, args: %s, kwargs %s."
-                     % (func.__name__, args, kwargs))
+        logger.debug("NetSharkPcapQuery: %s starting" % func.__name__)
         start_time = time.time()
         ret = func(*args, **kwargs)
         end_time = time.time()
-        logger.debug("NetSharkPcapQuery: %s finished, args %s, kwargs %s."
-                     " It took %s."
-                     % (func.__name__, args, kwargs,
+        logger.debug("NetSharkPcapQuery: %s finished. It took %s."
+                     % (func.__name__,
                         datetime.timedelta(0, end_time - start_time)))
         return ret
     return inner
@@ -158,7 +165,12 @@ class NetSharkPcapQuery(AnalysisQuery):
             self.download(e)
 
         pcap = PcapFile(self.filename)
-        pcap_info = pcap.info()
+
+        try:
+            pcap_info = pcap.info()
+        except ValueError:
+            raise AnalysisException("No packets in %s" % self.filename)
+
         logger.debug("%s NetSharkPcapQuery: File info %s" % (self, pcap_info))
 
         self.pkt_num = int(pcap_info['Number of packets'])
@@ -171,7 +183,7 @@ class NetSharkPcapQuery(AnalysisQuery):
 
         depjobs = {}
 
-        self.output_dir = 'splits'
+        self.output_dir = SPLIT_DIR_PREFIX + self.filename
 
         if self.pkt_num < min_pkt_num:
             # No need to split the pcap file
@@ -188,6 +200,11 @@ class NetSharkPcapQuery(AnalysisQuery):
 
         split_files = subprocess.check_output('ls %s' % self.output_dir,
                                               shell=True).split()
+
+        if not split_files:
+            raise AnalysisException('No pcap file found after splitting %s'
+                                    % self.filename)
+
         for split in split_files:
             # use wireshark table
             criteria = copy.copy(self.job.criteria)
