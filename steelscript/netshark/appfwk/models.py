@@ -9,6 +9,7 @@ import pytz
 
 from django.db import models
 
+
 class NetSharkViews(models.Model):
 
     netsharkname = models.CharField(max_length=300)
@@ -51,7 +52,7 @@ class NetSharkViews(models.Model):
                 title = view.config['info']['title']
                 nv = NetSharkViews(netsharkname=netshark.host,
                                    viewname=title,
-                                   viewid = view.handle)
+                                   viewid=view.handle)
                 nv.save()
                 if title == viewname:
                     match = view
