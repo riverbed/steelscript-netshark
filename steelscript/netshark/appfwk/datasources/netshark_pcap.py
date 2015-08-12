@@ -7,6 +7,7 @@
 
 from __future__ import division
 
+import re
 import time
 import math
 import copy
@@ -84,7 +85,7 @@ class NetSharkPcapTable(AnalysisTable):
                      'include_files': False,
                      'include_interfaces': False,
                      'include_persistent': False,
-                     'filters': None,
+                     'filters': [],
                      'split_threshold': 0,
                      }
 
@@ -135,10 +136,9 @@ class NetSharkPcapQuery(AnalysisQuery):
         per_file = int(math.ceil(self.pkt_num/cpu_num))
 
         subprocess.Popen('rm -rf %s' % self.output_dir, shell=True).wait()
-
         subprocess.Popen('mkdir %s' % self.output_dir, shell=True).wait()
-        cmd = 'editcap -c %s %s %s/%s' % (per_file, self.filename,
-                                          self.output_dir, self.export_name)
+        cmd = 'editcap -c %s %s %s/' % (per_file, self.filename,
+                                        self.output_dir)
         logger.debug("NetSharkPcapQuery: %s" % cmd)
         subprocess.Popen(cmd, shell=True).wait()
 
@@ -157,7 +157,8 @@ class NetSharkPcapQuery(AnalysisQuery):
 
         timefilter = TimeFilter(criteria.starttime, criteria.endtime)
 
-        self.filename = '%s_export.pcap' % self.export_name
+        self.filename = '%s_export.pcap' % re.sub(r'[() ]', '',
+                                                  self.export_name)
 
         filters = [BpfFilter(filt) for filt in self.table.options.filters]
 
