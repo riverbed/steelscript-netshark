@@ -87,6 +87,8 @@ class NetSharkPcapTable(AnalysisTable):
                      'include_persistent': False,
                      'filters': [],
                      'split_threshold': 0,
+                     'wait_for_data': False,
+                     'wait_duration': 10
                      }
 
     FIELD_OPTIONS = {'resolution': '1s',
@@ -160,9 +162,12 @@ class NetSharkPcapQuery(AnalysisQuery):
         self.filename = '%s_export.pcap' % re.sub(r'[() ]', '',
                                                   self.export_name)
 
-        filters = [BpfFilter(filt) for filt in self.table.options.filters]
+        filters = ([BpfFilter(filt) for filt in self.table.options.filters]
+                   or None)
 
-        with netshark.create_export(source, timefilter, filters=filters) as e:
+        with netshark.create_export(source, timefilter, filters=filters,
+                                    wait_for_data=self.table.options.wait_for_data,
+                                    wait_duration=self.table.options.wait_duration) as e:
             self.download(e)
 
         pcap = PcapFile(self.filename)

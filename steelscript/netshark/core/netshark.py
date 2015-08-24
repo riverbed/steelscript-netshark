@@ -633,7 +633,8 @@ class NetShark(Service):
             config['case_id'] = int(case_id)
         return self.api.system.get_sysdump(path, config)
 
-    def create_export(self, source, timefilter, filters=None):
+    def create_export(self, source, timefilter, filters=None,
+                      wait_for_data=False, wait_duration=10):
         """Create a pcap Export object.
 
         :param source: source to use for packets: Job, View, Interface
@@ -646,7 +647,8 @@ class NetShark(Service):
         :returns: :class:`Export4`
 
         """
-        return self.classes.Export.create(self, source, timefilter, filters)
+        return self.classes.Export.create(self, source, timefilter, filters,
+                                          wait_for_data, wait_duration)
 
     @property
     def version(self):

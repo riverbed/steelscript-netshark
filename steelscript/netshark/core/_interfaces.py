@@ -6,9 +6,18 @@
 
 
 import functools
+import logging
+import time
 
 from steelscript.common.datastructures import DictObject
 from steelscript.common.timeutils import datetime_to_seconds
+from steelscript.common.exceptions import RvbdHTTPException
+
+logger = logging.getLogger(__name__)
+
+
+class NetSharkExportException(Exception):
+    pass
 
 
 def loaded(f):
@@ -208,8 +217,9 @@ class Export(object):
         self.delete()
 
     @classmethod
-    def create(cls, shark, source, timefilter, filters=None):
-        """Create a new pcap export from the gien source."""
+    def create(cls, shark, source, timefilter, filters=None,
+               wait_for_data=False, wait_duration=10):
+        """Create a new pcap export from the given source."""
         config = {
             'output_format': 'PCAP_US',
             'start_time': datetime_to_seconds(timefilter.start),
@@ -219,7 +229,20 @@ class Export(object):
         if filters:
             config['filters'] = [filt.bind(shark) for filt in filters]
 
-        r = source._api.create_export(source.id, config=config)
+        r = None
+        cnt = 0
+        while r is None and cnt < 3:
+            try:
+                r = source._api.create_export(source.id, config=config)
+            except RvbdHTTPException, e:
+                if '400 Selected job is empty' in str(e) and wait_for_data:
+                    logger.warning("Data is not available to export,"
+                                   " wait for %s seconds" % wait_duration)
+                    time.sleep(wait_duration)
+                    cnt += 1
+                    continue
+                else:
+                    raise NetSharkExportException(str(e))
 
         return cls(shark, r['id'], source)
 
