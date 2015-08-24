@@ -644,6 +644,14 @@ class NetShark(Service):
 
         :param filters: additional filters
 
+        :param wait_for_data: Boolean to indicate if additional retries
+            should be made if the export request initially fails.  If True,
+            up to three attempts will be made with an interval of
+            ``wait_duration``.
+
+        :param wait_duration: interval of time to wait between export
+            attempts, if ``wait_for_data`` is True.
+
         :returns: :class:`Export4`
 
         """

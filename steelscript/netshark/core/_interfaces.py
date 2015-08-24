@@ -235,14 +235,19 @@ class Export(object):
             try:
                 r = source._api.create_export(source.id, config=config)
             except RvbdHTTPException, e:
-                if '400 Selected job is empty' in str(e) and wait_for_data:
+                if 'job is empty' in str(e) and wait_for_data:
                     logger.warning("Data is not available to export,"
-                                   " wait for %s seconds" % wait_duration)
+                                   " waiting for %s seconds" % wait_duration)
                     time.sleep(wait_duration)
                     cnt += 1
                     continue
                 else:
                     raise NetSharkExportException(str(e))
+
+        if r is None:
+            raise NetSharkExportException("Data is not available to export,"
+                                          " need to wait longer or "
+                                          " ensure the job id is correct")
 
         return cls(shark, r['id'], source)
 
