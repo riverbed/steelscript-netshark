@@ -138,7 +138,6 @@ class NetSharkPcapQuery(AnalysisQuery):
         subprocess.Popen('mkdir %s' % self.output_dir, shell=True).wait()
         cmd = 'editcap -c %s %s %s/' % (per_file, self.filename,
                                         self.output_dir)
-        logger.debug("NetSharkPcapQuery1: %s" % cmd)
         subprocess.Popen(cmd, shell=True).wait()
 
     def analyze(self, jobs=None):
