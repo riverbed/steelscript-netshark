@@ -47,12 +47,12 @@ from steelscript.netshark.core.filters import BpfFilter
 
 logger = logging.getLogger(__name__)
 
-SPLIT_DIR_PREFIX = '/tmp/splits_'
-PCAP_DIR = 'data/datacache/pcaps'
+SPLIT_DIR = '/tmp/split_pcaps'
+PCAP_DIR = os.path.join(settings.DATA_CACHE, 'pcaps')
 
 
 def add_pcap_dir(f):
-    return '/'.join([PCAP_DIR, f])
+    return os.path.join(PCAP_DIR, f)
 
 
 # decorator for bounded methods
@@ -135,7 +135,10 @@ class NetSharkPcapQuery(AnalysisQuery):
         cpu_num = multiprocessing.cpu_count()
         per_file = int(math.ceil(self.pkt_num/cpu_num))
 
-        subprocess.Popen('mkdir %s' % self.output_dir, shell=True).wait()
+        if not os.path.exists(SPLIT_DIR):
+            os.mkdir(SPLIT_DIR)
+        os.mkdir(self.output_dir)
+
         cmd = 'editcap -c %s %s %s/' % (per_file, self.filename,
                                         self.output_dir)
         subprocess.Popen(cmd, shell=True).wait()
@@ -181,7 +184,7 @@ class NetSharkPcapQuery(AnalysisQuery):
             logger.debug("NetSharkPcapQuery starting single job")
             return QueryContinue(self.collect, depjobs)
 
-        self.output_dir = SPLIT_DIR_PREFIX + download_job_handle
+        self.output_dir = os.path.join(SPLIT_DIR, download_job_handle)
         self.split_pcap()
 
         split_files = subprocess.check_output('ls %s' % self.output_dir,
@@ -194,7 +197,7 @@ class NetSharkPcapQuery(AnalysisQuery):
         for split in split_files:
             # use wireshark table
             ws_criteria = copy.copy(criteria)
-            ws_criteria.pcapfilename = '/'.join([self.output_dir, split])
+            ws_criteria.pcapfilename = os.path.join(self.output_dir, split)
 
             # for ease of removing the split directory in collect func
             ws_criteria.output_dir = self.output_dir
@@ -211,11 +214,10 @@ class NetSharkPcapQuery(AnalysisQuery):
     def collect(self, jobs=None):
         dfs = []
 
-        # Removing the temporary split directory if multiple jobs
-        if len(jobs) > 1:
-            output_dir = jobs.values()[0].criteria.output_dir
-            if os.path.exists(output_dir):
-                shutil.rmtree(output_dir)
+        # Removing the temporary split directory if it exists
+        output_dir = getattr(jobs.values()[0].criteria, 'output_dir', None)
+        if output_dir and os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
 
         for jid, job in jobs.iteritems():
             if job.status == Job.ERROR:
@@ -288,10 +290,6 @@ class PcapDownloadQuery(TableQueryBase):
         return sum(os.path.getsize(add_pcap_dir(f))
                    for f in os.listdir(PCAP_DIR) if f.endswith('.pcap'))
 
-    def delete_pcaps(self):
-        while self.all_pcap_size > settings.PCAP_SIZE_LIMIT:
-            self.delete_oldest_pcap()
-
     def delete_oldest_pcap(self):
 
         oldest_pcap = min((f for f in os.listdir(PCAP_DIR)
@@ -321,9 +319,10 @@ class PcapDownloadQuery(TableQueryBase):
 
         # check if pcaps directory exists, if not make the directory
         if not os.path.exists(PCAP_DIR):
-            subprocess.Popen('mkdir %s' % PCAP_DIR, shell=True).wait()
+            os.mkdir(PCAP_DIR)
 
-        self.delete_pcaps()
+        while self.all_pcap_size > settings.PCAP_SIZE_LIMIT:
+            self.delete_oldest_pcap()
 
         self.filename = add_pcap_dir('%s.pcap' % handle)
 
