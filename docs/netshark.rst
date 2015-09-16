@@ -208,7 +208,7 @@ A View object encapsulates everything needed to read data from an
 existing view on a NetShark.  Every view has one or more associated
 *outputs*.  For example, the standard "Bandwidth over time" view has
 separate outputs for "bits over time", "bytes over time", and "packets
-over time".  In flyscript, a View object contains an associated Output
+over time".  In SteelScript, a View object contains an associated Output
 object for each output.  To read data from a view, you must first
 locate the appropriate Output object, then use the method
 :py:meth:`Output4.get_data()`.

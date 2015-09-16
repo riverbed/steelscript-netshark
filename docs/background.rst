@@ -45,7 +45,7 @@ internally constructs and updates a table much like the one presented
 in the Packet Analyzer user interface.
 
 These examples are just meant to help illustrate what views are at a
-high level.  The details about exactly how views are contstructed and
+high level.  The details about exactly how views are constructed and
 accessed are later in this document and elsewhere in the FlyScript
 documentation.
 
@@ -200,7 +200,7 @@ designated as either a *key* or a *value*.  We begin with value
 fields.  Each value field corresponds to a single output for the view,
 but of course there can be many packets processed by the view, so the
 field has an associated *calculation* that specifies how the
-indvidiual samples are aggregated into a single statistic.  Possible
+individual samples are aggregated into a single statistic.  Possible
 calculations include summing the individual samples, computing the
 average, or finding the minimum or maximum value.
 
