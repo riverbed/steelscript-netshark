@@ -20,47 +20,47 @@ files in this directory named accordingly.
 
 """
 
-import logging
 import copy
+import logging
 import datetime
 
-from steelscript.appfwk.apps.datasource.models import Table
-from steelscript.appfwk.apps.jobs.models import Job, BatchJobRunner
+import pandas
 
+from steelscript.appfwk.apps.datasource.models import Table
+from steelscript.appfwk.apps.jobs import \
+    Job, QueryContinue, QueryComplete
 from steelscript.appfwk.apps.datasource.modules.analysis import \
     AnalysisTable, AnalysisQuery
-
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
-
 from steelscript.appfwk.apps.devices.models import Device
 
 logger = logging.getLogger(__name__)
 
 
 class SharksTable(AnalysisTable):
-    @classmethod
-    def create(cls, name, basetable, **kwargs):
-        kwargs['related_tables'] = {'basetable': basetable}
-        return super(SharksTable, cls).create(name, **kwargs)
-
     class Meta:
         proxy = True
 
     _query_class = 'SharksQuery'
 
+    @classmethod
+    def create(cls, name, basetable, **kwargs):
+        kwargs['related_tables'] = {'basetable': basetable}
+        return super(SharksTable, cls).create(name, **kwargs)
+
 
 class SharksQuery(AnalysisQuery):
-    def post_run(self):
+    def analyze(self, jobs):
         criteria = self.job.criteria
-
-        batch = BatchJobRunner(self)
 
         sharks_query_table = Table.from_ref(
             self.table.options.related_tables['basetable'])
 
+        depjobs = {}
+
         # For every (shark, job), we spin off a new job to grab the data, then
         # merge everything into one dataframe at the end.
-        for s in Device.objects.filter(module='netshark'):
+        for s in Device.objects.filter(module='netshark', enabled=True):
             shark = DeviceManager.get_device(s.id)
 
             for capjob in shark.get_capture_jobs():
@@ -75,12 +75,14 @@ class SharksQuery(AnalysisQuery):
                 job = Job.create(table=sharks_query_table,
                                  criteria=bytes_criteria)
 
-                batch.add_job(job)
+                depjobs[job.id] = job
 
-        batch.run()
+        return QueryContinue(self.collect, depjobs)
+
+    def collect(self, jobs=None):
 
         out = []
-        for job in batch.jobs:
+        for jid, job in jobs.iteritems():
             sharkdata = job.data()
             if sharkdata is not None:
                 s = Device.objects.get(id=job.criteria.netshark_device)
@@ -89,5 +91,6 @@ class SharksQuery(AnalysisQuery):
                             job.criteria.netshark_source_name[5:],
                             sharkdata['generic_bytes']])
 
-        self.data = out
-        return True
+        columns = ['name', 'host', 'capjob', 'bytes']
+        df = pandas.DataFrame(out, columns=columns)
+        return QueryComplete(df)
