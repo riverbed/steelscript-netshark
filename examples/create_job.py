@@ -7,7 +7,6 @@
 # as set forth in the License.
 
 
-
 """
 This script shows how to create a Capture Job in the simplest possible way:
 only the required job parameters are set, while all the optional parameters
@@ -18,9 +17,9 @@ from steelscript.netshark.core.app import NetSharkApp
 from steelscript.common.datautils import bytes2human
 
 
-class CreateJob(NetSharkApp):
+class CreateJobApp(NetSharkApp):
     def add_options(self, parser):
-        super(CreateJob, self).add_options(parser)
+        super(CreateJobApp, self).add_options(parser)
         parser.add_option('-j', '--jobname', default=None, help='job name')
         parser.add_option('--capture-port', help='capture port')
         parser.add_option('-s', '--size', help='size', default=None)
@@ -36,9 +35,11 @@ class CreateJob(NetSharkApp):
             ifc = self.netshark.get_interface_by_name(self.options.capture_port)
         except KeyError:
             print 'Capture Ports:'
-            interfaces = self.netshark.get_interfaces()
+            interfaces = [ifc for ifc in self.netshark.get_interfaces()
+                          if 'virtual_info' not in ifc.__dict__['data']]
+
             for i, ifc in enumerate(interfaces):
-                print '\t{0}. {1}'.format(i + 1, ifc)
+                print '\t{0}. {1} {2}'.format(i + 1, ifc.id, ifc.description)
 
             while 1:
                 idx = raw_input('Port number(1-{0})? '.format(len(interfaces)))
@@ -71,4 +72,4 @@ class CreateJob(NetSharkApp):
 
 
 if __name__ == '__main__':
-    CreateJob().run()
+    CreateJobApp().run()

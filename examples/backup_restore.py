@@ -21,6 +21,9 @@ from steelscript.netshark.core.app import NetSharkApp
 
 class BackupApp(NetSharkApp):
     config_types = ['basic', 'auth', 'jobs', 'profiler_export', 'audit', 'protocols', 'users']
+    protocol_resources = ['port_definitions', 'port_groups', 'l4_mappings',
+                          'custom_applications', 'srt_ports', 'snmp',
+                          'alerts']
 
     def add_options(self, parser):
         super(BackupApp, self).add_options(parser)
@@ -41,7 +44,7 @@ class BackupApp(NetSharkApp):
         else:
             self.types = self.options.types.split(',')
             for t in self.types:
-                if not t in self.config_types:
+                if t not in self.config_types:
                     raise ValueError("Invalid configuration type %s" % t)
 
         if self.options.filename is None:
@@ -87,18 +90,20 @@ class BackupApp(NetSharkApp):
                 self.config['profiler_export'] = self.netshark.api.settings.get_profiler_export()
 
             elif t == 'protocols':
-                print "Backing up protocol names / protocol groups..."
-                self.config['protocol_groups'] = self.netshark.api.settings.get_protocol_groups()
-                self.config['protocol_names'] = self.netshark.api.settings.get_protocol_names()
+                for resource in self.protocol_resources:
+                    print "Backing up %s" % resource
+                    self.config[resource] = getattr(self.netshark.api,
+                                                    resource).get()
 
             elif t == 'jobs':
                 print "Backing up jobs..."
-                self.config['jobs'] = [j.config for j in self.netshark.api.jobs.get_all()]
+                self.config['jobs'] = [j['config']
+                                       for j in self.netshark.api.jobs.get_all()]
 
             elif t == 'users':
                 print "Backing up users and groups..."
-                self.config['users'] = self.netshark.api.auth.users.get_all()
-                self.config['groups'] = self.netshark.api.auth.groups.get_all()
+                self.config['users'] = self.netshark.api.users.get()
+                self.config['groups'] = self.netshark.api.groups.get()
 
         json.dump(self.config, f, indent=4)
         print "Backup complete."
@@ -129,7 +134,7 @@ class BackupApp(NetSharkApp):
                 self.netshark.api.settings.update_auth(self.config['auth'])
 
                 print "Restoring (reconnecting to netshark...)"
-                self.connect()
+                self.netshark.connect()
 
             elif t == 'audit':
                 print "Restoring audit settings..."
@@ -140,9 +145,10 @@ class BackupApp(NetSharkApp):
                 self.netshark.api.settings.update_profiler_export(self.config['profiler_export'])
 
             elif t == 'protocols':
-                print "Restoring protocol names / protocol groups..."
-                self.netshark.api.settings.update_protocol_names(self.config['protocol_names'])
-                self.netshark.api.settings.update_protocol_groups(self.config['protocol_groups'])
+                for resource in self.protocol_resources:
+                    print "Restoring %s" % resource
+                    self.config[resource] = getattr(self.netshark.api,
+                                                    resource).get()
 
             elif t == 'jobs':
                 print "Restoring jobs..."
@@ -152,7 +158,7 @@ class BackupApp(NetSharkApp):
 
                 config_by_name = {}
                 for j in job_config:
-                    config_by_name[j.config.name] = j.config
+                    config_by_name[j['config']['name']] = j['config']
 
                 for new_job in self.config['jobs']:
                     if new_job.name in config_by_name:
@@ -169,11 +175,11 @@ class BackupApp(NetSharkApp):
             elif t == 'users':
                 print "Restoring groups..."
                 # Don't blow away existing groups with the same configuration
-                group_config = self.netshark.api.auth.groups.get_all()
+                group_config = self.netshark.api.groups.get()
 
                 config_by_name = {}
                 for g in group_config:
-                    config_by_name[g.name] = g
+                    config_by_name[g['name']] = g
 
                 for new_group in self.config['groups']:
                     if new_group.name in config_by_name:
@@ -188,11 +194,11 @@ class BackupApp(NetSharkApp):
                     self.netshark.api.auth.groups.add(new_group)
 
                 print "Restoring users..."
-                user_config = self.netshark.api.auth.users.get_all()
+                user_config = self.netshark.api.users.get()
 
                 config_by_name = {}
                 for u in user_config:
-                    config_by_name[u.name] = u
+                    config_by_name[u['name']] = u
 
                 for new_user in self.config['users']:
                     if new_user.name in config_by_name:
