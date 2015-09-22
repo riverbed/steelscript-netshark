@@ -133,8 +133,8 @@ class BackupApp(NetSharkApp):
                 print "Restoring authentication settings..."
                 self.netshark.api.settings.update_auth(self.config['auth'])
 
-                print "Restoring (reconnecting to netshark...)"
-                self.netshark.connect()
+                print "Reauthenticating to netshark..."
+                self.netshark.reauthenticate()
 
             elif t == 'audit':
                 print "Restoring audit settings..."
