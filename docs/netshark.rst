@@ -1,6 +1,8 @@
 NetShark, Packet Sources and Views
 ==================================
 
+.. automodule:: steelscript.netshark.core
+
 .. currentmodule:: steelscript.netshark.core
 
 :py:class:`NetShark` Objects
@@ -156,30 +158,8 @@ Interface Objects
 
 Trace Clip Objects
 ~~~~~~~~~~~~~~~~~~
-
-Trace clip objects are used to work with trace clips.
-These objects are not instantiated directly but are returned from
-methods such as :py:meth:`NetShark.get_clips`.
-
-.. autoclass:: Clip4
-   :members:
-
-   Trace clip objects have the following properties:
-
-   * :py:meth:`.description`
-   * :py:meth:`.size`
-
-   * :py:meth:`.add`
-   * :py:meth:`.delete`
-   * :py:meth:`.download`
-
-   These methods provide a way to obtain clip objects, though it
-   is usually easier to use methods like `NetShark.get_clips`.
-
-   * :py:meth:`Clip4.get`
-   * :py:meth:`.get_all`
-
-   Complete method and property descriptions:
+.. note::
+   See section :ref:`Trace Clip Objects (v4) <Clip4>` for details.
 
 .. _extractor-fields:
 

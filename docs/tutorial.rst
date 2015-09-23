@@ -32,7 +32,7 @@ As with any Python code, the first step is to import the module(s) we
 intend to use.  The SteelScript code for working with NetShark
 appliances resides in a module called
 :py:mod:`steelscript.netshark.core`.  The main class in this module is
-:py:class:`NetShark <steelscript.netshark.core.netshark.NetShark>`.
+:py:class:`NetShark <steelscript.netshark.core.NetShark>`.
 This object represents a connection to a NetShark appliance.
 
 To start, start python from the shell or command line:
@@ -583,7 +583,7 @@ Save your changes and rerun the script (without the ``-i`` this time):
 This script now runs a total of 4 views, the first view collects bytes
 and packets per IP address.  The subsequent views collect bytes and
 packets per protocol for an individual IP address using a
-:py:class:`NetSharkFilter`:
+:py:class:`NetSharkFilter <steelscript.netshark.core.filters>`:
 
 .. code-block:: python
 
