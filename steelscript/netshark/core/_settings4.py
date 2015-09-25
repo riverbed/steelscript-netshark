@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Riverbed Technology, Inc.
+# Copyright (c) 2015 Riverbed Technology, Inc.
 #
 # This software is licensed under the terms and conditions of the MIT License
 # accompanying the software ("License").  This software is distributed "AS IS"
@@ -441,7 +441,7 @@ class Storage(NoBulk, BasicSettingsFunctionality):
            This operation will lose all packets in every job
 
         :param bool wait: set to True to wait for the packet storage to be
-        back again before returning
+            back again before returning
         """
         self._api.reinitialize()
 

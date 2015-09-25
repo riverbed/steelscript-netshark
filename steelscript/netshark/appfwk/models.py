@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Riverbed Technology, Inc.
+# Copyright (c) 2015 Riverbed Technology, Inc.
 #
 # This software is licensed under the terms and conditions of the MIT License
 # accompanying the software ("License").  This software is distributed "AS IS"
@@ -8,6 +8,7 @@ import datetime
 import pytz
 
 from django.db import models
+
 
 class NetSharkViews(models.Model):
 
@@ -51,7 +52,7 @@ class NetSharkViews(models.Model):
                 title = view.config['info']['title']
                 nv = NetSharkViews(netsharkname=netshark.host,
                                    viewname=title,
-                                   viewid = view.handle)
+                                   viewid=view.handle)
                 nv.save()
                 if title == viewname:
                     match = view

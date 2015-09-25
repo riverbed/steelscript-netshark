@@ -1,6 +1,8 @@
 NetShark, Packet Sources and Views
 ==================================
 
+.. automodule:: steelscript.netshark.core
+
 .. currentmodule:: steelscript.netshark.core
 
 :py:class:`NetShark` Objects
@@ -59,6 +61,10 @@ NetShark, Packet Sources and Views
    * :py:meth:`.get_extractor_fields`
    * :py:meth:`.find_extractor_field_by_name`
    * :py:meth:`.search_extractor_fields`
+
+   The following method is used to create an export from a source:
+
+   * :py:meth:`.create_export`
 
    Complete method descriptions:
 
@@ -152,30 +158,8 @@ Interface Objects
 
 Trace Clip Objects
 ~~~~~~~~~~~~~~~~~~
-
-Trace clip objects are used to work with trace clips.
-These objects are not instantiated directly but are returned from
-methods such as :py:meth:`NetShark.get_clips`.
-
-.. autoclass:: Clip4
-   :members:
-
-   Trace clip objects have the following properties:
-
-   * :py:meth:`.description`
-   * :py:meth:`.size`
-
-   * :py:meth:`.add`
-   * :py:meth:`.delete`
-   * :py:meth:`.download`
-
-   These methods provide a way to obtain clip objects, though it
-   is usually easier to use methods like `NetShark.get_clips`.
-
-   * :py:meth:`Clip4.get`
-   * :py:meth:`.get_all`
-
-   Complete method and property descriptions:
+.. note::
+   See section :ref:`Trace Clip Objects (v4) <Clip4>` for details.
 
 .. _extractor-fields:
 
@@ -204,7 +188,7 @@ A View object encapsulates everything needed to read data from an
 existing view on a NetShark.  Every view has one or more associated
 *outputs*.  For example, the standard "Bandwidth over time" view has
 separate outputs for "bits over time", "bytes over time", and "packets
-over time".  In flyscript, a View object contains an associated Output
+over time".  In SteelScript, a View object contains an associated Output
 object for each output.  To read data from a view, you must first
 locate the appropriate Output object, then use the method
 :py:meth:`Output4.get_data()`.
@@ -212,6 +196,14 @@ locate the appropriate Output object, then use the method
 .. autoclass:: View4
    :members:
    :inherited-members:
+
+Export Objects
+--------------
+
+.. autoclass:: Export4
+   :members:
+   :inherited-members:
+   :show-inheritance:
 
 .. _output-objects:
 

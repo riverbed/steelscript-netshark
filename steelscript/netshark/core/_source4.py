@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Riverbed Technology, Inc.
+# Copyright (c) 2015 Riverbed Technology, Inc.
 #
 # This software is licensed under the terms and conditions of the MIT License
 # accompanying the software ("License").  This software is distributed "AS IS"
@@ -13,7 +13,7 @@ from steelscript.netshark.core._exceptions import NetSharkException
 from steelscript.common import datautils, timeutils
 
 
-__all__ = ['Interface4', 'Clip4', 'Job4']
+__all__ = ['Interface4', 'Clip4', 'Job4', 'Export4']
 
 
 class Interface4(_interfaces._InputSource):
@@ -455,3 +455,7 @@ class Job4(_interfaces.Job):
     def get_index_info(self):
         """Return statistics about the capture job index."""
         return self._api.get_index(self.id)
+
+
+class Export4(_interfaces.Export):
+    pass

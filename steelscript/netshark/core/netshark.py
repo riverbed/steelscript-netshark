@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Riverbed Technology, Inc.
+# Copyright (c) 2015 Riverbed Technology, Inc.
 #
 # This software is licensed under the terms and conditions of the MIT License
 # accompanying the software ("License").  This software is distributed "AS IS"
@@ -632,6 +632,31 @@ class NetShark(Service):
         if case_id:
             config['case_id'] = int(case_id)
         return self.api.system.get_sysdump(path, config)
+
+    def create_export(self, source, timefilter, filters=None,
+                      wait_for_data=False, wait_duration=10):
+        """Create a pcap Export object.
+
+        :param source: source to use for packets: Job, View, Interface
+            or TraceClip
+
+        :param timefilter: time range of packets to export
+
+        :param filters: additional filters
+
+        :param wait_for_data: Boolean to indicate if additional retries
+            should be made if the export request initially fails.  If True,
+            up to three attempts will be made with an interval of
+            ``wait_duration``.
+
+        :param wait_duration: interval of time to wait between export
+            attempts, if ``wait_for_data`` is True.
+
+        :returns: :class:`Export4`
+
+        """
+        return self.classes.Export.create(self, source, timefilter, filters,
+                                          wait_for_data, wait_duration)
 
     @property
     def version(self):

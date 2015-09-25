@@ -1,4 +1,4 @@
-# Copyright (c) 2014 Riverbed Technology, Inc.
+# Copyright (c) 2015 Riverbed Technology, Inc.
 #
 # This software is licensed under the terms and conditions of the MIT License
 # accompanying the software ("License").  This software is distributed "AS IS"
@@ -214,9 +214,11 @@ class Interfaces(API4Group):
         """ Return details for a specific export """
         return self._xjtrans("/interfaces/%s/exports/%s" % (handle, export_id), "GET", None, as_json, timestamp_format)
 
-    def get_packets_from_export(self, handle, export_id, path=None):
+    def get_packets_from_export(self, handle, export_id, path=None, overwrite=False):
         """ Fetch packets from export ID """
-        return self.shark.conn.download(self.uri_prefix + "/interfaces/%s/exports/%s/packets" % (handle, export_id), path)
+        return self.shark.conn.download(
+            self.uri_prefix + "/interfaces/%s/exports/%s/packets" % (handle, export_id),
+            path, overwrite=overwrite)
 
     def get_packets(self, handle, path=None, params=None):
         """ Directly fetch packets for this interface, with optional parameters """
@@ -264,9 +266,11 @@ class Jobs(API4Group):
         """ Delete an export """
         return self._xjtrans("/jobs/%s/exports/%s" % (handle, export_id), "DELETE", None, True, APITimestampFormat.NANOSECOND)
 
-    def get_packets_from_export(self, handle, export_id, path=None):
+    def get_packets_from_export(self, handle, export_id, path=None, overwrite=False):
         """ Fetch packets from export ID """
-        return self.shark.conn.download(self.uri_prefix + "/jobs/%s/exports/%s/packets" % (handle, export_id), path)
+        return self.shark.conn.download(
+            self.uri_prefix + "/jobs/%s/exports/%s/packets" % (handle, export_id),
+            path, overwrite=overwrite)
 
     def get_packets(self, handle, path=None, params=None):
         """ Directly fetch packets for this job, with optional parameters """
@@ -333,9 +337,11 @@ class Clips(API4Group):
         """ Delete an export """
         return self._xjtrans("/clips/%s/exports/%s" % (handle, export_id), "DELETE", None, True, APITimestampFormat.NANOSECOND)
 
-    def get_packets_from_export(self, handle, export_id, path=None):
+    def get_packets_from_export(self, handle, export_id, path=None, overwrite=False):
         """ Fetch packets from export ID """
-        return self.shark.conn.download(self.uri_prefix + "/clips/%s/exports/%s/packets" % (handle, export_id), path)
+        return self.shark.conn.download(
+            self.uri_prefix + "/clips/%s/exports/%s/packets" % (handle, export_id),
+            path, overwrite=overwrite)
 
     def get_packets(self, handle, path=None, params=None):
         """ Directly fetch packets from this clip, with optional parameters """
@@ -411,11 +417,13 @@ class Files(API4Group):
             path = path[1:]
         return self.shark.conn.upload(self.uri_prefix + "/fs/%s" % path, local_file_ref, extra_headers=headers)
 
-    def download(self, path, local_path=None):
+    def download(self, path, local_path=None, overwrite=False):
         """Convenience function to download a file."""
         if path[0] == '/':
             path = path[1:]
-        return self.shark.conn.download(self.uri_prefix + "/fs/%s/download" % path, path=local_path)
+        return self.shark.conn.download(
+            self.uri_prefix + "/fs/%s/download" % path,
+            path=local_path, overwrite=overwrite)
 
     def delete(self, path):
         """Delete a file from the system."""
@@ -513,11 +521,13 @@ class Files(API4Group):
             path = path[1:]
         return self._xjtrans("/fs/%s/exports/%s" % (path, export_id), "DELETE", None, True, APITimestampFormat.NANOSECOND)
 
-    def get_packets_from_export(self, path, export_id, local_path=None):
+    def get_packets_from_export(self, path, export_id, local_path=None, overwrite=False):
         """ Fetch packets from export ID """
         if path[0] == '/':
             path = path[1:]
-        return self.shark.conn.download(self.uri_prefix + "/fs/%s/exports/%s/packets" % (path, export_id), local_path)
+        return self.shark.conn.download(
+            self.uri_prefix + "/fs/%s/exports/%s/packets" % (path, export_id),
+            local_path, overwrite=overwrite)
 
     def get_packets(self, path, local_path=None,  params=None):
         """ Directly fetch packets from file on server, with optional parameters """

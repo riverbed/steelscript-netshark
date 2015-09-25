@@ -21,6 +21,8 @@ Interface Objects (v4)
    :members:
    :undoc-members:
 
+.. _Clip4:
+
 Trace Clip Objects (v4)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -30,21 +32,19 @@ methods such as :py:meth:`NetShark.get_clips`.
 
 .. autoclass:: Clip4
    :members:
-   :noindex:
 
    Trace clip objects have the following properties:
 
-   * :py:meth:`.description`
-   * :py:meth:`.size`
+   * :py:attr:`.description`
+   * :py:attr:`.size`
 
-   * :py:meth:`Clip4.add`
-   * :py:meth:`Clip4.delete`
-   * :py:meth:`Clip4.download`
+   * :py:meth:`.add`
+   * :py:meth:`.delete`
+   * :py:meth:`.download`
 
    These methods provide a way to obtain clip objects, though it
-   is usually easier to use methods like `NetShark.get_clips`.
+   is usually easier to use methods like :py:meth:`NetShark.get_clips`.
 
-   * :py:meth:`Clip4.get`
-   * :py:meth:`Clip4.get_all`
+   * :py:meth:`.get_all`
 
    Complete method and property descriptions:

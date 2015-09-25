@@ -32,7 +32,7 @@ As with any Python code, the first step is to import the module(s) we
 intend to use.  The SteelScript code for working with NetShark
 appliances resides in a module called
 :py:mod:`steelscript.netshark.core`.  The main class in this module is
-:py:class:`NetShark <steelscript.netshark.core.netshark.NetShark>`.
+:py:class:`NetShark <steelscript.netshark.core.NetShark>`.
 This object represents a connection to a NetShark appliance.
 
 To start, start python from the shell or command line:
@@ -388,7 +388,7 @@ set ``aggregated=False``?
 
 Normally all data on the NetShark appliance is collected in time
 intervals and will return that data by time.  This is what happens
-when ``aggregrated=False``.  The time interval must be set when you
+when ``aggregated=False``.  The time interval must be set when you
 create the view, but by default it is 1 second.
 
 Let's see what the output would look like when it's not aggregated.
@@ -466,7 +466,7 @@ From this, we can tell that the sample covers the time from 12:41:34
 to 12:41:35.  (Note, to be precise, it actually covers from
 12:41:34.808202 to 12:41:35.808202) Within that interval 289 packets
 were processed and host 11.1.1.90 was involved in each and every one
-of those packets accountoing for 193,299 bytes.
+of those packets accounting for 193,299 bytes.
 
 Let's take a look at the time range covered for each sample using a
 little Python magic.
@@ -583,7 +583,7 @@ Save your changes and rerun the script (without the ``-i`` this time):
 This script now runs a total of 4 views, the first view collects bytes
 and packets per IP address.  The subsequent views collect bytes and
 packets per protocol for an individual IP address using a
-:py:class:`NetSharkFilter`:
+:py:class:`NetSharkFilter <steelscript.netshark.core.filters>`:
 
 .. code-block:: python
 

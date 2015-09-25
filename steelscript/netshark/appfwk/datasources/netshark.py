@@ -1,9 +1,8 @@
-# Copyright (c) 2014 Riverbed Technology, Inc.
+# Copyright (c) 2015 Riverbed Technology, Inc.
 #
 # This software is licensed under the terms and conditions of the MIT License
 # accompanying the software ("License").  This software is distributed "AS IS"
 # as set forth in the License.
-
 
 import time
 import logging
@@ -313,7 +312,7 @@ class NetSharkQuery(TableQueryBase):
                     time.sleep(0.5)
                     with lock:
                         s = view.get_progress()
-                        self.job.progress = s
+                        self.job.mark_progress(s)
                         self.job.save()
                         done = view.is_ready()
 
