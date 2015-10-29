@@ -27,7 +27,7 @@ from steelscript.appfwk.apps.datasource.models import \
 from steelscript.appfwk.apps.datasource.forms import \
     fields_add_time_selection, fields_add_resolution
 from steelscript.appfwk.libs.fields import Function
-
+from steelscript.appfwk.apps.datasource.forms import IDChoiceField
 
 logger = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -129,7 +129,7 @@ class NetSharkTable(DatasourceTable):
                         self.options)
         TableField.create(keyword='netshark_source_name', label='Source',
                           obj=self,
-                          field_cls=forms.ChoiceField,
+                          field_cls=IDChoiceField,
                           parent_keywords=['netshark_device'],
                           dynamic=True,
                           pre_process_func=func)
