@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+[1.0]
+ * Improved support for PCAP exports, including Appfwk classes
+ * Fix example scripts
+ * Improved documentation
+
 [0.9.5.1]
  * Fix readview.py example script
 

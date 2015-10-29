@@ -441,7 +441,7 @@ class Storage(NoBulk, BasicSettingsFunctionality):
            This operation will lose all packets in every job
 
         :param bool wait: set to True to wait for the packet storage to be
-        back again before returning
+            back again before returning
         """
         self._api.reinitialize()
 
