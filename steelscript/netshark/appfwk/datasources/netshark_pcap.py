@@ -123,9 +123,27 @@ class PcapDownloadQuery(TableQueryBase):
 
     def delete_oldest_pcap(self):
 
-        oldest_pcap = min((f for f in os.listdir(PCAP_DIR)
-                           if f.endswith('.pcap')),
-                          key=lambda f: os.stat(add_pcap_dir(f)).st_mtime)
+        oldest_time = 0
+        oldest_pcap = None
+
+        for f in os.listdir(PCAP_DIR):
+            if f.endswith('.pcap'):
+                try:
+                    file_time = os.stat(add_pcap_dir(f)).st_mtime
+                except OSError:
+                    logger.warning("Failed to get time of file %s" % f)
+                    continue
+
+                if oldest_time == 0:
+                    oldest_time = file_time
+                    oldest_pcap = f
+                elif file_time < oldest_time:
+                    oldest_time = file_time
+                    oldest_pcap = f
+
+        if oldest_pcap is None:
+            return
+
         try:
             os.unlink(add_pcap_dir(oldest_pcap))
         except OSError:
