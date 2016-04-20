@@ -25,6 +25,6 @@ tcp.add_column('errors', label='TCP Errors', sortdesc=True,
                default_value=0)
 
 report.add_widget(yui3.BarWidget, tcp,
-                  'TCP Errors', width=6)
+                  'TCP Errors', width=6, height=400)
 report.add_widget(yui3.TableWidget, tcp,
-                  'TCP Errors Table', width=6)
+                  'TCP Errors Table', width=6, height=400)

@@ -63,7 +63,7 @@ z.add_column('max_microburst_1ms_bits', label='uBurst 1ms',
              operation='max', units='B')
 
 # Local Max Microburst detail
-a = FocusedAnalysisTable.create(name='max-focused-table',
+a = FocusedAnalysisTable.create(name='max-focused-table-microburst',
                                 max=True,
                                 zoom_duration='1s',
                                 zoom_resolution='1ms',
@@ -78,9 +78,10 @@ report.add_widget(yui3.TableWidget, a,
 tcp = NetSharkTable.create(name='TCPErrors', aggregated=True)
 
 tcp.add_column('error_type', label='TCP Error Type', iskey=True,
-             extractor='tcp.error_type', datatype='string')
-tcp.add_column('errors', label='TCP Errors',
-             extractor='tcp.errors', datatype='integer', operation='sum', default_value=0)
+               extractor='tcp.error_type', datatype='string')
+tcp.add_column('errors', label='TCP Errors', sortdesc=True,
+               extractor='tcp.errors', datatype='integer',
+               operation='sum', default_value=0)
 
 # Local Min Microburst detail
 a = FocusedAnalysisTable.create(name='max-focused-table-tcp',
@@ -90,6 +91,6 @@ a = FocusedAnalysisTable.create(name='max-focused-table-tcp',
                                 tables={'source': t},
                                 related_tables={'template': tcp})
 report.add_widget(yui3.BarWidget, a,
-                  'TCP Errors', width=6)
+                  'TCP Errors @ Peak 1s Microburst', width=6, height=400)
 report.add_widget(yui3.TableWidget, a,
-                  'TCP Errors Table', width=6)
+                  'TCP Errors Table @ Peak 1s Microburst', width=6, height=400)
