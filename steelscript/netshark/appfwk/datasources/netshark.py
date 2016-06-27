@@ -6,9 +6,10 @@
 
 import time
 import logging
-import threading
 import hashlib
+import threading
 
+import pandas
 from django import forms
 
 from steelscript.netshark.core.types import Operation, Value, Key
@@ -16,9 +17,10 @@ from steelscript.netshark.core.filters import NetSharkFilter, TimeFilter
 from steelscript.netshark.core._class_mapping import path_to_class
 from steelscript.netshark.appfwk.models import NetSharkViews
 
-from steelscript.common import timeutils
 from steelscript.common.timeutils import (parse_timedelta,
-                                          timedelta_total_seconds)
+                                          timedelta_total_seconds,
+                                          datetime_to_nanoseconds,
+                                          datetime_to_microseconds)
 
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
@@ -27,7 +29,8 @@ from steelscript.appfwk.apps.datasource.models import \
 from steelscript.appfwk.apps.datasource.forms import \
     fields_add_time_selection, fields_add_resolution
 from steelscript.appfwk.libs.fields import Function
-
+from steelscript.appfwk.apps.datasource.forms import IDChoiceField
+from steelscript.appfwk.apps.jobs import QueryComplete
 
 logger = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -129,7 +132,7 @@ class NetSharkTable(DatasourceTable):
                         self.options)
         TableField.create(keyword='netshark_source_name', label='Source',
                           obj=self,
-                          field_cls=forms.ChoiceField,
+                          field_cls=IDChoiceField,
                           parent_keywords=['netshark_device'],
                           dynamic=True,
                           pre_process_func=func)
@@ -151,10 +154,6 @@ class NetSharkTable(DatasourceTable):
 
 class NetSharkQuery(TableQueryBase):
 
-    def fake_run(self):
-        import fake_data
-        self.data = fake_data.make_data(self.table, self.job)
-
     def run(self):
         """ Main execution method
         """
@@ -173,9 +172,6 @@ class NetSharkQuery(TableQueryBase):
             logger.debug('%s: No netshark device selected' % self.table)
             self.job.mark_error("No NetShark Device Selected")
             return False
-
-        #self.fake_run()
-        #return True
 
         shark = DeviceManager.get_device(criteria.netshark_device)
 
@@ -211,8 +207,8 @@ class NetSharkQuery(TableQueryBase):
                           operation,
                           description=tc.label,
                           default_value=tc_options.default_value)
-                self.column_names.append(tc.name)
 
+            self.column_names.append(tc.name)
             columns.append(c)
 
         # Identify Sort Column
@@ -317,8 +313,8 @@ class NetSharkQuery(TableQueryBase):
                         done = view.is_ready()
 
         logger.debug("Retrieving data for timeframe: %s - %s" %
-                     (timeutils.datetime_to_nanoseconds(criteria.starttime),
-                      timeutils.datetime_to_nanoseconds(criteria.endtime)))
+                     (datetime_to_nanoseconds(criteria.starttime),
+                      datetime_to_nanoseconds(criteria.endtime)))
 
         # Retrieve the data
         with lock:
@@ -334,9 +330,9 @@ class NetSharkQuery(TableQueryBase):
             if live:
                 # For live views, attach the time frame to the get_data()
                 getdata_kwargs['start'] = (
-                    timeutils.datetime_to_nanoseconds(criteria.starttime))
+                    datetime_to_nanoseconds(criteria.starttime))
                 getdata_kwargs['end'] = (
-                    timeutils.datetime_to_nanoseconds(criteria.endtime))
+                    datetime_to_nanoseconds(criteria.endtime))
 
             self.data = view.get_data(**getdata_kwargs)
 
@@ -351,7 +347,7 @@ class NetSharkQuery(TableQueryBase):
         logger.info("NetShark Report %s returned %s rows" %
                     (self.job, len(self.data)))
 
-        return True
+        return QueryComplete(self.data)
 
     def parse_data(self):
         """Reformat netshark data results to be uniform tabular format."""
@@ -360,7 +356,7 @@ class NetSharkQuery(TableQueryBase):
             # use sample times for each row
             for d in self.data:
                 if d['t'] is not None:
-                    t = timeutils.datetime_to_microseconds(d['t']) / float(10 ** 6)
+                    t = datetime_to_microseconds(d['t']) / float(10 ** 6)
                     out.extend([t] + x for x in d['vals'])
 
         else:

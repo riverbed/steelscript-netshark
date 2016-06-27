@@ -112,15 +112,42 @@ class PcapDownloadQuery(TableQueryBase):
 
     @property
     def all_pcap_size(self):
-        return sum(os.path.getsize(add_pcap_dir(f))
-                   for f in os.listdir(PCAP_DIR) if f.endswith('.pcap'))
+        total = 0
+        for f in os.listdir(PCAP_DIR):
+            if f.endswith('.pcap'):
+                try:
+                    total += os.path.getsize(add_pcap_dir(f))
+                except OSError:
+                    logger.warning("Failed to read size of file %s" % f)
+        return total
 
     def delete_oldest_pcap(self):
 
-        oldest_pcap = min((f for f in os.listdir(PCAP_DIR)
-                           if f.endswith('.pcap')),
-                          key=lambda f: os.stat(add_pcap_dir(f)).st_mtime)
-        os.unlink(add_pcap_dir(oldest_pcap))
+        oldest_time = 0
+        oldest_pcap = None
+
+        for f in os.listdir(PCAP_DIR):
+            if f.endswith('.pcap'):
+                try:
+                    file_time = os.stat(add_pcap_dir(f)).st_mtime
+                except OSError:
+                    logger.warning("Failed to get time of file %s" % f)
+                    continue
+
+                if oldest_time == 0:
+                    oldest_time = file_time
+                    oldest_pcap = f
+                elif file_time < oldest_time:
+                    oldest_time = file_time
+                    oldest_pcap = f
+
+        if oldest_pcap is None:
+            return
+
+        try:
+            os.unlink(add_pcap_dir(oldest_pcap))
+        except OSError:
+            logger.warning("Failed to remove oldest file %s" % oldest_pcap)
 
         handle = re.sub('\.pcap$', '', oldest_pcap)
 
@@ -158,4 +185,5 @@ class PcapDownloadQuery(TableQueryBase):
                 wait_for_data=self.table.options.wait_for_data,
                 wait_duration=self.table.options.wait_duration) as e:
             self.download(e)
+
         return QueryComplete(pandas.DataFrame([dict(filename=self.filename)]))
