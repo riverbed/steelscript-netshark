@@ -347,8 +347,7 @@ class NetSharkQuery(TableQueryBase):
         logger.info("NetShark Report %s returned %s rows" %
                     (self.job, len(self.data)))
 
-        df = pandas.DataFrame(self.data, columns=self.column_names)
-        return QueryComplete(df)
+        return QueryComplete(self.data)
 
     def parse_data(self):
         """Reformat netshark data results to be uniform tabular format."""
