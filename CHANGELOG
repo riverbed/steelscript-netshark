@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+[1.1]
+ * OS and file system operation fixes.
+ * TCP error metrics support added.
+
 [1.0]
  * Improved support for PCAP exports, including Appfwk classes
  * Fix example scripts
