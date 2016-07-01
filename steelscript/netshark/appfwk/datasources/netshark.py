@@ -104,7 +104,7 @@ class NetSharkTable(DatasourceTable):
 
     FIELD_OPTIONS = {'duration': '1m',
                      'durations': ('1m', '15m'),
-                     'resolution': '1m',
+                     'resolution': '1s',
                      'resolutions': ('1s', '1m'),
                      }
 
