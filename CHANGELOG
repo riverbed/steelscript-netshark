@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+[1.1.1]
+ * Add support for BPF filter fields in App Framework
+ * Add example script to list out NetShark capture jobs, clips, and files
+ * Fix appfwk bug that always selected 1min resolution
+
 [1.1]
  * OS and file system operation fixes.
  * TCP error metrics support added.
