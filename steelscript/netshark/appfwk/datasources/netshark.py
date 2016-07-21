@@ -9,11 +9,11 @@ import logging
 import hashlib
 import threading
 
-import pandas
 from django import forms
 
 from steelscript.netshark.core.types import Operation, Value, Key
-from steelscript.netshark.core.filters import NetSharkFilter, TimeFilter
+from steelscript.netshark.core.filters import NetSharkFilter, TimeFilter, \
+    BpfFilter
 from steelscript.netshark.core._class_mapping import path_to_class
 from steelscript.netshark.appfwk.models import NetSharkViews
 
@@ -89,6 +89,30 @@ class NetSharkColumn(Column):
                       'default_value': None}
 
 
+def fields_add_filterexpr(table, keyword='netshark_filterexpr',
+                          initial=None):
+    field = TableField(keyword=keyword,
+                       label='NetShark Filter Expression',
+                       help_text='Traffic expression using '
+                                 'NetShark filter syntax',
+                       initial=initial,
+                       required=False)
+    field.save()
+    table.fields.add(field)
+
+
+def fields_add_bpf_filterexpr(table, keyword='netshark_bpf_filterexpr',
+                              initial=None):
+    field = TableField(keyword=keyword,
+                       label='NetShark BPF Filter Expression',
+                       help_text='Traffic expression using '
+                                 'BPF filter syntax',
+                       initial=initial,
+                       required=False)
+    field.save()
+    table.fields.add(field)
+
+
 class NetSharkTable(DatasourceTable):
     class Meta:
         proxy = True
@@ -99,25 +123,16 @@ class NetSharkTable(DatasourceTable):
     TABLE_OPTIONS = {'aggregated': False,
                      'include_files': False,
                      'include_interfaces': False,
-                     'include_persistent': False
+                     'include_persistent': False,
+                     'include_filter': True,       # included by default
+                     'include_bpf_filter': False,
                      }
 
     FIELD_OPTIONS = {'duration': '1m',
                      'durations': ('1m', '15m'),
-                     'resolution': '1m',
+                     'resolution': '1s',
                      'resolutions': ('1s', '1m'),
                      }
-
-    def fields_add_filterexpr(self, keyword='netshark_filterexpr',
-                              initial=None):
-        field = TableField(keyword=keyword,
-                           label='NetShark Filter Expression',
-                           help_text='Traffic expression using '
-                                     'NetShark filter syntax',
-                           initial=initial,
-                           required=False)
-        field.save()
-        self.fields.add(field)
 
     def post_process_table(self, field_options):
         duration = field_options['duration']
@@ -149,7 +164,12 @@ class NetSharkTable(DatasourceTable):
         fields_add_resolution(self,
                               initial=field_options['resolution'],
                               resolutions=field_options['resolutions'])
-        self.fields_add_filterexpr()
+
+        if self.options.include_filter:
+            fields_add_filterexpr(self)
+
+        if self.options.include_bpf_filter:
+            fields_add_bpf_filterexpr(self)
 
 
 class NetSharkQuery(TableQueryBase):
@@ -226,12 +246,25 @@ class NetSharkQuery(TableQueryBase):
         criteria = self.job.criteria
 
         filters = []
-        filterexpr = self.job.combine_filterexprs(
-            exprs=criteria.netshark_filterexpr,
-            joinstr="&"
-        )
-        if filterexpr:
-            filters.append(NetSharkFilter(filterexpr))
+
+        if hasattr(criteria, 'netshark_filterexpr'):
+            logger.debug('calculating netshark filter expression ...')
+            filterexpr = self.job.combine_filterexprs(
+                exprs=criteria.netshark_filterexpr,
+                joinstr="&"
+            )
+            if filterexpr:
+                logger.debug('applying netshark filter expression: %s'
+                             % filterexpr)
+                filters.append(NetSharkFilter(filterexpr))
+
+        if hasattr(criteria, 'netshark_bpf_filterexpr'):
+            # TODO evaluate how to combine multiple BPF filters
+            # this will just apply one at a time
+            filterexpr = criteria.netshark_bpf_filterexpr
+            logger.debug('applying netshark BPF filter expression: %s'
+                         % filterexpr)
+            filters.append(BpfFilter(filterexpr))
 
         resolution = criteria.resolution
         if resolution.seconds == 1:
