@@ -4,7 +4,7 @@
 # accompanying the software ("License").  This software is distributed "AS IS"
 # as set forth in the License.
 
-import steelscript.appfwk.apps.report.modules.yui3 as yui3
+import steelscript.appfwk.apps.report.modules.tables as tables
 import steelscript.netshark.appfwk.datasources.netshark_scanner_source as \
     scanner
 
@@ -32,5 +32,5 @@ table.add_column('host', "Host", datatype='string')
 table.add_column('capjob', "Capture Job", datatype='string')
 table.add_column('bytes', "Bytes")
 
-report.add_widget(yui3.TableWidget, table, "Shark Capture Jobs Found",
+report.add_widget(tables.TableWidget, table, "Shark Capture Jobs Found",
                   width=12, height=200)
