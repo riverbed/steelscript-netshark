@@ -5,8 +5,9 @@
 # as set forth in the License.
 
 
-import steelscript.appfwk.apps.report.modules.yui3 as yui3
+import steelscript.appfwk.apps.report.modules.c3 as c3
 from steelscript.appfwk.apps.report.models import Report
+import steelscript.appfwk.apps.report.modules.tables as tables
 from steelscript.netshark.appfwk.datasources.netshark import \
     NetSharkTable
 
@@ -24,7 +25,7 @@ tcp.add_column('errors', label='TCP Errors', sortdesc=True,
                extractor='tcp.errors', datatype='integer', operation='sum',
                default_value=0)
 
-report.add_widget(yui3.BarWidget, tcp,
+report.add_widget(c3.BarWidget, tcp,
                   'TCP Errors', width=6, height=400)
-report.add_widget(yui3.TableWidget, tcp,
+report.add_widget(tables.TableWidget, tcp,
                   'TCP Errors Table', width=6, height=400)

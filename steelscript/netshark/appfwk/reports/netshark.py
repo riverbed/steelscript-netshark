@@ -4,9 +4,9 @@
 # accompanying the software ("License").  This software is distributed "AS IS"
 # as set forth in the License.
 
-
+import steelscript.appfwk.apps.report.modules.c3 as c3
 from steelscript.appfwk.apps.report.models import Report
-import steelscript.appfwk.apps.report.modules.yui3 as yui3
+import steelscript.appfwk.apps.report.modules.tables as tables
 
 from steelscript.netshark.appfwk.datasources.netshark import NetSharkTable
 #
@@ -26,7 +26,7 @@ t.add_column('time', label='Time', iskey=True,
 t.add_column('generic_bits', label='Bits', iskey=False,
              extractor='generic.bits', operation='sum')
 
-report.add_widget(yui3.TimeSeriesWidget, t, 'Overall Bandwidth (Bits)',
+report.add_widget(c3.TimeSeriesWidget, t, 'Overall Bandwidth (Bits)',
                   width=12)
 
 # Table for NetShark
@@ -42,7 +42,7 @@ t.add_column('generic_bits', label='Bits', iskey=False,
 t.add_column('generic_packets', label='Packets', iskey=False, sortdesc=True,
              extractor='generic.packets', operation='sum')
 
-report.add_widget(yui3.TableWidget, t, 'Top 100 Conversations', width=12)
+report.add_widget(tables.TableWidget, t, 'Top 100 Conversations', width=12)
 
 # TCP/UDP Traffic tables
 t = NetSharkTable.create(name='Traffic by TCP/UDP', duration=1,
@@ -55,4 +55,4 @@ t.add_column('udp_bits', label='UDP Bits', iskey=False,
 t.add_column('tcp_bits', label='TCP Bits', iskey=False,
              extractor='tcp.bits', operation='sum', default_value=0)
 
-report.add_widget(yui3.TimeSeriesWidget, t, 'Traffic By Type (Bits)', width=12)
+report.add_widget(c3.TimeSeriesWidget, t, 'Traffic By Type (Bits)', width=12)

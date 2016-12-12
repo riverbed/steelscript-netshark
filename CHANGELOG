@@ -1,6 +1,9 @@
 CHANGELOG
 =========
 
+[1.2]
+ * Update reports to use c3 library. YUI deprecated.
+
 [1.1.1]
  * Add support for BPF filter fields in App Framework
  * Add example script to list out NetShark capture jobs, clips, and files

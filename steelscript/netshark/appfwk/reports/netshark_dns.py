@@ -5,8 +5,9 @@
 # as set forth in the License.
 
 
+import steelscript.appfwk.apps.report.modules.c3 as c3
 from steelscript.appfwk.apps.report.models import Report
-import steelscript.appfwk.apps.report.modules.yui3 as yui3
+import steelscript.appfwk.apps.report.modules.tables as tables
 
 from steelscript.netshark.appfwk.datasources.netshark import NetSharkTable
 #
@@ -29,7 +30,7 @@ s.add_column('dns_count', label='DNS Query Count', datatype='integer',
              extractor='dns.query.count', operation='sum')
 s.add_column('dns_response_time', label='DNS Response Time (ns)',
              units='ms', extractor='dns.response_time', operation='none')
-report.add_widget(yui3.TimeSeriesWidget, s, name, width=12,
+report.add_widget(c3.TimeSeriesWidget, s, name, width=12,
                   altaxis=['dns_response_time'])
 
 # DNS Response Code List for NetShark 1
@@ -43,7 +44,7 @@ s.add_column('dns_total_queries', label='DNS Total Queries',
              datatype='integer', extractor='dns.query.count',
              operation='sum', sortdesc=True)
 
-report.add_widget(yui3.PieWidget, s, name, width=6)
+report.add_widget(c3.PieWidget, s, name, width=6)
 
 # DNS Query Type for NetShark 1
 name = 'DNS Query Type'
@@ -55,7 +56,7 @@ s.add_column('dns_total_queries', label='DNS Total Queries',
              datatype='integer', extractor='dns.query.count',
              operation='sum', sortdesc=True)
 
-report.add_widget(yui3.PieWidget, s, name, width=6)
+report.add_widget(c3.PieWidget, s, name, width=6)
 
 # DNS Request Details Table for NetShark 1
 name = 'Top 100 DNS Requests'
@@ -69,4 +70,4 @@ s.add_column('dns_is_success_str', label='Query Result', iskey=True,
 s.add_column('dns_query_type', label='# Requests',
              datatype='string', extractor='dns.query.count',
              operation='sum', sortdesc=True)
-report.add_widget(yui3.TableWidget, s, name, width=12)
+report.add_widget(tables.TableWidget, s, name, width=12)
