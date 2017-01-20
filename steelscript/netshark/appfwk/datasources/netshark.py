@@ -5,6 +5,7 @@
 # as set forth in the License.
 
 import time
+import pandas
 import logging
 import hashlib
 import threading
@@ -31,6 +32,7 @@ from steelscript.appfwk.apps.datasource.forms import \
 from steelscript.appfwk.libs.fields import Function
 from steelscript.appfwk.apps.datasource.forms import IDChoiceField
 from steelscript.appfwk.apps.jobs import QueryComplete
+from steelscript.appfwk.apps.devices.models import Device
 
 logger = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -397,3 +399,44 @@ class NetSharkQuery(TableQueryBase):
                 out.extend(x for x in d['vals'])
 
         self.data = out
+
+
+class NetSharkJobsTable(DatasourceTable):
+    class Meta:
+        proxy = True
+
+    _query_class = 'NetSharkJobsQuery'
+
+    def post_process_table(self, field_options):
+        self.add_column('netshark', label='NetShark',
+                        datatype='string', iskey=True)
+        self.add_column('job', label='Job', datatype='string', iskey=True)
+        self.add_column('interface', label='Interface', datatype='string')
+        self.add_column('state', label='Status', datatype='string')
+        self.add_column('size', label='Packet Capture Size (Bytes)',
+                        datatype='integer')
+
+
+class NetSharkJobsQuery(TableQueryBase):
+
+    def run(self):
+
+        sks = Device.objects.filter(enabled=True, module='netshark')
+
+        res = []
+        for sk in sks:
+            sk_dev = DeviceManager.get_device(sk.id)
+            for job in sk_dev.get_capture_jobs():
+
+                if_name = job.data['config']['interface_name']
+                if_desc = job.data['config']['interface_description']
+
+                job_data = dict(netshark=sk.name,
+                                job=job.data['config']['name'],
+                                interface='%s (%s)' % (if_name, if_desc),
+                                state=job.data['status']['state'],
+                                size=job.data['status']['packet_size'])
+                logger.debug("job_data %s" % job_data)
+                res.append(job_data)
+
+        return QueryComplete(pandas.DataFrame(res))
