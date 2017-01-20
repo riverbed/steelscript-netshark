@@ -436,7 +436,6 @@ class NetSharkJobsQuery(TableQueryBase):
                                 interface='%s (%s)' % (if_name, if_desc),
                                 state=job.data['status']['state'],
                                 size=job.data['status']['packet_size'])
-                logger.debug("job_data %s" % job_data)
                 res.append(job_data)
 
         return QueryComplete(pandas.DataFrame(res))
