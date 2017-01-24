@@ -21,7 +21,8 @@ from steelscript.netshark.appfwk.models import NetSharkViews
 from steelscript.common.timeutils import (parse_timedelta,
                                           timedelta_total_seconds,
                                           datetime_to_nanoseconds,
-                                          datetime_to_microseconds)
+                                          datetime_to_microseconds,
+                                          nsec_string_to_datetime)
 
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
@@ -410,10 +411,40 @@ class NetSharkJobsTable(DatasourceTable):
     def post_process_table(self, field_options):
         self.add_column('netshark', label='NetShark',
                         datatype='string', iskey=True)
-        self.add_column('job', label='Job', datatype='string', iskey=True)
+        self.add_column('job_name', label='Job Name', datatype='string')
+        self.add_column('job_id', label='Job ID',
+                        datatype='string', iskey=True)
+
         self.add_column('interface', label='Interface', datatype='string')
+        self.add_column('bpf_filter', label='BPF Filter', datatype='string')
+        self.add_column('dpi_enabled', label='Enable DPI', datatype='string')
+        self.add_column('index_enabled', label='Enable Indexing',
+                        datatype='string')
         self.add_column('state', label='Status', datatype='string')
+
+        self.add_column('start_time', label='Start Time', datatype='string')
+        self.add_column('end_time', label='End Time', datatype='string')
+
         self.add_column('size', label='Packet Capture Size (Bytes)',
+                        datatype='integer')
+
+        self.add_column('last_sec_written',
+                        label='Last Second Written (Bytes)',
+                        datatype='integer')
+        self.add_column('last_min_written',
+                        label='Last Minute Written (Bytes)',
+                        datatype='integer')
+        self.add_column('last_hr_written',
+                        label='Last Hour Written (Bytes)',
+                        datatype='integer')
+        self.add_column('last_sec_dropped',
+                        label='Last Second Dropped (Bytes)',
+                        datatype='integer')
+        self.add_column('last_min_dropped',
+                        label='Last Minute Dropped (Bytes)',
+                        datatype='integer')
+        self.add_column('last_hr_dropped',
+                        label='Last Hour Dropped (Bytes)',
                         datatype='integer')
 
 
@@ -429,13 +460,36 @@ class NetSharkJobsQuery(TableQueryBase):
             for job in sk_dev.get_capture_jobs():
 
                 if_name = job.data['config']['interface_name']
-                if_desc = job.data['config']['interface_description']
+
+                start = str(nsec_string_to_datetime(job.packet_start_time))
+                end = str(nsec_string_to_datetime(job.packet_end_time))
+
+                bpf_filter = job.data['config'].get('bpf_filter', '')
+
+                bpf_filter = bpf_filter if len(bpf_filter) <= 20 else \
+                    bpf_filter[:18] + '...'
+
+                pkts_dropped = job.get_stats()['packets_dropped']
+                pkts_written = job.get_stats()['packets_written']
 
                 job_data = dict(netshark=sk.name,
-                                job=job.data['config']['name'],
-                                interface='%s (%s)' % (if_name, if_desc),
+                                job_id=job.data['id'],
+                                job_name=job.data['config']['name'],
+                                interface=if_name,
                                 state=job.data['status']['state'],
-                                size=job.data['status']['packet_size'])
+                                size=job.data['status']['packet_size'],
+                                start_time=start,
+                                end_time=end,
+                                bpf_filter=bpf_filter,
+                                dpi_enabled=str(job.dpi_enabled),
+                                index_enabled=str(job.index_enabled),
+                                last_sec_dropped=pkts_dropped['last_second'],
+                                last_min_dropped=pkts_dropped['last_minute'],
+                                last_hr_dropped=pkts_dropped['last_hour'],
+                                last_sec_written=pkts_written['last_second'],
+                                last_min_written=pkts_written['last_minute'],
+                                last_hr_written=pkts_written['last_hour']
+                                )
                 res.append(job_data)
 
         return QueryComplete(pandas.DataFrame(res))
