@@ -5,6 +5,7 @@
 # as set forth in the License.
 
 import time
+import pandas
 import logging
 import hashlib
 import threading
@@ -20,7 +21,8 @@ from steelscript.netshark.appfwk.models import NetSharkViews
 from steelscript.common.timeutils import (parse_timedelta,
                                           timedelta_total_seconds,
                                           datetime_to_nanoseconds,
-                                          datetime_to_microseconds)
+                                          datetime_to_microseconds,
+                                          nsec_string_to_datetime)
 
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
@@ -31,6 +33,7 @@ from steelscript.appfwk.apps.datasource.forms import \
 from steelscript.appfwk.libs.fields import Function
 from steelscript.appfwk.apps.datasource.forms import IDChoiceField
 from steelscript.appfwk.apps.jobs import QueryComplete
+from steelscript.appfwk.apps.devices.models import Device
 
 logger = logging.getLogger(__name__)
 lock = threading.Lock()
@@ -397,3 +400,61 @@ class NetSharkQuery(TableQueryBase):
                 out.extend(x for x in d['vals'])
 
         self.data = out
+
+
+class NetSharkJobsTable(DatasourceTable):
+    class Meta:
+        proxy = True
+
+    _query_class = 'NetSharkJobsQuery'
+
+
+class NetSharkJobsQuery(TableQueryBase):
+
+    # BPF filter will be rendered wholly if with length less than MAX_LENGTH,
+    # Otherwise only the first 17 characters will be shown.
+    MAX_LENGTH = 20
+
+    def run(self):
+
+        sks = Device.objects.filter(enabled=True, module='netshark')
+
+        res = []
+        for sk in sks:
+            sk_dev = DeviceManager.get_device(sk.id)
+            for job in sk_dev.get_capture_jobs():
+
+                if_name = job.data['config']['interface_name']
+
+                start = str(nsec_string_to_datetime(job.packet_start_time))
+                end = str(nsec_string_to_datetime(job.packet_end_time))
+
+                bpf_filter = job.data['config'].get('bpf_filter', '')
+
+                if len(bpf_filter) > self.MAX_LENGTH:
+                    bpf_filter = bpf_filter[:self.MAX_LENGTH - 2] + '...'
+
+                pkts_dropped = job.get_stats()['packets_dropped']
+                pkts_written = job.get_stats()['packets_written']
+
+                job_data = dict(netshark=sk.name,
+                                job_id=job.data['id'],
+                                job_name=job.data['config']['name'],
+                                interface=if_name,
+                                state=job.data['status']['state'],
+                                size=job.data['status']['packet_size'],
+                                start_time=start,
+                                end_time=end,
+                                bpf_filter=bpf_filter,
+                                dpi_enabled=str(job.dpi_enabled),
+                                index_enabled=str(job.index_enabled),
+                                last_sec_dropped=pkts_dropped['last_second'],
+                                last_min_dropped=pkts_dropped['last_minute'],
+                                last_hr_dropped=pkts_dropped['last_hour'],
+                                last_sec_written=pkts_written['last_second'],
+                                last_min_written=pkts_written['last_minute'],
+                                last_hr_written=pkts_written['last_hour']
+                                )
+                res.append(job_data)
+
+        return QueryComplete(pandas.DataFrame(res))
