@@ -408,45 +408,6 @@ class NetSharkJobsTable(DatasourceTable):
 
     _query_class = 'NetSharkJobsQuery'
 
-    def post_process_table(self, field_options):
-        self.add_column('netshark', label='NetShark',
-                        datatype='string', iskey=True)
-        self.add_column('job_name', label='Job Name', datatype='string')
-        self.add_column('job_id', label='Job ID',
-                        datatype='string', iskey=True)
-
-        self.add_column('interface', label='Interface', datatype='string')
-        self.add_column('bpf_filter', label='BPF Filter', datatype='string')
-        self.add_column('dpi_enabled', label='Enable DPI', datatype='string')
-        self.add_column('index_enabled', label='Enable Indexing',
-                        datatype='string')
-        self.add_column('state', label='Status', datatype='string')
-
-        self.add_column('start_time', label='Start Time', datatype='string')
-        self.add_column('end_time', label='End Time', datatype='string')
-
-        self.add_column('size', label='Packet Capture Size (Bytes)',
-                        datatype='integer')
-
-        self.add_column('last_sec_written',
-                        label='Last Second Written (Bytes)',
-                        datatype='integer')
-        self.add_column('last_min_written',
-                        label='Last Minute Written (Bytes)',
-                        datatype='integer')
-        self.add_column('last_hr_written',
-                        label='Last Hour Written (Bytes)',
-                        datatype='integer')
-        self.add_column('last_sec_dropped',
-                        label='Last Second Dropped (Bytes)',
-                        datatype='integer')
-        self.add_column('last_min_dropped',
-                        label='Last Minute Dropped (Bytes)',
-                        datatype='integer')
-        self.add_column('last_hr_dropped',
-                        label='Last Hour Dropped (Bytes)',
-                        datatype='integer')
-
 
 class NetSharkJobsQuery(TableQueryBase):
 
