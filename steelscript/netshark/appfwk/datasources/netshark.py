@@ -86,6 +86,7 @@ def netshark_source_name_choices(form, id, field_kwargs, params):
 class NetSharkColumn(Column):
     class Meta:
         proxy = True
+        app_label = 'steelscript.netshark.appfwk'
 
     COLUMN_OPTIONS = {'extractor': None,
                       'operation': None,
@@ -119,6 +120,7 @@ def fields_add_bpf_filterexpr(table, keyword='netshark_bpf_filterexpr',
 class NetSharkTable(DatasourceTable):
     class Meta:
         proxy = True
+        app_label = 'steelscript.netshark.appfwk'
 
     _column_class = 'NetSharkColumn'
     _query_class = 'NetSharkQuery'

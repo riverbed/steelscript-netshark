@@ -67,6 +67,7 @@ def logtime(func):
 class PcapDownloadTable(DatasourceTable):
     class Meta:
         proxy = True
+        app_label = 'steelscript.netshark.appfwk'
 
     _query_class = 'PcapDownloadQuery'
 

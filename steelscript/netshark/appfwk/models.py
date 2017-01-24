@@ -12,6 +12,9 @@ from django.db import models
 
 class NetSharkViews(models.Model):
 
+    class Meta:
+        app_label = 'steelscript.netshark.appfwk'
+
     netsharkname = models.CharField(max_length=300)
     viewname = models.CharField(max_length=300)
     viewid = models.CharField(max_length=12)
