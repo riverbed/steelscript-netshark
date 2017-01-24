@@ -411,6 +411,10 @@ class NetSharkJobsTable(DatasourceTable):
 
 class NetSharkJobsQuery(TableQueryBase):
 
+    # BPF filter will be rendered wholly if with length less than MAX_LENGTH,
+    # Otherwise only the first 17 characters will be shown.
+    MAX_LENGTH = 20
+
     def run(self):
 
         sks = Device.objects.filter(enabled=True, module='netshark')
@@ -427,8 +431,8 @@ class NetSharkJobsQuery(TableQueryBase):
 
                 bpf_filter = job.data['config'].get('bpf_filter', '')
 
-                bpf_filter = bpf_filter if len(bpf_filter) <= 20 else \
-                    bpf_filter[:18] + '...'
+                if len(bpf_filter) > self.MAX_LENGTH:
+                    bpf_filter = bpf_filter[:self.MAX_LENGTH - 2] + '...'
 
                 pkts_dropped = job.get_stats()['packets_dropped']
                 pkts_written = job.get_stats()['packets_written']
