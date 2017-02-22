@@ -27,8 +27,8 @@ import datetime
 import pandas
 
 from steelscript.appfwk.apps.datasource.models import Table
-from steelscript.appfwk.apps.jobs import \
-    Job, QueryContinue, QueryComplete
+from steelscript.appfwk.apps.jobs import QueryComplete, QueryContinue
+from steelscript.appfwk.apps.jobs.models import Job
 from steelscript.appfwk.apps.datasource.modules.analysis import \
     AnalysisTable, AnalysisQuery
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 class SharksTable(AnalysisTable):
     class Meta:
         proxy = True
+        app_label = 'steelscript.netshark.appfwk'
 
     _query_class = 'SharksQuery'
 

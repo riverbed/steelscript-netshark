@@ -7,10 +7,12 @@
 
 import pkg_resources
 
-from steelscript.appfwk.apps.plugins import Plugin
+from django.apps import AppConfig
+
+from steelscript.appfwk.apps.plugins import Plugin as AppsPlugin
 
 
-class NetSharkPlugin(Plugin):
+class NetSharkPlugin(AppsPlugin):
     title = 'NetShark Datasource Plugin'
     description = 'A Portal datasource plugin with example report'
     version = pkg_resources.get_distribution('steelscript.netshark').version
@@ -22,3 +24,10 @@ class NetSharkPlugin(Plugin):
     devices = ['devices']
     datasources = ['datasources']
     reports = ['reports']
+
+
+class SteelScriptAppConfig(AppConfig):
+    name = 'steelscript.netshark.appfwk'
+    # label cannot have '.' in it
+    label = 'steelscript_netshark'
+    verbose_name = 'SteelScript NetShark'
