@@ -5,7 +5,7 @@
 # as set forth in the License.
 
 from steelscript.appfwk.apps.report.models import Report
-import steelscript.appfwk.apps.report.modules.tables as tables
+import steelscript.appfwk.apps.report.modules.raw as raw
 
 from steelscript.netshark.appfwk.datasources.netshark_msa import \
     MSADownloadTable
@@ -21,4 +21,4 @@ report.add_section()
 t = MSADownloadTable.create(name='MultiSegment Table')
 t.add_column('results', label='Results', iskey=True)
 
-report.add_widget(tables.TableWidget, t, 'MSA Results', width=12)
+report.add_widget(raw.TableWidget, t, 'MSA Results', width=12)

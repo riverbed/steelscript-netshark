@@ -218,7 +218,7 @@ class MSADownloadQuery(AnalysisQuery):
             filepaths.append((remotefile, localfile))
 
         # create msa from those files
-        filepaths.sort(key=lambda x: x[1])
+        filepaths.sort()
         flist = [s.get_file(remotefile) for remotefile, _ in filepaths]
 
         msafile = upload_dir + '/msa_file.pvt'
@@ -231,13 +231,17 @@ class MSADownloadQuery(AnalysisQuery):
         msa = s.create_multisegment_file(msafile, flist)
         msa.calculate_timeskew(10000)
 
-        result = ['Done']
-        for fp in filepaths:
+        result = ['<strong>Done</strong> - PCAPs successfully downloaded '
+                  'from source NetSharks and uploaded for analysis']
+        result.append('')
+        for remote, local in filepaths:
             result.append(
-                'Local file: %s, Remote file: %s' % fp
+                '<strong>Uploaded file path:</strong> %s' % remote
             )
-        result.append('MSA file created with config: %s' % msa.get_info())
-        return QueryComplete(result)
+        result.append('')
+        result.append('<strong>MSA file created with config:</strong> %s'
+                      % msa.get_info())
+        return QueryComplete(['<br>'.join(result)])
 
 
 class MSATable(NetSharkTable):
