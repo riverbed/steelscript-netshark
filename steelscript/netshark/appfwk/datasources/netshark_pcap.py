@@ -31,8 +31,8 @@ from steelscript.appfwk.apps.datasource.forms import \
 from steelscript.appfwk.libs.fields import Function
 from steelscript.wireshark.appfwk.datasources.wireshark_source import \
     fields_add_filterexpr
-from steelscript.appfwk.apps.jobs import \
-    Job, QueryComplete
+from steelscript.appfwk.apps.jobs import QueryComplete
+from steelscript.appfwk.apps.jobs.models import Job
 from steelscript.netshark.appfwk.datasources.netshark import \
     netshark_source_name_choices
 from steelscript.netshark.core.filters import BpfFilter
