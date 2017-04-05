@@ -7,7 +7,8 @@
 from steelscript.appfwk.apps.report.models import Report
 import steelscript.appfwk.apps.report.modules.tables as tables
 
-from steelscript.netshark.appfwk.datasources.netshark_msa import MSADownloadTable
+from steelscript.netshark.appfwk.datasources.netshark_msa import \
+    MSADownloadTable
 #
 # Define a NetShark Report and Table
 #

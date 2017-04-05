@@ -11,42 +11,34 @@ import copy
 import logging
 
 from django import forms
-from functools import wraps
-from django.conf import settings
 
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.common import datetime_to_seconds
 from steelscript.common.exceptions import RvbdHTTPException
 from steelscript.netshark.appfwk.datasources.netshark_pcap import \
     PcapDownloadTable
-from steelscript.netshark.core.filters import TimeFilter
-from steelscript.netshark.core._class_mapping import path_to_class
 
 from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
 from steelscript.appfwk.apps.datasource.modules.analysis import \
-    AnalysisException, AnalysisTable, AnalysisQuery
-from steelscript.appfwk.apps.datasource.models import \
-    TableField, DatasourceTable, TableQueryBase, Table
-from steelscript.appfwk.apps.datasource.forms import \
-    fields_add_time_selection, fields_add_resolution
+    AnalysisTable, AnalysisQuery
+from steelscript.appfwk.apps.datasource.models import TableField, Table
+from steelscript.appfwk.apps.datasource.forms import fields_add_time_selection
 from steelscript.appfwk.libs.fields import Function
 from steelscript.wireshark.appfwk.datasources.wireshark_source import \
     fields_add_filterexpr
 from steelscript.appfwk.apps.jobs import QueryComplete, QueryContinue
 from steelscript.appfwk.apps.jobs.models import Job
-from steelscript.netshark.appfwk.datasources.netshark import \
-    netshark_source_name_choices
 
 
 logger = logging.getLogger(__name__)
 
 
-def netshark_source_choices(form, id, field_kwargs, params):
+def netshark_source_choices(form, id_, field_kwargs, params):
     """ Query netshark for available capture jobs / trace clips. """
     # simplified clone from base netshark datasource that allows for
     # custom field names
 
-    netshark_device = form.get_field_value(params['field'], id)
+    netshark_device = form.get_field_value(params['field'], id_)
     if netshark_device == '':
         choices = [('', '<No netshark device>')]
     else:
@@ -60,15 +52,6 @@ def netshark_source_choices(form, id, field_kwargs, params):
         for clip in netshark.get_clips():
             choices.append((clip.source_path, 'Clip: ' + clip.description))
 
-#        if params['include_files']:
-#            for f in netshark.get_files():
-#                choices.append((f.source_path, 'File: ' + f.path))
-#
-#        if params['include_interfaces']:
-#            for iface in netshark.get_interfaces():
-#                choices.append((iface.source_path, 'If: ' + iface.description))
-
-    #field_kwargs['label'] = 'Source'
     field_kwargs['choices'] = choices
 
 
