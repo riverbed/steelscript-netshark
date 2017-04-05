@@ -9,15 +9,15 @@ import steelscript.appfwk.apps.report.modules.tables as tables
 
 from steelscript.netshark.appfwk.datasources.netshark_msa import \
     MSADownloadTable
+
 #
-# Define a NetShark Report and Table
+# Download PCAPs from two NetSharks and upload to a third for MSA analysis
 #
 
-report = Report.create('NetShark MSA', position=10)
+report = Report.create('NetShark MSA Download', position=10)
 
 report.add_section()
 
-# NetShark Time Series
 t = MSADownloadTable.create(name='MultiSegment Table')
 t.add_column('results', label='Results', iskey=True)
 

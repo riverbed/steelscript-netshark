@@ -15,6 +15,8 @@ from django import forms
 from steelscript.appfwk.apps.devices.devicemanager import DeviceManager
 from steelscript.common import datetime_to_seconds
 from steelscript.common.exceptions import RvbdHTTPException
+from steelscript.netshark.appfwk.datasources.netshark import NetSharkTable, \
+    fields_add_bpf_filterexpr, NetSharkQuery, NetSharkColumn
 from steelscript.netshark.appfwk.datasources.netshark_pcap import \
     PcapDownloadTable
 
@@ -22,7 +24,8 @@ from steelscript.appfwk.apps.devices.forms import fields_add_device_selection
 from steelscript.appfwk.apps.datasource.modules.analysis import \
     AnalysisTable, AnalysisQuery
 from steelscript.appfwk.apps.datasource.models import TableField, Table
-from steelscript.appfwk.apps.datasource.forms import fields_add_time_selection
+from steelscript.appfwk.apps.datasource.forms import \
+    fields_add_time_selection, IDChoiceField, fields_add_resolution
 from steelscript.appfwk.libs.fields import Function
 from steelscript.wireshark.appfwk.datasources.wireshark_source import \
     fields_add_filterexpr
@@ -34,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 
 def netshark_source_choices(form, id_, field_kwargs, params):
-    """ Query netshark for available capture jobs / trace clips. """
+    """Query netshark for available capture jobs / trace clips."""
     # simplified clone from base netshark datasource that allows for
     # custom field names
 
@@ -51,6 +54,24 @@ def netshark_source_choices(form, id_, field_kwargs, params):
 
         for clip in netshark.get_clips():
             choices.append((clip.source_path, 'Clip: ' + clip.description))
+
+    field_kwargs['choices'] = choices
+
+
+def netshark_msa_file_choices(form, id_, field_kwargs, params):
+    """Query netshark for available MSA files."""
+
+    netshark_device = form.get_field_value('netshark_device', id_)
+    if netshark_device == '':
+        choices = [('', '<No netshark device>')]
+    else:
+        netshark = DeviceManager.get_device(netshark_device)
+
+        choices = []
+
+        for f in netshark.get_files():
+            if hasattr(f, 'list_linked_files'):
+                choices.append((f.source_path, 'MSA File: ' + f.path))
 
     field_kwargs['choices'] = choices
 
@@ -217,3 +238,48 @@ class MSADownloadQuery(AnalysisQuery):
             )
         result.append('MSA file created with config: %s' % msa.get_info())
         return QueryComplete(result)
+
+
+class MSATable(NetSharkTable):
+    class Meta:
+        proxy = True
+        app_label = 'steelscript.netshark.appfwk'
+
+    _query_class = 'MSAQuery'
+
+    def post_process_table(self, field_options):
+        duration = field_options['duration']
+        if isinstance(duration, int):
+            duration = "%dm" % duration
+
+        fields_add_device_selection(self, keyword='netshark_device',
+                                    label='NetShark', module='netshark',
+                                    enabled=True)
+
+        func = Function(netshark_msa_file_choices,
+                        self.options)
+        TableField.create(keyword='netshark_source_name', label='Source',
+                          obj=self,
+                          field_cls=IDChoiceField,
+                          parent_keywords=['netshark_device'],
+                          dynamic=True,
+                          pre_process_func=func)
+
+        fields_add_time_selection(self,
+                                  initial_duration=duration,
+                                  durations=field_options['durations'])
+        fields_add_resolution(self,
+                              initial=field_options['resolution'],
+                              resolutions=field_options['resolutions'])
+
+        if self.options.include_filter:
+            fields_add_filterexpr(self)
+
+        if self.options.include_bpf_filter:
+            fields_add_bpf_filterexpr(self)
+
+
+class MSAQuery(NetSharkQuery):
+
+    def run(self):
+        return super(MSAQuery, self).run()
