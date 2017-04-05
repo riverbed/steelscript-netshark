@@ -150,12 +150,15 @@ class NetSharkTable(DatasourceTable):
 
         func = Function(netshark_source_name_choices,
                         self.options)
-        TableField.create(keyword='netshark_source_name', label='Source',
-                          obj=self,
-                          field_cls=IDChoiceField,
-                          parent_keywords=['netshark_device'],
-                          dynamic=True,
-                          pre_process_func=func)
+        TableField.create(
+            keyword='netshark_source_name', label='Source',
+            obj=self,
+            field_cls=IDChoiceField,
+            field_kwargs={'widget_attrs': {'class': 'form-control'}},
+            parent_keywords=['netshark_device'],
+            dynamic=True,
+            pre_process_func=func
+        )
 
         if self.options.include_persistent:
             TableField.create(keyword='netshark_persistent',
