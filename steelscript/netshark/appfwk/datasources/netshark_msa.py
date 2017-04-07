@@ -9,6 +9,7 @@ import os
 
 import copy
 import logging
+import pprint
 
 from django import forms
 
@@ -34,6 +35,17 @@ from steelscript.appfwk.apps.jobs.models import Job
 
 
 logger = logging.getLogger(__name__)
+
+
+def check_netshark_file(netshark, fname, remove=False):
+    """Check for existance of file on NetShark, optionally removing."""
+    if netshark.exists(fname):
+        if remove:
+            logger.info("Removing existing file: %s" % fname)
+            f = netshark.get_file(fname)
+            f.remove()
+        return True
+    return False
 
 
 def netshark_source_choices(form, id_, field_kwargs, params):
@@ -69,7 +81,12 @@ def netshark_msa_file_choices(form, id_, field_kwargs, params):
 
         choices = []
 
-        for f in netshark.get_files():
+        # TODO - this enables automatic refresh
+        # whenever the report or criteria get reloaded, but
+        # it will cause some extra load when the report runs
+        # since each time a TableForm gets created all the files
+        # will be re-queried
+        for f in netshark.get_files(force_refetch=True):
             if hasattr(f, 'list_linked_files'):
                 choices.append((f.source_path, 'MSA File: ' + f.path))
 
@@ -207,11 +224,7 @@ class MSADownloadQuery(AnalysisQuery):
             )
 
             remotefile = os.path.join(upload_dir, fname)
-            if s.exists(remotefile):
-                logger.info("Removing existing multi-segment PCAP file: %s"
-                            % remotefile)
-                f = s.get_file(remotefile)
-                f.remove()
+            check_netshark_file(s, remotefile, remove=True)
 
             logger.info('Uploading new PCAP %s to %s' % (localfile,
                                                          remotefile))
@@ -221,16 +234,16 @@ class MSADownloadQuery(AnalysisQuery):
 
         # create msa from those files
         filepaths.sort()
-        flist = [s.get_file(remotefile) for remotefile, _ in filepaths]
+        flist = [s.get_file(rfile) for rfile, _ in filepaths]
 
         msafile = upload_dir + '/msa_file.pvt'
-        if s.exists(msafile):
-            logger.info("Removing existing multi-segment file: %s" % msafile)
-            f = s.get_file(msafile)
-            f.remove()
+        check_netshark_file(s, msafile, remove=True)
 
         # create the aggregated file and initiate a timeskew calculation
         msa = s.create_multisegment_file(msafile, flist)
+
+        # pick arbitrary number 10,000 for number of pkts
+        # to use for timeskew calculation
         msa.calculate_timeskew(10000)
 
         result = ['<strong>Done</strong> - PCAPs successfully downloaded '
@@ -241,8 +254,14 @@ class MSADownloadQuery(AnalysisQuery):
                 '<strong>Uploaded file path:</strong> %s' % remote
             )
         result.append('')
-        result.append('<strong>MSA file created with config:</strong> %s'
-                      % msa.get_info())
+
+        config = pprint.pformat(msa.get_info()).splitlines()
+        result.append('<strong>MSA file created with config:</strong> '
+                      '<br>'
+                      '<pre>'
+                      '%s'
+                      '</pre>'
+                      % '<br>'.join(config))
         return QueryComplete(['<br>'.join(result)])
 
 
@@ -252,6 +271,15 @@ class MSATable(NetSharkTable):
         app_label = 'steelscript.netshark.appfwk'
 
     _query_class = 'MSAQuery'
+
+    TABLE_OPTIONS = {'aggregated': False,
+                     'include_files': False,
+                     'include_interfaces': False,
+                     'include_persistent': False,
+                     'include_filter': True,       # included by default
+                     'include_bpf_filter': False,
+                     'show_entire_msa': True,
+                     }
 
     def post_process_table(self, field_options):
         duration = field_options['duration']
@@ -267,6 +295,9 @@ class MSATable(NetSharkTable):
         TableField.create(keyword='netshark_source_name', label='Source',
                           obj=self,
                           field_cls=IDChoiceField,
+                          field_kwargs={
+                              'widget_attrs': {'class': 'form-control'}
+                          },
                           parent_keywords=['netshark_device'],
                           dynamic=True,
                           pre_process_func=func)
@@ -284,8 +315,23 @@ class MSATable(NetSharkTable):
         if self.options.include_bpf_filter:
             fields_add_bpf_filterexpr(self)
 
+        if self.options.show_entire_msa:
+            TableField.create(keyword='entire_msa', obj=self,
+                              field_cls=forms.BooleanField,
+                              label='Entire MSA (ignore start/end times)',
+                              initial=True,
+                              required=False)
+
 
 class MSAQuery(NetSharkQuery):
 
     def run(self):
+        """Run MSA Table"""
+        criteria = self.job.criteria
+
+        # if `entire_msa` option set, change start/end to null values
+        if criteria.entire_msa:
+            criteria.starttime = None
+            criteria.endtime = None
+
         return super(MSAQuery, self).run()

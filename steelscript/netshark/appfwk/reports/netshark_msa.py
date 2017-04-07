@@ -21,4 +21,4 @@ report.add_section()
 t = MSADownloadTable.create(name='MultiSegment Table')
 t.add_column('results', label='Results', iskey=True)
 
-report.add_widget(raw.TableWidget, t, 'MSA Results', width=12)
+report.add_widget(raw.TableWidget, t, 'MSA Results', width=12, height=400)
