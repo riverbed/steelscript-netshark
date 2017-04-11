@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+[1.3]
+ * Add pcap job report
+ * Django 1.8 compatibility
+
 [1.2]
  * Update reports to use c3 library. YUI deprecated.
 
