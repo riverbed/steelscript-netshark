@@ -55,9 +55,9 @@ def setup_capture_job(netshark, name, size=None):
     return job
 
 
-def netshark_source_name_choices(form, id, field_kwargs, params):
+def netshark_source_name_choices(form, id_, field_kwargs, params):
     """ Query netshark for available capture jobs / trace clips. """
-    netshark_device = form.get_field_value('netshark_device', id)
+    netshark_device = form.get_field_value('netshark_device', id_)
     if netshark_device == '':
         choices = [('', '<No netshark device>')]
     else:
@@ -150,12 +150,15 @@ class NetSharkTable(DatasourceTable):
 
         func = Function(netshark_source_name_choices,
                         self.options)
-        TableField.create(keyword='netshark_source_name', label='Source',
-                          obj=self,
-                          field_cls=IDChoiceField,
-                          parent_keywords=['netshark_device'],
-                          dynamic=True,
-                          pre_process_func=func)
+        TableField.create(
+            keyword='netshark_source_name', label='Source',
+            obj=self,
+            field_cls=IDChoiceField,
+            field_kwargs={'widget_attrs': {'class': 'form-control'}},
+            parent_keywords=['netshark_device'],
+            dynamic=True,
+            pre_process_func=func
+        )
 
         if self.options.include_persistent:
             TableField.create(keyword='netshark_persistent',
@@ -317,18 +320,24 @@ class NetSharkQuery(TableQueryBase):
             # Only assign a title for persistent views
             title = None
 
+        timefilter = TimeFilter(start=criteria.starttime, end=criteria.endtime)
+
         if not view:
             # Not persistent, or not yet created...
 
             if not live:
                 # Cannot attach time filter to a live view,
                 # it will be added later at get_data() time
-                tf = TimeFilter(start=criteria.starttime,
-                                end=criteria.endtime)
-                filters.append(tf)
+                if criteria.starttime and criteria.endtime:
+                    filters.append(timefilter)
 
-                logger.info("Setting netshark table %d timeframe to %s" %
-                            (self.table.id, str(tf)))
+                    logger.info("Setting netshark table %d timeframe to %s" %
+                                (self.table.id, str(timefilter)))
+                else:
+                    # if times are set to zero, don't add to filter
+                    # this will process entire timeframe of source instead
+                    logger.info("Not setting netshark table %d timeframe" %
+                                self.table.id)
 
             # Create it
             with lock:
@@ -350,9 +359,7 @@ class NetSharkQuery(TableQueryBase):
                         self.job.save()
                         done = view.is_ready()
 
-        logger.debug("Retrieving data for timeframe: %s - %s" %
-                     (datetime_to_nanoseconds(criteria.starttime),
-                      datetime_to_nanoseconds(criteria.endtime)))
+        logger.debug("Retrieving data for timeframe: %s" % timefilter)
 
         # Retrieve the data
         with lock:

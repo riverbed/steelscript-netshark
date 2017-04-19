@@ -5,7 +5,6 @@
 # as set forth in the License.
 
 
-
 """
 Filters are used to reduce the traffic that is fed to NetShark
 views, and are basic tools when doing data analysis with a NetShark
@@ -28,14 +27,20 @@ FILTERS_MAP.update({
         })
 
 
-__all__ = [ 'TimeFilter', 'NetSharkFilter', 'WiresharkDisplayFilter', 'BpfFilter' ]
+__all__ = [
+    'TimeFilter',
+    'NetSharkFilter',
+    'WiresharkDisplayFilter',
+    'BpfFilter'
+]
+
 
 class Filter(object):
     def __init__(self, *args, **kwargs):
         super(Filter, self).__init__(*args, **kwargs)
 
     def bind(self, shark):
-        """Get the correct version of the filter based on the netshark version
+        """Get the correct version of the filter based on the NetShark version
         """
         mod = FILTERS_MAP[shark.api.__class__]
         try:
