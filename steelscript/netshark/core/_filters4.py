@@ -30,7 +30,7 @@ class TimeFilter(object):
             self.end = 0
 
     def __unicode__(self):
-        return '<TimeFilter - start: %s, end: %s>' % (self.start, self.end)
+        return '<TimeFilter - start: {}, end: {}>'.format(self.start, self.end)
 
     def to_dict(self):
         return {
@@ -45,7 +45,7 @@ class NetSharkFilter(object):
         self.string = string
 
     def __unicode__(self):
-        return '<%s - filter: %s>' % (self.__class__, self.string)
+        return '<{} - filter: {}>'.format(self.__class__, self.string)
 
     def to_dict(self):
         return {
@@ -59,7 +59,7 @@ class BpfFilter(object):
         self.string = string
 
     def __unicode__(self):
-        return '<%s - filter: %s>' % (self.__class__, self.string)
+        return '<{} - filter: {}>'.format(self.__class__, self.string)
 
     def to_dict(self):
         return {

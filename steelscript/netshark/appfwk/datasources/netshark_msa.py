@@ -217,7 +217,7 @@ class MSADownloadQuery(AnalysisQuery):
             localfile = job.data()['filename'][0]
 
             # example naming: "1-source-6-jobs_00001E3"
-            fname = '%s-%s-%s' % (
+            fname = '{}-{}-{}'.format(
                 job.criteria.segment,
                 job.criteria.netshark_device,
                 job.criteria.netshark_source_name.replace('/', '_')
@@ -236,7 +236,7 @@ class MSADownloadQuery(AnalysisQuery):
         filepaths.sort()
         flist = [s.get_file(rfile) for rfile, _ in filepaths]
 
-        msafile = upload_dir + '/msa_file.pvt'
+        msafile = os.path.join(upload_dir, 'msa_file.pvt')
         check_netshark_file(s, msafile, remove=True)
 
         # create the aggregated file and initiate a timeskew calculation
@@ -259,9 +259,8 @@ class MSADownloadQuery(AnalysisQuery):
         result.append('<strong>MSA file created with config:</strong> '
                       '<br>'
                       '<pre>'
-                      '%s'
-                      '</pre>'
-                      % '<br>'.join(config))
+                      '{}'
+                      '</pre>'.format('<br>'.join(config)))
         return QueryComplete(['<br>'.join(result)])
 
 
@@ -284,7 +283,7 @@ class MSATable(NetSharkTable):
     def post_process_table(self, field_options):
         duration = field_options['duration']
         if isinstance(duration, int):
-            duration = "%dm" % duration
+            duration = "{}m".format(duration)
 
         fields_add_device_selection(self, keyword='netshark_device',
                                     label='NetShark', module='netshark',
