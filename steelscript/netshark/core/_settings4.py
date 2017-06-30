@@ -117,7 +117,6 @@ class NoBulk(object):
     This basically overrides the save method such that it doesn't perform a
     bulk update on the resource but fetches the new data from the server only
     """
-
     @getted
     def save(self):
         # this mimics settings behaviour
@@ -204,9 +203,9 @@ class Firewall(BasicSettingsFunctionality):
 
 
 class Certificates(NoBulk, BasicSettingsFunctionality):
-    '''Wrapper class around the certificates configuration'''
+    """Wrapper class around the certificates configuration"""
 
-    def _gen_cert_configuration(self, *args, **kwargs):
+    def _gen_cert_configuration(self, **kwargs):
         return {'issued_to': {
                 'country': kwargs.get('country') or 'US',
                 'email': kwargs.get('email') or '',
@@ -319,7 +318,7 @@ class Users(NoBulk, BasicSettingsFunctionality):
     """Wrapper class around Users configuration settings. """
 
     @getted
-    def add(self, username, password, groups=[], can_be_locked=False):
+    def add(self, username, password, groups=None, can_be_locked=False):
         """Adds a user to the NetShark
 
         `username` is a string representing the username
@@ -331,6 +330,9 @@ class Users(NoBulk, BasicSettingsFunctionality):
         `can_be_locked` is a boolean representing if the user can be locked out
         from the system or not
         """
+        if groups is None:
+            groups = []
+
         self._api.add({'name': username,
                        'password': password,
                        'groups': groups,
@@ -357,7 +359,7 @@ class Groups(NoBulk, BasicSettingsFunctionality):
     """Wrapper class around settings for user groups. """
 
     @getted
-    def add(self, name, description='', capabilities=[]):
+    def add(self, name, description='', capabilities=None):
         """Adds a new group to the system
 
         :param str name: the name of the group
@@ -379,6 +381,9 @@ class Groups(NoBulk, BasicSettingsFunctionality):
             * CAPABILITY_ACCESS_PROBE_FILES
 
         """
+        if capabilities is None:
+            capabilities = []
+
         self._api.add({'name': name,
                        'description': description,
                        'capabilities': capabilities})
@@ -434,14 +439,11 @@ class Update(NoBulk, BasicSettingsFunctionality):
 
 class Storage(NoBulk, BasicSettingsFunctionality):
 
-    def reinitialize(self, wait=True):
+    def reinitialize(self):
         """Reinitializes the packet storage
 
         .. warning::
            This operation will lose all packets in every job
-
-        :param bool wait: set to True to wait for the packet storage to be
-            back again before returning
         """
         self._api.reinitialize()
 
@@ -473,8 +475,7 @@ class Storage(NoBulk, BasicSettingsFunctionality):
 
         """
 
-        assert (percentage_reserved_space >= 0 and
-                percentage_reserved_space < 96)
+        assert (0 <= percentage_reserved_space < 96)
         self._api.format({'reserved_space': percentage_reserved_space})
 
 

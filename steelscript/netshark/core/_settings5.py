@@ -4,13 +4,11 @@
 # accompanying the software ("License").  This software is distributed "AS IS"
 # as set forth in the License.
 
-
-from _settings4 import Settings4, getted, BasicSettingsFunctionality, ProfilerExport
-
-#there is no functional need to put this class nested into Settings5 class
-#leaving it as module object to simplify reuse and modularization
-
 from functools import partial
+
+from _settings4 import Settings4, getted, \
+    BasicSettingsFunctionality, ProfilerExport
+
 
 class DPIResource(BasicSettingsFunctionality):
     def _get_by_name(self, name):
@@ -28,7 +26,8 @@ class DPIResource(BasicSettingsFunctionality):
 
     def _port_string_to_port_list(self, port_string, protocol='TCP'):
         if port_string is not None:
-            ports = [{'port_range':range.strip(), 'protocol':protocol} for range in port_string.split(',')]
+            ports = [{'port_range': x.strip(), 'protocol': protocol}
+                     for x in port_string.split(',')]
         else:
             ports = []
         return ports
@@ -56,7 +55,6 @@ class PortDefinitions(DPIResource):
         super(PortDefinitions, self).save()
         self._srt_ports_api.update(self._srtdata)
 
-
     def _lookup_port(self, port):
         for port_obj in self.data:
             if port_obj['port'] == port:
@@ -78,8 +76,8 @@ class PortDefinitions(DPIResource):
             port
 
         """
-        assert port > 0 and port < 65536
-        assert srt == True or srt == False
+        assert 0 < port < 65536
+        assert srt is True or srt is False
         if protocol is not 'tcp' and protocol is not 'udp':
             raise ValueError('Protocol must be tcp or udp')
 
@@ -87,16 +85,16 @@ class PortDefinitions(DPIResource):
 
         if port_obj is not None:
             if port_obj.get(protocol) is not None:
-                raise ValueError('There is already a setting for port number {0}'.format(port))
+                raise ValueError('There is already a setting '
+                                 'for port number {0}'.format(port))
             else:
                 port_obj[protocol] = name
         else:
-            self.data.append({protocol:name, 'port':port})
+            self.data.append({protocol: name, 'port': port})
 
         if srt and protocol == 'tcp':
             if port not in self._srtdata:
                 self._srtdata.append(port)
-
 
     @getted
     def remove(self, name, port):
@@ -107,12 +105,13 @@ class PortDefinitions(DPIResource):
         :param int port: the port number
 
         """
-        assert port > 0 and port < 65536
+        assert 0 < port < 65536
 
         port_obj = self._lookup_port(port)
 
         if port_obj is None:
-            raise ValueError('Port number {0} has no configuration in the current netshark'.format(port))
+            raise ValueError('Port number {0} has no configuration '
+                             'in the current netshark'.format(port))
 
         if port_obj.get('tcp') == name:
             del port_obj['tcp']
@@ -131,8 +130,8 @@ class PortGroups(DPIResource):
 
     @getted
     def add(self, name, tcp_ports=None, udp_ports=None, priority=None):
-        #sort the list first by priority
-        self.data.sort(key=lambda k:k['priority'])
+        # sort the list first by priority
+        self.data.sort(key=lambda k: k['priority'])
 
         obj = self._get_by_name(name)
 
@@ -152,7 +151,6 @@ class PortGroups(DPIResource):
 
         self._refresh_priorities()
 
-
     @getted
     def remove(self, name=None, priority=None):
         """Remove a port group by name or by priority
@@ -168,6 +166,8 @@ class PortGroups(DPIResource):
         if name is None and priority is None:
             raise ValueError('name and priority cannot be both None')
 
+        obj = None
+
         if name is not None:
             obj = self._get_by_name(name)
 
@@ -176,17 +176,26 @@ class PortGroups(DPIResource):
 
         if name is not None and priority is not None:
             if obj.get('name') != name:
-                raise ValueError('Port group with priority {0} has a different name than {1}'.format(priority, name))
+                raise ValueError(
+                    'Port group with priority {0} has a '
+                    'different name than {1}'.format(priority, name)
+                )
 
         if obj is not None:
             self.data.remove(obj)
         else:
             if name is not None and priority is None:
-                raise ValueError('Impossible to find port group with name {0}'.format(name))
-            if name is  None and priority is not None:
-                raise ValueError('Impossible to find port group with priority {0}'.format(priority))
+                raise ValueError('Impossible to find port group '
+                                 'with name {0}'.format(name))
+            if name is None and priority is not None:
+                raise ValueError('Impossible to find port group '
+                                 'with priority {0}'.format(priority))
             if name is not None and priority is not None:
-                raise ValueError('Impossible to find port group with name {0} and priority {1}'.format(name, priority))
+                raise ValueError(
+                    'Impossible to find port group '
+                    'with name {0} and priority {1}'.format(name, priority)
+                )
+
 
 class L4Mapping(PortGroups):
     """Wrapper class around Layer 4 Mappings."""
@@ -197,7 +206,8 @@ class L4Mapping(PortGroups):
 
         :param str name: the name of the rule
 
-        :param str hosts: comma separated list of hosts with optional subnet mask
+        :param str hosts: comma separated list of hosts with optional
+                          subnet mask
 
         :param str tcp_ports: comma separated list of ports or port range
 
@@ -211,16 +221,20 @@ class L4Mapping(PortGroups):
         obj = self._get_by_name(name)
 
         if obj is not None:
-            raise ValueError('a l4 mapping with name {0} already exists'.format(name))
+            raise ValueError('l4 mapping with name {0} '
+                             'already exists'.format(name))
 
         tcp = self._port_string_to_port_list(tcp_ports, 'TCP')
         udp = self._port_string_to_port_list(udp_ports, 'UDP')
 
-        self.data.insert(priority, {'name': name,
-                                    'hosts': [x.strip() for x in hosts.split(',')],
-                                    'priority': priority,
-                                    'ports': tcp+udp
-                                    })
+        self.data.insert(
+            priority,
+            {'name': name,
+             'hosts': [x.strip() for x in hosts.split(',')],
+             'priority': priority,
+             'ports': tcp+udp
+             }
+        )
 
         self._refresh_priorities()
 
@@ -239,7 +253,7 @@ class L4Mapping(PortGroups):
 
 
 class CustomApplications(DPIResource):
-    """Wrapper class around custom application defintions."""
+    """Wrapper class around custom application definitions."""
 
     @getted
     def add(self, name, uri):
@@ -254,7 +268,8 @@ class CustomApplications(DPIResource):
         obj = self._get_by_name(name)
 
         if obj is not None:
-            raise ValueError('a l4 mapping with name {0} already exists'.format(name))
+            raise ValueError('l4 mapping with name {0} '
+                             'already exists'.format(name))
 
         self.data.append({'name': name, 'uri': uri})
 
@@ -269,11 +284,12 @@ class CustomApplications(DPIResource):
         if obj is not None:
             self.data.remove(obj)
         else:
-            raise ValueError('The rule with name {0} does not exist'.format(name))
+            raise ValueError('The rule with name {0} '
+                             'does not exist'.format(name))
 
 
 class ProfilerExport(ProfilerExport):
-    """Wrapper class arouind Profiler Export"""
+    """Wrapper class around Profiler Export"""
 
     def _lookup_profiler(self, address):
         for p in self.data['profilers']:
@@ -368,27 +384,38 @@ class Settings5(Settings4):
 
     def __init__(self, shark):
         super(Settings5, self).__init__(shark)
-        self.port_definitions = PortDefinitions(shark.api.port_definitions, shark.api.srt_ports)
+        self.port_definitions = PortDefinitions(shark.api.port_definitions,
+                                                shark.api.srt_ports)
         self.port_groups = PortGroups(shark.api.port_groups)
         self.l4_mapping = L4Mapping(shark.api.l4_mappings)
-        self.custom_applications = CustomApplications(shark.api.custom_applications)
+        self.custom_applications = CustomApplications(
+            shark.api.custom_applications
+        )
         self.profiler_export = ProfilerExport(shark.api.settings)
         self.snmp = BasicSettingsFunctionality(shark.api.snmp)
         self.alerts = Alerts(shark.api.alerts)
 
-        def raise_NotImplementedError(append):
+        def raise_notimplemented_error(append):
             msg = ("This functionality has been replaced in this version of "
                    "NetShark with the DPI classes. "
                    "Please refer to the documentation for more information or "
                    "look at the instance of %s" % append)
-            raise NotImplementedError()
+            raise NotImplementedError(msg)
 
-        #remove API 4.0 specific
-        self.get_protocol_groups = partial(raise_NotImplementedError,
-                                           'NetShark.settings.groups_definitions')
-        self.update_protocol_groups = partial(raise_NotImplementedError,
-                                              'NetShark.settings.groups_definitions')
-        self.get_protocol_names = partial(raise_NotImplementedError,
-                                          'NetShark.settings.l4_mapping')
-        self.update_protocol_names = partial(raise_NotImplementedError,
-                                             'NetShark.settings.l4_mapping')
+        # remove API 4.0 specific
+        self.get_protocol_groups = partial(
+            raise_notimplemented_error,
+            'NetShark.settings.groups_definitions'
+        )
+        self.update_protocol_groups = partial(
+            raise_notimplemented_error,
+            'NetShark.settings.groups_definitions'
+        )
+        self.get_protocol_names = partial(
+            raise_notimplemented_error,
+            'NetShark.settings.l4_mapping'
+        )
+        self.update_protocol_names = partial(
+            raise_notimplemented_error,
+            'NetShark.settings.l4_mapping'
+        )
