@@ -11,14 +11,8 @@ import warnings
 import json
 import copy
 import time
-try:
-    from decorator import decorator
-except ImportError:
-    def decorator(ob):
-        return ob
 
 
-@decorator
 def getted(f):
     @functools.wraps(f)
     def wrapper(self, *args, **kwds):

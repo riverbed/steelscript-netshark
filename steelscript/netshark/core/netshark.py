@@ -46,7 +46,9 @@ __all__ = ['NetShark']
 
 
 class NetShark(Service):
-    """The NetShark class is the main interface to interact with a NetShark appliance.
+    """The NetShark class is the main interface to interact with a NetShark
+    appliance.
+
     Among other things, it makes it possible to manage views, jobs, files and
     trace clips, and to query and modify the appliance settings.
     """

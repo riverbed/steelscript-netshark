@@ -5,7 +5,6 @@
 # as set forth in the License.
 
 
-
 """
 The NetShark package offers a set of interfaces to control and work with
 a SteelCentral NetShark appliance.
