@@ -138,7 +138,8 @@ class PortGroups(DPIResource):
         if obj is not None:
             raise ValueError('A port group with the same name already exists')
 
-        priority = priority or len(self.data)
+        if priority is None:
+            priority = len(self.data)
 
         tcp = self._port_string_to_port_list(tcp_ports, 'TCP')
 
@@ -216,7 +217,8 @@ class L4Mapping(PortGroups):
         """
         assert tcp_ports is not None and udp_ports is not None
 
-        priority = priority or len(self.data)
+        if priority is None:
+            priority = len(self.data)
 
         obj = self._get_by_name(name)
 
