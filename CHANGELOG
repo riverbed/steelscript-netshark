@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+[1.4]
+ * Add Multi-Segment Analysis (MSA) reporting to App Framework
+ * Fix and cleanup settings modules
+
 [1.3]
  * Add pcap job report
  * Django 1.8 compatibility
