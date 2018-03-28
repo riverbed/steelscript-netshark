@@ -15,9 +15,6 @@ class NetSharkApp(Application):
         super(NetSharkApp, self).__init__(*args, **kwargs)
         self.netshark = None
 
-    def parse_args(self):
-        super(NetSharkApp, self).parse_args()
-
     def add_positional_args(self):
         self.add_positional_arg('host', 'NetShark hostname or IP address')
 
