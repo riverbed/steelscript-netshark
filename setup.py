@@ -59,6 +59,7 @@ http://pythonhosted.org/steelscript/
     'data_files': (
         ('share/doc/steelscript/docs/netshark', glob('docs/*')),
         ('share/doc/steelscript/examples/netshark', glob('examples/*')),
+        ('share/doc/steelscript/notebooks/netshark', glob('notebooks/*')),
     ),
 
     'install_requires': (
